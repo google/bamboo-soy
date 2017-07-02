@@ -1,0 +1,32 @@
+{template primitiveTypes}
+  {@param a: any}
+  {@param b: string}
+  {@param c: bool}
+  {@param d: int}
+  {@param e: float}
+  {@param f: number}
+  {@param g: html}
+  {@param h: null}
+  {@param i: ?}
+  {@param j: uri}
+  {@param k: js}
+  {@param l: attributes}
+{/template}
+
+{template unionTypes}
+  {@param a: int|string}
+  {@param b: int|string|uri}
+  {@param c: list<int>|string|uri}
+  {@param d: int|list<int>}
+  {@param e: map<string,string>|list<int>}
+{/template}
+
+{template recordTypes}
+  {@param a: [a:int]}
+  {@param b: [a:int, b:string]}
+  {@param c: [a:int, b:list<int>, c:string]}
+{/template}
+
+{template complexTypes}
+  {@param a: [a:int, b:list<map<string, map<?, any>>>, c:?]|null}
+{/template}

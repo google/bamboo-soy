@@ -1,0 +1,40 @@
+{template callSingle}
+  {call foo /}
+{/template}
+
+{template callBlock}
+  {call bar}
+    {param a: 1/}
+    {param b kind="text"}
+      ASD ASD
+    {/param}
+    {param c: "baz"/}
+    {param d: [1, 2] /}
+  {/call}
+{/template}
+
+{template callMany}
+  {call foo /}
+  {call bar}
+    {param a: 1/}
+    {param b kind="text"}
+      ASD ASD
+    {/param}
+    {param c: "baz"/}
+    {param d: [1, 2] /}
+  {/call}
+  {call baz}
+    {param a: 1 /}
+  {/call}
+  {call last /}
+{/template}
+
+{template callNested}
+  {call l1}
+    {param foo kind="text"}
+      {call l2}
+        {param baz: 1 /}
+      {/call}
+    {/param}
+  {/call}
+{/template}

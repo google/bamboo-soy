@@ -1,0 +1,50 @@
+{template IfStatement}
+  {if $emptyIf}
+  {/if}
+
+  {if $emptyIfWithElse}
+  {else}
+  {/if}
+
+  {if $emptyIfWithElseIf}
+  {elseif $elseIf}
+  {/if}
+
+  {if $emptyIfWithMultipleElseIfAndElse}
+  {elseif $elseIf1}
+  {elseif $elseIf2}
+  {elseif $elseIf3}
+  {else}
+  {/if}
+
+  {if $simpleIf}
+    Simple stuff
+    {call templateWithNoParam /}
+  {/if}
+
+  {if $simpleIf2}
+    {call templateWithNoParam /}
+  {else}
+    {call templateWithSomeParam}
+      {param foo: 3/}
+    {/call}
+    Baz
+  {/if}
+
+  {if $nestedIf}
+    {if $someIf}
+      asd
+    {/if}
+  {else}
+    {if $baz}
+      a
+    {elseif $boo}
+      b
+    {else}
+      c
+    {/if}
+  {/if}
+
+  {if [1,2,3,$complicatedCondition][0]}
+  {/if}
+{/template}

@@ -1,0 +1,880 @@
+{
+  parserClass="com.google.bamboo.soy.parser.SoyParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Soy"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.google.bamboo.soy.parser"
+  psiImplPackage="com.google.bamboo.soy.parser.impl"
+
+  elementTypeHolderClass="com.google.bamboo.soy.parser.SoyTypes"
+  elementTypeClass="com.google.bamboo.soy.parser.SoyElementType"
+  tokenTypeClass="com.google.bamboo.soy.lexer.SoyTokenType"
+
+  implements(".*Statement")="com.google.bamboo.soy.elements.StatementBase"
+
+  tokens = [
+    ALIAS = "alias"
+    AMP_AMP = "&&"
+    AND = "and"
+    AS = "as"
+    AT_PARAM = "@param"
+    AT_PARAM_OPT = "@param?"
+    AT_INJECT = "@inject"
+    AT_INJECT_OPT = "@inject?"
+    BOOL_LITERAL = "regexp:false|true"
+    CALL = "call"
+    CARRIAGE_RETURN = "\\r"
+    CASE = "case"
+    COLON = ":"
+    COMMA = ","
+    CSS="css"
+    DEFAULT = "default"
+    DELCALL = "delcall"
+    DELPACKAGE = "delpackage"
+    DELTEMPLATE = "deltemplate"
+    DOT = "."
+    DOT_NULL_CHECK = "?."
+    ELSE = "else"
+    ELSEIF = "elseif"
+    END_CALL = "/call"
+    END_DELCALL = "/delcall"
+    END_DELTEMPLATE = "/deltemplate"
+    END_FOR = "/for"
+    END_FOREACH = "/foreach"
+    END_IF = "/if"
+    END_LET = "/let"
+    END_LITERAL = "{/literal}"
+    END_MSG = "/msg"
+    END_PARAM = "/param"
+    END_PLURAL = "/plural"
+    END_SELECT = "/select"
+    END_SWITCH = "/switch"
+    END_TEMPLATE = "/template"
+    EQUAL = "="
+    EQUAL_EQUAL = "=="
+    EXCLAMATION = "!"
+    FALLBACKMSG = "fallbackmsg"
+    FOR = "for"
+    FOREACH = "foreach"
+    GREATER = ">"
+    GREATER_EQUAL = ">="
+    IF = "if"
+    IFEMPTY = "ifempty"
+    IN = "in"
+    INDEX_NULL_CHECK = "?["
+    LB = "lb"
+    LBRACE = "{"
+    LBRACE_LBRACE = "{{"
+    LESS = "<"
+    LESS_EQUAL = "<="
+    LET = "let"
+    LITERAL = "{literal}"
+    MINUS = "-"
+    MSG = "msg"
+    NAMESPACE = "namespace"
+    NEWLINE_LITERAL = "\\n"
+    NIL = "nil"
+    NOT = "not"
+    NOT_EQUAL = "!="
+    OR = "or"
+    PARAM = "param"
+    PARENS_CLOSE = ")"
+    PARENS_OPEN = "("
+    PERCENT = "%"
+    PIPE = "|"
+    PIPE_PIPE = "||"
+    PLURAL = "plural"
+    PLUS = "+"
+    PRINT = "print"
+    QUESTIONMARK = "?"
+    RB = "rb"
+    RBRACE = "}"
+    RBRACE_RBRACE = "}}"
+    SELECT = "select"
+    SLASH = "/"
+    SLASH_RBRACE = "/}"
+    SLASH_RBRACE_RBRACE = "/}}"
+    SP = "sp"
+    SQUARE_CLOSE = "]"
+    SQUARE_OPEN = "["
+    STAR = "*"
+    SWITCH = "switch"
+    TAB = "\\t"
+    TEMPLATE = "template"
+    TERNARY_COALESCER = "?:"
+    TESTING_WHITESPACE = "regexp:[ \n\t\r\f]+"
+    XID="xid"
+
+    /* Types */
+    ANY = "any"
+    STRING = "string"
+    BOOL = "bool"
+    INT = "int"
+    FLOAT = "float"
+    NUMBER = "number"
+    HTML = "html"
+    URI = "uri"
+    JS = "js"
+    ATTRIBUTES = "attributes"
+    LIST = "list"
+    MAP = "map"
+
+    DOC_COMMENT_BLOCK = "regexp:(/\**([^*]|(\*+[^*/]))*(\*+/))"
+    COMMENT_BLOCK = "regexp:(/\*([^*]|(\*+[^*/]))*(\*+/))"
+    HTML_COMMENT ="regexp:<!--([^\r\n]|(\r|\n|\r\n))*-->"
+
+    DASHED_IDENTIFIER_LITERAL = "regexp:\$?[a-zA-Z_]([a-zA-Z_0-9])*(-[a-zA-Z_]([a-zA-Z_0-9])*)+"
+    DOLLAR_SINGLE_IDENTIFIER_LITERAL = "regexp:\$[a-zA-Z_][a-zA-Z_0-9]*"
+    CSS_DOLLAR_MULTI_IDENTIFIER_LITERAL = "regexp:\$[a-zA-Z_][a-zA-Z_0-9]*((\.[a-zA-Z_][a-zA-Z_0-9]*)|(-[a-zA-Z_0-9]+))+"
+    CSS_PERCENT_IDENTIFIER_LITERAL = "regexp:%[a-zA-Z_][a-zA-Z_0-9]*(-[a-zA-Z_][a-zA-Z_0-9]*)*"
+    SINGLE_IDENTIFIER_LITERAL = "regexp:[a-zA-Z_][a-zA-Z_0-9]*"
+    LOCAL_IDENTIFIER_LITERAL = "regexp:\.[a-zA-Z_][a-zA-Z_0-9]*(\.[a-zA-Z_][a-zA-Z_0-9]*)*"
+    FULLY_QUALIFIED_IDENTIFIER_LITERAL = "regexp:[a-zA-Z_]([a-zA-Z_0-9])*(\.[a-zA-Z_]([a-zA-Z_0-9]*))*"
+
+    STRING_LITERAL = "regexp:'([^\r\n'\\]|\\.)*'"
+    MULTI_LINE_STRING_LITERAL = "regexp:'([^'\\]|\\([^]))*'"
+
+    INTEGER_LITERAL = "regexp:[0-9]+"
+    FLOAT_LITERAL = "regexp:([0-9]+\.[0-9]+(e((\+|-)?[0-9]+))?)|([0-9]+(e((\+|-)?[0-9]+))?)"
+
+    OTHER = "regexp:."
+
+    HORIZONTAL_SPACE
+    LINE_TERMINATOR
+  ]
+}
+
+// Root rule
+
+FileInput ::= BlockList | (HORIZONTAL_SPACE | LINE_TERMINATOR)*
+
+// Identifiers
+
+private KeywordsAllowedInIdentifiers ::=
+    ANY | AS | ATTRIBUTES | BOOL | CSS | FLOAT | HTML | INT | JS | LB | LIST |
+    MAP | MSG | NIL | NUMBER | PLURAL | RB | SP | STRING | URI | XID
+
+private SingleIdentifier ::= LOCAL_IDENTIFIER_LITERAL | SINGLE_IDENTIFIER_LITERAL | KeywordsAllowedInIdentifiers
+
+private FullyQualifiedIdentifier ::= SingleIdentifier | FULLY_QUALIFIED_IDENTIFIER_LITERAL
+
+private CssEnabledIdentifier ::= FullyQualifiedIdentifier | CSS_PERCENT_IDENTIFIER_LITERAL | DASHED_IDENTIFIER_LITERAL |
+    DOLLAR_SINGLE_IDENTIFIER_LITERAL | CSS_DOLLAR_MULTI_IDENTIFIER_LITERAL
+
+Identifier ::= CssEnabledIdentifier
+
+TemplateDefinitionIdentifier ::= Identifier {
+  mixin="com.google.bamboo.soy.elements.TemplateDefinitionMixin"
+  implements="com.google.bamboo.soy.elements.TemplateDefinitionElement"
+  methods=[setName getName]
+}
+
+TemplateReferenceIdentifier ::= Identifier {
+  mixin="com.google.bamboo.soy.elements.IdentifierMixin"
+  implements="com.google.bamboo.soy.elements.IdentifierElement"
+  methods=[getReference]
+}
+
+VariableReferenceIdentifier ::= Identifier {
+  mixin="com.google.bamboo.soy.elements.IdentifierMixin"
+  implements="com.google.bamboo.soy.elements.IdentifierElement"
+  methods=[getReference]
+}
+
+VariableDefinitionIdentifier ::= Identifier {
+  mixin="com.google.bamboo.soy.elements.VariableDefinitionMixin"
+  implements="com.google.bamboo.soy.elements.VariableDefinitionElement"
+  methods=[setName getName]
+}
+
+ParamDefinitionIdentifier ::= Identifier {
+  mixin="com.google.bamboo.soy.elements.ParamDefinitionMixin"
+  implements="com.google.bamboo.soy.elements.ParamDefinitionElement"
+  methods=[setName getName]
+}
+
+ParamSpecificationIdentifier ::= Identifier {
+  mixin="com.google.bamboo.soy.elements.ParamIdentifierMixin"
+  implements="com.google.bamboo.soy.elements.ParamIdentifierElement"
+  methods=[getReference]
+}
+
+NamespaceIdentifier ::= Identifier
+
+AliasIdentifier ::= Identifier
+
+TypeIdentifier ::= Identifier
+
+PackageIdentifier ::= Identifier
+
+FieldIdentifier ::= SingleIdentifier
+
+AttributeNameIdentifier ::= Identifier
+
+FunctionIdentifier ::= Identifier
+
+// Literals
+
+ValueLiteral ::= NumberLiteral | AnyStringLiteral | BOOL_LITERAL
+
+NumberLiteral ::= INTEGER_LITERAL | FLOAT_LITERAL | DOT FLOAT_LITERAL
+
+AnyStringLiteral ::= STRING_LITERAL | MULTI_LINE_STRING_LITERAL {
+  mixin="com.google.bamboo.soy.elements.IdentifierMixin"
+  implements="com.google.bamboo.soy.elements.IdentifierElement"
+  methods=[getReferences]
+}
+
+private recoverEndOfTag ::= !(LBRACE | LBRACE_LBRACE | LITERAL | LITERAL_DOUBLE | RBRACE | RBRACE_RBRACE | SLASH_RBRACE | SLASH_RBRACE_RBRACE)
+private meta BracedTag ::= <<ClosedBracedTag <<p>>>> | <<OpenBracedTag <<p>>>>
+private meta OpenBracedTag ::= <<SingleBracedOpenTagOuter <<p>>>> | <<DoubleBracedOpenTagOuter <<p>>>>
+private meta ClosedBracedTag ::= <<SingleBracedClosedTag <<p>>>> | <<DoubleBracedClosedTag <<p>>>>
+private meta SingleBracedOpenTagOuter ::= <<SingleBracedOpenTagInner <<p>>>> RBRACE {
+  pin = 1
+}
+private meta SingleBracedOpenTagInner ::= LBRACE <<p>> {
+  recoverWhile = "recoverEndOfTag"
+}
+private meta SingleBracedClosedTag ::= LBRACE <<p>> SLASH_RBRACE
+
+private meta DoubleBracedOpenTagOuter ::= <<DoubleBracedOpenTagInner <<p>>>> RBRACE_RBRACE {
+  pin = 1
+}
+private meta DoubleBracedOpenTagInner ::= LBRACE_LBRACE <<p>> {
+  recoverWhile = "recoverEndOfTag"
+}
+private meta DoubleBracedClosedTag ::= LBRACE_LBRACE <<p>> SLASH_RBRACE_RBRACE
+
+// Possible ending tags
+
+EndCallTag ::= <<BracedTag END_CALL>>
+EndDelCallTag ::= <<BracedTag END_DELCALL>>
+EndDelTemplateTag ::= <<BracedTag END_DELTEMPLATE>>
+EndForeachTag ::= <<BracedTag END_FOREACH>>
+EndForTag ::= <<BracedTag END_FOR>>
+EndIfTag ::= <<BracedTag END_IF>>
+EndLetTag ::= <<BracedTag END_LET>>
+EndMsgTag ::= <<BracedTag END_MSG>>
+EndParamTag ::= <<BracedTag END_PARAM>>
+EndPluralTag ::= <<BracedTag END_PLURAL>>
+EndSelectTag ::= <<BracedTag END_SELECT>>
+EndSwitchTag ::= <<BracedTag END_SWITCH>>
+EndTemplateTag ::= <<BracedTag END_TEMPLATE>>
+// This little rule is needed to exclude from matching CatchallBraces in statements so that a block
+// or nested statement can actually be closed.
+private EndTag ::= EndCallTag | EndDelCallTag | EndDelTemplateTag | EndForeachTag | EndForTag |
+    EndIfTag | EndLetTag | EndMsgTag | EndParamTag | EndPluralTag | EndSelectTag | EndSwitchTag |
+    EndTemplateTag
+
+// Expanding on soy's hierarchical structure follows.
+
+BlockList ::= (Block | OTHER | COMMENT_BLOCK | HTML_COMMENT)*
+
+private Block ::= NamespaceBlock | AliasBlock | TemplateBlock | DelegatePackageBlock | DelegateTemplateBlock | CatchallBraces
+
+CatchallBraces ::= <<BracedTag ()>>
+
+// Namespace block
+
+NamespaceBlock ::= <<BracedTag NamespaceTagBody>>
+
+private NamespaceTagBody ::= NAMESPACE NamespaceIdentifier [AttributeList] {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
+
+// Alias block
+
+AliasBlock ::= <<BracedTag AliasBody>>
+
+private AliasBody ::= ALIAS NamespaceIdentifier [AS AliasIdentifier] {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
+
+// Template block
+
+TemplateBlock ::=
+    BeginTemplate
+    [AtParamList]
+    [<<StatementList !()>>]
+    EndTemplateTag {
+  pin = 1
+  implements="com.google.bamboo.soy.elements.TemplateBlockBase"
+}
+
+BeginTemplate ::= <<BracedTag BeginTemplateBody>> {
+  implements="com.google.bamboo.soy.elements.BeginTemplateBase"
+}
+
+private BeginTemplateBody ::= TEMPLATE (TemplateDefinitionIdentifier [AttributeList] | AttributeList) {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
+
+AtParamList ::= (AtParamSingle [DocComment]| AtInjectSingle [DocComment])+
+
+AtParamSingle ::= <<BracedTag AtParamBody>>
+
+DocComment ::= (HORIZONTAL_SPACE | LINE_TERMINATOR)* DOC_COMMENT_BLOCK
+
+AtParamBody ::= (AT_PARAM | AT_PARAM_OPT) ParamDefinitionIdentifier COLON TypeExpression {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
+
+AtInjectSingle ::= <<BracedTag AtInjectBody>>
+
+AtInjectBody ::= (AT_INJECT | AT_INJECT_OPT) ParamDefinitionIdentifier COLON TypeExpression {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
+
+TypeExpression ::= UnionType | CompoundType | PrimitiveType
+
+PrimitiveType
+  ::=
+    ANY | STRING | BOOL | INT | FLOAT | NUMBER | HTML | NULL | QUESTIONMARK |
+    URI | JS | ATTRIBUTES | TypeIdentifier
+
+CompoundType ::= ListType | MapType | RecordType
+
+ListType ::= LIST LESS TypeExpression GREATER {
+  pin = 2
+}
+
+MapType ::= MAP LESS TypeExpression COMMA TypeExpression GREATER {
+  pin = 2
+}
+
+UnionType ::= (CompoundType | PrimitiveType) PIPE TypeExpression {
+  pin = 2
+}
+
+RecordType ::= SQUARE_OPEN RecordTypeField (COMMA RecordTypeField)* SQUARE_CLOSE {
+  pin = 1
+}
+
+RecordTypeField ::= FieldIdentifier COLON TypeExpression {
+  pin = 2
+}
+
+// DelTemplate block
+
+DelegateTemplateBlock ::=
+    BeginDelegateTemplate
+    [AtParamList]
+    [<<StatementList !()>>]
+    EndDelTemplateTag {
+  pin = 1
+  implements="com.google.bamboo.soy.elements.DelegateTemplateBlockBase"
+}
+
+BeginDelegateTemplate ::= <<BracedTag BeginDelegateTemplateBody>> {
+  implements="com.google.bamboo.soy.elements.BeginTemplateBase"
+}
+
+private BeginDelegateTemplateBody ::= DELTEMPLATE TemplateDefinitionIdentifier [AttributeList] {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
+
+// DelPackage block
+
+DelegatePackageBlock ::= <<BracedTag DelegatePackageTagBody>>
+
+private DelegatePackageTagBody ::= DELPACKAGE PackageIdentifier {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
+
+// Attribute lists
+
+private AttributeList ::= AttributeKeyValuePair+
+
+AttributeKeyValuePair ::= AttributeNameIdentifier EQUAL AnyStringLiteral {
+  pin = 2
+}
+
+// Statements
+
+// Should consume everything until the provided threshold rule or any end tag.
+// Should only expect statements.
+// Should (ideally) mark everything else as an error.
+meta StatementList ::= (Statement | !(EndTag | <<p>>) CatchallBraces)+ {
+  recoverWhile = "!(EndTag | <<p>>)"
+}
+
+// ! It is very important to have the following structure
+// StatementList
+// |- OTHER
+// |- Some other statement
+// for the formatter to work, see SoyFormattingModelBuilder
+//
+// Please do not change the visibility of these rules, unless you are sure
+// what you are doing.
+
+private Content ::= OTHER
+
+private Statement ::=
+    DirectCallStatement
+  |
+    DelCallStatement
+  |
+    CssStatement
+  |
+    ForStatement
+  |
+    ForeachStatement
+  |
+    IfStatement
+  |
+    LbStatement
+  |
+    LetSingleStatement
+  |
+    LetCompoundStatement
+  |
+    LiteralStatement
+  |
+    MsgStatement
+  |
+    NilStatement
+  |
+    PluralStatement
+  |
+    XidStatement
+  |
+    RbStatement
+  |
+    SelectStatement
+  |
+    SpStatement
+  |
+    SwitchStatement
+  |
+    WhitespaceStatement
+  |
+    PrintStatement
+  |
+    Content
+
+// A wrapper for [StatementList] that parses all statements in an unexpected context.
+
+meta UnexpectedStatements ::= <<StatementList (<<p>>)>>
+
+// For
+
+ForStatement
+  ::= BeginFor
+    [<<StatementList !()>>]
+    EndForTag {
+  pin = 1
+}
+
+BeginFor ::= <<BracedTag BeginForTagBody>>
+
+private BeginForTagBody ::= FOR VariableDefinitionIdentifier IN ExpressionList {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
+
+// Foreach
+
+ForeachStatement
+  ::=
+    BeginForeach
+      [<<StatementList (IfEmptyTag)>>]
+    [IfEmptyTag
+      [<<StatementList !()>>]]
+    EndForeachTag {
+  pin = 1
+}
+
+IfEmptyTag ::= <<BracedTag IFEMPTY>>
+
+BeginForeach ::= <<BracedTag BeginForeachTagBody>>
+
+private BeginForeachTagBody ::= FOREACH VariableDefinitionIdentifier IN ExpressionList {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
+
+// If
+
+IfStatement
+  ::=
+    BeginIf
+    [<<StatementList (ElseTag | BeginElseIf)>>]
+    [ElseIfClauseList]
+    [ElseTag [<<StatementList !()>>]]
+    EndIfTag {
+  pin = 1
+}
+
+BeginIf ::= <<BracedTag BeginIfTagBody>>
+
+private BeginIfTagBody ::= IF ExpressionList {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
+
+ElseIfClauseList
+  ::=
+    BeginElseIf
+      [<<StatementList (ElseTag | BeginElseIf)>>]
+    [ElseIfClauseList] {
+  pin = 1
+}
+
+BeginElseIf ::= <<BracedTag BeginElseIfTagBody>>
+
+private BeginElseIfTagBody ::= ELSEIF ExpressionList {
+  pin = 1
+}
+
+ElseTag ::= <<BracedTag ELSE>>
+
+
+
+/*
+ * CALL STATEMENTS
+ */
+
+// Direct call
+
+DirectCallStatement ::= BeginCall [<<CallStatementBody (EndCallTag)>> | EndCallTag] {
+  implements="com.google.bamboo.soy.elements.CallStatementBase"
+}
+
+BeginCall ::= <<BracedTag BeginCallTagBody>> {
+  implements="com.google.bamboo.soy.elements.BeginCallBase"
+}
+
+private BeginCallTagBody ::= CALL (TemplateReferenceIdentifier [AttributeList] | AttributeList) {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
+
+// DelCall
+
+DelCallStatement ::= BeginDelCall [<<CallStatementBody (EndDelCallTag)>> | EndDelCallTag] {
+  implements="com.google.bamboo.soy.elements.DelCallStatementBase"
+}
+
+BeginDelCall ::= <<BracedTag BeginDelCallTagBody>> {
+  implements="com.google.bamboo.soy.elements.BeginCallBase"
+}
+
+private BeginDelCallTagBody ::= DELCALL TemplateReferenceIdentifier [AttributeList] {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
+
+// ParamList
+
+private meta CallStatementBody ::= ParamList <<p>> {
+  pin = 1
+}
+
+private ParamList ::=
+  ([<<UnexpectedStatements (BeginParamTag)>>] ParamListElement)+
+  [<<UnexpectedStatements (BeginParamTag)>>]
+
+ParamListElement
+  ::=
+    BeginParamTag
+    [ParamListElementBody | EndParamTag] {
+  pin = 1
+  // Ideally, should be useless and parsed by [ParamListElementBody]
+  recoverWhile = "!(EndTag | BeginParamTag)"
+  implements = "com.google.bamboo.soy.elements.ParamListElementBase"
+}
+
+private ParamListElementBody ::= <<StatementList (BeginParamTag)>> EndParamTag {
+  pin = 1
+}
+
+BeginParamTag ::= <<BracedTag BeginParamTagBody>>
+
+private BeginParamTagBody ::= PARAM (ParamSpecificationIdentifier COLON ExpressionList | AttributeList | ParamSpecificationIdentifier [AttributeList]) {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
+
+
+
+/*
+ * MULTIPLE CHOICE STATEMENTS
+ */
+
+// Plural statement
+
+PluralStatement ::= BeginPlural CaseAndDefaultClauses EndPluralTag {
+  pin = 1
+  implements="com.google.bamboo.soy.elements.ChoiceStatementBaseElement"
+}
+
+BeginPlural ::= <<BracedTag BeginPluralTagBody>>
+
+private BeginPluralTagBody ::= PLURAL ExpressionList [AttributeKeyValuePair] {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
+
+// Switch statement
+
+SwitchStatement ::= BeginSwitch CaseAndDefaultClauses EndSwitchTag {
+  pin = 1
+  implements="com.google.bamboo.soy.elements.ChoiceStatementBaseElement"
+}
+
+BeginSwitch ::= <<BracedTag BeginSwitchTagBody>>
+
+private BeginSwitchTagBody ::= SWITCH ExpressionList {
+  pin = 1
+}
+
+// Select statement
+
+SelectStatement ::= BeginSelectStatement CaseAndDefaultClauses EndSelectTag {
+  pin = 1
+  implements="com.google.bamboo.soy.elements.ChoiceStatementBaseElement"
+}
+
+BeginSelectStatement ::= <<BracedTag BeginSelectStatementTagBody>>
+
+private BeginSelectStatementTagBody ::= SELECT ExpressionList {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
+
+// Case and default clauses
+
+// Statements are only "unexpected" before the first {case} or {default} tag. After that they are
+// consumed by the appropriate *Clause rule.
+
+private CaseAndDefaultClauses
+  ::=
+    [<<UnexpectedStatements (BeginCaseClause | DefaultTag)>>]
+    (CaseClause | DefaultClause)*
+
+CaseClause
+  ::=
+    BeginCaseClause
+    [<<StatementList (BeginCaseClause | DefaultTag)>>] {
+  pin = 1
+}
+
+BeginCaseClause ::= <<BracedTag BeginCaseClauseTagBody>>
+
+private BeginCaseClauseTagBody ::= CASE CommaSeparatedExpressionList {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
+
+DefaultClause ::= DefaultTag [<<StatementList !()>>] {
+  pin = 1
+}
+
+DefaultTag ::= <<BracedTag DEFAULT>>
+
+
+
+/*
+ * SIMPLE STATEMENTS
+ */
+
+// Css statement
+
+CssStatement ::= <<BracedTag CssStatementTagBody>>
+
+private CssStatementTagBody ::= CSS Identifier {
+  recoverWhile = "recoverEndOfTag"
+}
+
+// Xid statement
+
+XidStatement ::= <<BracedTag XidStatementTagBody>>
+
+private XidStatementTagBody ::= XID Identifier {
+  recoverWhile = "recoverEndOfTag"
+}
+
+// Let statement
+
+LetSingleStatement ::= <<BracedTag LetSingleTagBody>>
+
+private LetSingleTagBody ::= LET VariableDefinitionIdentifier COLON ExpressionList {
+  pin = 3
+  recoverWhile = "recoverEndOfTag"
+}
+
+LetCompoundStatement ::= BeginLet [<<StatementList !()>>] EndLetTag {
+  pin = 1
+}
+
+BeginLet ::= <<BracedTag BeginLetTagBody>>
+
+private BeginLetTagBody ::= LET VariableDefinitionIdentifier [AttributeKeyValuePair] {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
+
+// Literal statement
+
+LiteralStatement ::= (LITERAL Content END_LITERAL) | (LITERAL_DOUBLE Content END_LITERAL_DOUBLE)
+
+// Msg statement
+
+MsgStatement
+  ::=
+    BeginMsg
+      [<<StatementList (FallbackMsgClause)>>]
+    [FallbackMsgClause
+      [<<StatementList !()>>]]
+    EndMsgTag {
+  pin = 1
+  implements="com.google.bamboo.soy.elements.MsgStatement"
+}
+
+BeginMsg ::= <<BracedTag BeginMsgTagBody>>
+
+private BeginMsgTagBody ::= MSG AttributeList {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
+
+FallbackMsgClause ::= <<BracedTag FallbackMsgTagBody>>
+
+private FallbackMsgTagBody ::= FALLBACKMSG AttributeList {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
+
+LbStatement ::= <<BracedTag LB>>
+
+NilStatement ::= <<BracedTag NIL>>
+
+RbStatement ::= <<BracedTag RB>>
+
+SpStatement ::= <<BracedTag SP>>
+
+// Print statement
+
+PrintStatement ::= <<BracedTag PrintBody>>
+
+private PrintBody ::= ImplicitPrintBody | ExplicitPrintBody
+
+private ExplicitPrintBody ::= PRINT ExpressionList [PIPE DirectiveList] {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
+
+private ImplicitPrintBody ::= ExpressionList [PIPE DirectiveList] [AttributeKeyValuePair]
+
+private DirectiveList ::= Directive (PIPE Directive)*
+
+Directive
+  ::=
+    Identifier
+  |
+    Identifier COLON ValueLiteral (COMMA ValueLiteral)*
+
+CommaSeparatedExpressionList ::= ExpressionList (COMMA ExpressionList)* COMMA?
+
+// Whitespace statement
+
+WhitespaceStatement ::= <<BracedTag TAB>>|<<BracedTag NEWLINE_LITERAL>>|<<BracedTag CARRIAGE_RETURN>>
+
+// Expressions
+
+ExpressionList
+  ::=
+    Expression BinaryOperator ExpressionList [ExpressionTail]
+  |
+    Expression [ExpressionTail]
+
+
+private ExpressionTail
+  ::=
+    SQUARE_OPEN ExpressionList SQUARE_CLOSE [ExpressionTail]
+  |
+    INDEX_NULL_CHECK ExpressionList SQUARE_CLOSE [ExpressionTail]
+
+ParenthesizedExpression ::= PARENS_OPEN Expression PARENS_CLOSE
+
+Expression
+  ::=
+    // List definition.
+    SQUARE_OPEN [CommaSeparatedExpressionList] SQUARE_CLOSE
+  |
+    // List/Map access.
+    [FunctionCall | VariableReferenceIdentifier | ParenthesizedExpression] SQUARE_OPEN [CommaSeparatedExpressionList] SQUARE_CLOSE
+  |
+    NumberLiteral
+  |
+    FunctionCall
+  |
+    VariableReferenceIdentifier
+  |
+    AnyStringLiteral
+  |
+    BOOL_LITERAL
+  |
+    ParenthesizedExpression
+  |
+    PLUS Expression
+  |
+    MINUS Expression
+  |
+    NOT Expression
+  |
+    EXCLAMATION Expression
+
+FunctionCall
+  ::=
+    FunctionIdentifier PARENS_OPEN PARENS_CLOSE
+  |
+    FunctionIdentifier PARENS_OPEN FunctionParameterList PARENS_CLOSE
+
+private FunctionParameterList ::= ExpressionList (COMMA ExpressionList)*
+
+private BinaryOperator ::=
+    BooleanOperator
+  |
+    ArithmeticOperator
+  |
+    RelationalOperator
+  |
+    DotReferenceOperator
+  |
+    NullCheckOperator
+
+private BooleanOperator ::= AND | OR | PIPE_PIPE | AMP_AMP
+
+private ArithmeticOperator ::= STAR | SLASH | PERCENT | PLUS | MINUS
+
+private RelationalOperator
+  ::=
+    GREATER_EQUAL
+  |
+    EQUAL_EQUAL
+  |
+    LESS_EQUAL
+  |
+    NOT_EQUAL
+  |
+    LESS
+  |
+    GREATER
+  |
+    QUESTIONMARK  // fake a ternary operator
+  |
+    COLON  // fake a ternary operator
+
+private DotReferenceOperator ::= DOT
+
+private NullCheckOperator ::= TERNARY_COALESCER | DOT_NULL_CHECK

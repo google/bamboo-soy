@@ -1,0 +1,126 @@
+<templateSet group="ClosureTemplates">
+  <template name="{namespace" value="{namespace $NAME$}$END$"
+      description="Package namespace declaration" toReformat="false" toShortenFQNames="true">
+    <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="CLOSURE_TEMPLATE_TOP_LEVEL" value="true"/>
+    </context>
+  </template>
+  <template name="{alias" value="{alias $NAME$ as $END$}" description="Alias declaration"
+      toReformat="false" toShortenFQNames="true">
+    <variable name="NAME" expression="complete()" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="CLOSURE_TEMPLATE_TOP_LEVEL" value="true"/>
+    </context>
+  </template>
+  <template name="{template" value="{template $NAME$}&#10;  $END$&#10;{/template}"
+      description="Template definition" toReformat="false" toShortenFQNames="true">
+    <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="CLOSURE_TEMPLATE_TOP_LEVEL" value="true"/>
+    </context>
+  </template>
+  <template name="{deltemplate" value="{deltemplate $NAME$}&#10;  $END$&#10;{/deltemplate}"
+      description="Deltemplate definition" toReformat="false" toShortenFQNames="true">
+    <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="CLOSURE_TEMPLATE_TOP_LEVEL" value="true"/>
+    </context>
+  </template>
+
+  <template name="{param}{/param}"
+      value="{param $NAME$ kind=&quot;$KIND$&quot;}&#10;  $END$&#10;{/param}"
+      description="Template parameter" toReformat="false" toShortenFQNames="true">
+    <variable name="NAME" expression="complete()" defaultValue="" alwaysStopAt="true"/>
+    <variable name="KIND" expression="complete()" defaultValue='"text"' alwaysStopAt="true"/>
+    <context>
+      <option name="CLOSURE_TEMPLATE_CALL_BLOCK" value="true"/>
+    </context>
+  </template>
+  <template name="{sparam/}" value="{param $NAME$: $END$ /}"
+      description="Template parameter single line" toReformat="false" toShortenFQNames="true">
+    <variable name="NAME" expression="complete()" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="CLOSURE_TEMPLATE_CALL_BLOCK" value="true"/>
+    </context>
+  </template>
+
+  <template name="{@param" value="{@param $NAME$: $TYPE$}$END$" description="Parameter definition"
+      toReformat="false" toShortenFQNames="true">
+    <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true"/>
+    <variable name="TYPE" expression="" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="CLOSURE_TEMPLATE_TEMPLATE_BLOCK" value="true"/>
+    </context>
+  </template>
+  <template name="{call}{/call}" value="{call $NAME$}&#10;  $END$&#10;{/call}"
+      description="Template call" toReformat="false" toShortenFQNames="true">
+    <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="CLOSURE_TEMPLATE_TEMPLATE_BLOCK" value="true"/>
+    </context>
+  </template>
+  <template name="{scall/}" value="{call $NAME$ /}$END$" description="Function call single line"
+      toReformat="false" toShortenFQNames="true">
+    <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="CLOSURE_TEMPLATE_TEMPLATE_BLOCK" value="true"/>
+    </context>
+  </template>
+  <template name="{delcall}{/delcall}" value="{delcall $NAME$}&#10;  $END$&#10;{/delcall}"
+      description="Deltemplate call" toReformat="false" toShortenFQNames="true">
+    <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="CLOSURE_TEMPLATE_TEMPLATE_BLOCK" value="true"/>
+    </context>
+  </template>
+  <template name="{sdelcall/}" value="{delcall $NAME$ /}$END$" description="Delcall single line"
+      toReformat="false" toShortenFQNames="true">
+    <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="CLOSURE_TEMPLATE_TEMPLATE_BLOCK" value="true"/>
+    </context>
+  </template>
+  <template name="{xid('')}" value="{xid('$ID$')}$END$" description="Xid function call"
+      toReformat="false" toShortenFQNames="true">
+    <variable name="ID" expression="" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="CLOSURE_TEMPLATE_TEMPLATE_BLOCK" value="true"/>
+    </context>
+  </template>
+  <template name="{css('')}" value="{css('%$NAME$')}$END$" description="Css function call"
+      toReformat="false" toShortenFQNames="true">
+    <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="CLOSURE_TEMPLATE_TEMPLATE_BLOCK" value="true"/>
+    </context>
+  </template>
+  <template name="{literal" value="{literal}$END${/literal}" description="Literal block"
+      toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="CLOSURE_TEMPLATE_TEMPLATE_BLOCK" value="true"/>
+    </context>
+  </template>
+  <template name="{foreach" value="{foreach $OPERAND$ in $OPERANDS$}&#10;  $END$&#10;{/foreach}"
+      description="Foreach loop" toReformat="false" toShortenFQNames="true">
+    <variable name="OPERAND" expression="" defaultValue="" alwaysStopAt="true"/>
+    <variable name="OPERANDS" expression="" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="CLOSURE_TEMPLATE_TEMPLATE_BLOCK" value="true"/>
+    </context>
+  </template>
+  <template name="{if" value="{if $CONDITION$}&#10;  $END$&#10;{/if}" description="If condition"
+      toReformat="false" toShortenFQNames="true">
+    <variable name="CONDITION" expression="complete()" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="CLOSURE_TEMPLATE_TEMPLATE_BLOCK" value="true"/>
+    </context>
+  </template>
+  <template name="{ifelse" value="{if $CONDITION$}&#10;  $END$&#10;{else}&#10;  &#10;{/if}"
+      description="If-else condition" toReformat="false" toShortenFQNames="true">
+    <variable name="CONDITION" expression="complete()" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="CLOSURE_TEMPLATE_TEMPLATE_BLOCK" value="true"/>
+    </context>
+  </template>
+</templateSet>

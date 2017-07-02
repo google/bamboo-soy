@@ -1,0 +1,24 @@
+{template emptyAtParamList}
+{/template}
+
+{template singleAtParamStatement}
+  {@param a : int}
+{/template}
+
+{template singleAtInjectStatement}
+  {@inject b : ?}
+{/template}
+
+{template atParamAndAtInject}
+  {@param a : int}
+  {@param b : string}
+  {@inject b : ?}
+  {@inject b : uri}
+{/template}
+
+{template atParamAndAtInjectInterleaved}
+  {@param a : int}
+  {@inject b : ?}
+  {@param b : string}
+  {@inject b : uri}
+{/template}
