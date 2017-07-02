@@ -15,8 +15,10 @@
 package com.google.bamboo.soy.typedhandlers;
 
 import com.google.bamboo.soy.BracedTagUtils;
+import com.google.bamboo.soy.elements.StatementBase;
 import com.google.bamboo.soy.parser.SoyParamListElement;
 import com.google.bamboo.soy.parser.SoyParserDefinition;
+import com.google.bamboo.soy.parser.SoyStatementList;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.common.collect.ImmutableMap;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -28,6 +30,7 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
 /** Automatically inserts a matching closing tag when "{/" is typed. */
@@ -116,6 +119,10 @@ public class ClosingTagHandler implements TypedActionHandler {
       }
       prev = el;
       el = el.getParent();
+      // Skipping the StatementList wrapper
+      if (el instanceof SoyStatementList) {
+        el = el.getParent();
+      }
     }
     return null;
   }
@@ -138,7 +145,7 @@ public class ClosingTagHandler implements TypedActionHandler {
    */
   private static boolean isEmptyInlinedStatement(PsiElement statement, PsiElement caretElement) {
     if (!(statement instanceof SoyParamListElement)
-        || caretElement.getParent() != statement) {
+        || caretElement.getParent().getParent() != statement) {
       return false;
     }
 
@@ -149,8 +156,12 @@ public class ClosingTagHandler implements TypedActionHandler {
 
     // If there are non-whitespace statements inside the {param} preceding current
     // editing position, do not skip.
-    // Skipping the begin_param_tag
-    PsiElement child = statement.getFirstChild().getNextSibling();
+    // Skipping the begin_*_tag and diving into StatementList
+    PsiElement statementList = PsiTreeUtil.findChildOfType(statement, SoyStatementList.class);
+    if (statementList == null) {
+      return false;
+    }
+    PsiElement child = statementList.getFirstChild();
     while (child != null && !child.isEquivalentTo(caretElement)) {
       if (!(SoyParserDefinition.WHITE_SPACES.contains(child.getNode().getElementType()))) {
         return false;
