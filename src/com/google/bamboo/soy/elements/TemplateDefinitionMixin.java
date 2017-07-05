@@ -15,12 +15,11 @@
 package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.stubs.TemplateDefinitionStub;
-import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
 
-public class TemplateDefinitionMixin extends StubBasedPsiElementBase<TemplateDefinitionStub>
+public class TemplateDefinitionMixin extends SoyStubBasedPsiElementBase<TemplateDefinitionStub>
     implements TemplateDefinitionElement {
   public TemplateDefinitionMixin(TemplateDefinitionStub stub, IStubElementType type) {
     super(stub, type);

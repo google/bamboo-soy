@@ -24,7 +24,7 @@ public class TemplateDefinitionStub extends StubBase<SoyTemplateDefinitionIdenti
 
   static class Type extends IStubElementType<TemplateDefinitionStub, SoyTemplateDefinitionIdentifier> {
     Type() {
-      super("TemplateDefinition", SoyLanguage.INSTANCE);
+      super("TEMPLATE_DEFINITION_IDENTIFIER", SoyLanguage.INSTANCE);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class TemplateDefinitionStub extends StubBase<SoyTemplateDefinitionIdenti
     @NotNull
     @Override
     public String getExternalId() {
-      return "TemplateDefinition";
+      return "TEMPLATE_DEFINITION_IDENTIFIER";
     }
 
     @Override
