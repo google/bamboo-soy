@@ -14,7 +14,7 @@
 
 package com.google.bamboo.soy.parser;
 
-import com.google.bamboo.soy.SoyLanguage;
+import com.google.bamboo.soy.stubs.FileStub;
 import com.google.bamboo.soy.file.SoyFile;
 import com.google.bamboo.soy.lexer.SoyMergingLexer;
 import com.intellij.lang.*;
@@ -32,8 +32,6 @@ public class SoyParserDefinition implements ParserDefinition {
       TokenSet.create(SoyTypes.COMMENT_BLOCK, SoyTypes.DOC_COMMENT_BLOCK);
 
   private static final TokenSet STRINGS = TokenSet.create(SoyTypes.OTHER);
-
-  private static final IFileElementType FILE = new IFileElementType(SoyLanguage.INSTANCE);
 
   @NotNull
   @Override
@@ -62,8 +60,8 @@ public class SoyParserDefinition implements ParserDefinition {
   }
 
   @Override
-  public IFileElementType getFileNodeType() {
-    return FILE;
+  public IStubFileElementType<FileStub> getFileNodeType() {
+    return FileStub.TYPE;
   }
 
   public PsiFile createFile(FileViewProvider viewProvider) {

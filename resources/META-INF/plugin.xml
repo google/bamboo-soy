@@ -97,6 +97,7 @@
     <lang.parserDefinition
         language="ClosureTemplate"
         implementationClass="com.google.bamboo.soy.parser.SoyParserDefinition"/>
+    <stubElementTypeHolder class="com.google.bamboo.soy.parser.SoyTypes"/>
     <lang.commenter
         language="ClosureTemplate"
         implementationClass="com.google.bamboo.soy.SoyCommenter"/>
@@ -120,6 +121,8 @@
         implementationClass="com.google.bamboo.soy.documentation.SoyDocumentationProvider"/>
 
     <fileIndentOptionsProvider implementation="com.google.bamboo.soy.format.SoyFileIndentOptionsProvider"/>
+
+    <stubIndex implementation="com.google.bamboo.soy.stubs.index.TemplateDefinitionIndex"/>
 
     <!-- Annotators -->
     <annotator

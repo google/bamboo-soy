@@ -168,7 +168,8 @@ Identifier ::= CssEnabledIdentifier
 TemplateDefinitionIdentifier ::= Identifier {
   mixin="com.google.bamboo.soy.elements.TemplateDefinitionMixin"
   implements="com.google.bamboo.soy.elements.TemplateDefinitionElement"
-  methods=[setName getName]
+  stubClass = "com.google.bamboo.soy.stubs.TemplateDefinitionStub"
+  elementTypeFactory = "com.google.bamboo.soy.stubs.StubFactory.getType"
 }
 
 TemplateReferenceIdentifier ::= Identifier {

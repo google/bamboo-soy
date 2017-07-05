@@ -15,11 +15,16 @@
 package com.google.bamboo.soy.file;
 
 import com.google.bamboo.soy.SoyLanguage;
+import com.google.bamboo.soy.parser.SoyNamespaceIdentifier;
+import com.google.bamboo.soy.stubs.FileStub;
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
-import javax.swing.*;
+
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
 
 public class SoyFile extends PsiFileBase {
   public SoyFile(@NotNull FileViewProvider viewProvider) {
@@ -33,6 +38,11 @@ public class SoyFile extends PsiFileBase {
   }
 
   @Override
+  public FileStub getStub() {
+    return (FileStub) super.getStub();
+  }
+
+  @Override
   public String toString() {
     return "Closure Template File";
   }
@@ -40,5 +50,14 @@ public class SoyFile extends PsiFileBase {
   @Override
   public Icon getIcon(int flags) {
     return super.getIcon(flags);
+  }
+
+  @NotNull
+  public String getNamespace() {
+    try {
+      return PsiTreeUtil.findChildOfType(this, SoyNamespaceIdentifier.class).getIdentifier().getText();
+    } catch(NullPointerException e) {
+      return "";
+    }
   }
 }

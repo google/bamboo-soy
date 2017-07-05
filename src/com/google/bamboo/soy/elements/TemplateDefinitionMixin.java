@@ -14,25 +14,32 @@
 
 package com.google.bamboo.soy.elements;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import com.google.bamboo.soy.stubs.TemplateDefinitionStub;
+import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
-import com.intellij.util.IncorrectOperationException;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.psi.stubs.IStubElementType;
+import com.intellij.psi.tree.IElementType;
 
-public class TemplateDefinitionMixin extends ASTWrapperPsiElement
+public class TemplateDefinitionMixin extends StubBasedPsiElementBase<TemplateDefinitionStub>
     implements TemplateDefinitionElement {
-  public TemplateDefinitionMixin(@NotNull ASTNode node) {
+  public TemplateDefinitionMixin(TemplateDefinitionStub stub, IStubElementType type) {
+    super(stub, type);
+  }
+
+  public TemplateDefinitionMixin(ASTNode node) {
     super(node);
+  }
+
+  public TemplateDefinitionMixin(TemplateDefinitionStub stub, IElementType type, ASTNode node) {
+    super(stub, type, node);
   }
 
   @Override
   public String getName() {
-    return getText();
-  }
-
-  @Override
-  public PsiElement setName(@NotNull String s) throws IncorrectOperationException {
-    return null;
+    try {
+      return getStub().name;
+    } catch (NullPointerException e) {
+      return getText();
+    }
   }
 }

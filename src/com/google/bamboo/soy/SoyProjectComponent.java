@@ -14,55 +14,11 @@
 
 package com.google.bamboo.soy;
 
-import com.google.bamboo.soy.cache.TemplateCache;
 import com.intellij.openapi.components.AbstractProjectComponent;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.EditorFactory;
-import com.intellij.openapi.editor.event.DocumentAdapter;
-import com.intellij.openapi.editor.event.DocumentEvent;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileAdapter;
-import com.intellij.openapi.vfs.VirtualFileEvent;
-import com.intellij.openapi.vfs.VirtualFileManager;
-import org.jetbrains.annotations.NotNull;
 
 public class SoyProjectComponent extends AbstractProjectComponent {
-  public final TemplateCache templateCache;
-
   protected SoyProjectComponent(Project project) {
     super(project);
-    templateCache = new TemplateCache(project);
-  }
-
-  @Override
-  public void projectOpened() {
-    EditorFactory.getInstance()
-        .getEventMulticaster()
-        .addDocumentListener(
-            new DocumentAdapter() {
-              @Override
-              public void documentChanged(DocumentEvent event) {
-                Document document = event.getDocument();
-                VirtualFile file = FileDocumentManager.getInstance().getFile(document);
-                if (file != null) {
-                  templateCache.indexFile(myProject, file);
-                }
-              }
-            });
-    VirtualFileManager.getInstance()
-        .addVirtualFileListener(
-            new VirtualFileAdapter() {
-              @Override
-              public void fileCreated(@NotNull VirtualFileEvent event) {
-                templateCache.indexFile(myProject, event.getFile());
-              }
-
-              @Override
-              public void fileDeleted(@NotNull VirtualFileEvent event) {
-                templateCache.removeFileFromIndex(event.getFile());
-              }
-            });
   }
 }

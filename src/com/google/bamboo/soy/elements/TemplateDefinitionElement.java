@@ -14,7 +14,10 @@
 
 package com.google.bamboo.soy.elements;
 
-import com.intellij.psi.PsiNamedElement;
+import com.google.bamboo.soy.stubs.TemplateDefinitionStub;
+import com.intellij.psi.StubBasedPsiElement;
 
 /** The PSI element that represents the template name in a template block definition. */
-public interface TemplateDefinitionElement extends PsiNamedElement {}
+public interface TemplateDefinitionElement extends StubBasedPsiElement<TemplateDefinitionStub> {
+  String getName();
+}
