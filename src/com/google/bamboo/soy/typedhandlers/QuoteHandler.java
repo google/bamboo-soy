@@ -21,7 +21,9 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDocumentManager;
 import org.jetbrains.annotations.NotNull;
 
-/** Automatically inserts a matching quote when typing one. */
+/**
+ * Automatically inserts a matching quote when typing one.
+ */
 public class QuoteHandler implements TypedActionHandler {
   private final TypedActionHandler myOriginalHandler;
 
@@ -32,7 +34,10 @@ public class QuoteHandler implements TypedActionHandler {
   public void execute(@NotNull Editor editor, char charTyped, @NotNull DataContext dataContext) {
     if (charTyped == '"') {
       int caretOffset = editor.getCaretModel().getOffset();
-      String nextChar = editor.getDocument().getText(new TextRange(caretOffset, caretOffset + 1));
+      String nextChar =
+          caretOffset >= editor.getDocument().getTextLength()
+              ? ""
+              : editor.getDocument().getText(new TextRange(caretOffset, caretOffset + 1));
 
       if (!nextChar.equals(charTyped + "")) {
         editor.getDocument().insertString(editor.getCaretModel().getOffset(), charTyped + "");
