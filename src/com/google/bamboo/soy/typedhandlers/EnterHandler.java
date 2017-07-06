@@ -30,8 +30,10 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.patterns.PsiElementPattern;
 import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
+
 import java.util.Collection;
 import java.util.Collections;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -83,13 +85,18 @@ public class EnterHandler implements EnterHandlerDelegate {
       if (previousElement == null) return Result.Continue;
 
       int caretLineNumber = editor.getDocument().getLineNumber(caretOffset);
-      int tagLineNumber = editor.getDocument().getLineNumber(previousElement.getTextOffset());
+
+      // PsiElement.getTextOffset() returns -1 if the caret is at the start of the document so we
+      // need to handle to special case it here.
+      int tagLineNumber =
+          previousElement.getTextOffset() > 0
+              ? editor.getDocument().getLineNumber(previousElement.getTextOffset())
+              : 0;
       boolean isAfterOpenTag =
           openTagMatcher.accepts(previousElement) && (caretLineNumber - tagLineNumber <= 1);
 
       if (isAfterOpenTag) {
-        CommonCodeStyleSettings defaultSettings =
-            new CommonCodeStyleSettings(SoyLanguage.INSTANCE);
+        CommonCodeStyleSettings defaultSettings = new CommonCodeStyleSettings(SoyLanguage.INSTANCE);
         CommonCodeStyleSettings.IndentOptions indentOptions = defaultSettings.initIndentOptions();
 
         String indentChar = indentOptions.USE_TAB_CHARACTER ? "\t" : " ";
