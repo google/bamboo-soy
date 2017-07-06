@@ -20,18 +20,9 @@ import com.google.bamboo.soy.ParamUtils;
 import com.google.bamboo.soy.TemplateNameUtils;
 import com.google.bamboo.soy.elements.CallStatementBase;
 import com.google.bamboo.soy.elements.TemplateDefinitionElement;
-import com.google.bamboo.soy.parser.SoyAliasBlock;
-import com.google.bamboo.soy.parser.SoyAtInjectBody;
-import com.google.bamboo.soy.parser.SoyAtParamBody;
-import com.google.bamboo.soy.parser.SoyBeginCall;
-import com.google.bamboo.soy.parser.SoyBeginDelCall;
-import com.google.bamboo.soy.parser.SoyBeginParamTag;
-import com.google.bamboo.soy.parser.SoyBeginTemplate;
-import com.google.bamboo.soy.parser.SoyExpression;
-import com.google.bamboo.soy.parser.SoyIdentifier;
-import com.google.bamboo.soy.parser.SoyListType;
-import com.google.bamboo.soy.parser.SoyMapType;
-import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
+import com.google.bamboo.soy.parser.*;
+import com.google.bamboo.soy.parser.impl.SoyIdentifierImpl;
+import com.google.bamboo.soy.parser.impl.SoyParamSpecificationIdentifierImpl;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
@@ -39,15 +30,18 @@ import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.patterns.PsiElementPattern;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.jetbrains.annotations.NotNull;
 
 public class SoyCompletionContributor extends CompletionContributor {
@@ -189,7 +183,9 @@ public class SoyCompletionContributor extends CompletionContributor {
         CompletionType.BASIC,
         psiElement()
             .inside(SoyBeginParamTag.class)
-            .andNot(psiElement().inside(SoyBeginParamTag.class).afterLeaf("=")),
+            .and(psiElement().afterLeafSkipping(
+                psiElement(PsiWhiteSpace.class), psiElement().withText("param")
+            )),
         new CompletionProvider<CompletionParameters>() {
           @Override
           protected void addCompletions(
@@ -224,7 +220,35 @@ public class SoyCompletionContributor extends CompletionContributor {
           }
         });
 
-    // Complete parameter names for {param .. /} in template function calls.
+    // Complete "kind" keyword after param identifier.
+    extend(
+        CompletionType.BASIC,
+        psiElement().inside(SoyBeginParamTag.class),
+        new CompletionProvider<CompletionParameters>() {
+          @Override
+          protected void addCompletions(
+              @NotNull CompletionParameters completionParameters,
+              ProcessingContext processingContext,
+              @NotNull CompletionResultSet completionResultSet) {
+            PsiElement prevSibling = completionParameters.getPosition().getPrevSibling();
+            while (prevSibling != null) {
+              if (!(prevSibling instanceof PsiWhiteSpace)) {
+                if (prevSibling instanceof SoyParamSpecificationIdentifier) {
+                  completionResultSet.addElement(LookupElementBuilder.create("kind")
+                      .withInsertHandler(
+                          new PostfixInsertHandler("=\"", "\"")
+                      ));
+                }
+
+                return;
+              }
+
+              prevSibling = prevSibling.getPrevSibling();
+            }
+          }
+        });
+
+    // Complete supported kind literal for names for {param .. /} in template function calls.
     extend(
         CompletionType.BASIC,
         psiElement().inside(SoyBeginParamTag.class).afterLeaf("="),
@@ -276,22 +300,22 @@ public class SoyCompletionContributor extends CompletionContributor {
 
   private static List<LookupElement> soyTypeLiterals =
       Stream.concat(
-              Stream.of(
-                      "any",
-                      "null",
-                      "?",
-                      "string",
-                      "bool",
-                      "int",
-                      "float",
-                      "number",
-                      "html",
-                      "uri",
-                      "js",
-                      "css",
-                      "attributes")
-                  .map(LookupElementBuilder::create),
-              Stream.of(soyListTypeLiteral, soyMapTypeLiteral))
+          Stream.of(
+              "any",
+              "null",
+              "?",
+              "string",
+              "bool",
+              "int",
+              "float",
+              "number",
+              "html",
+              "uri",
+              "js",
+              "css",
+              "attributes")
+              .map(LookupElementBuilder::create),
+          Stream.of(soyListTypeLiteral, soyMapTypeLiteral))
           .collect(Collectors.toList());
 
   private static List<LookupElement> kindLiterals =
