@@ -14,12 +14,21 @@
 
 package com.google.bamboo.soy.annotators;
 
-import com.google.bamboo.soy.parser.*;
+import com.google.bamboo.soy.parser.SoyAliasIdentifier;
+import com.google.bamboo.soy.parser.SoyAttributeNameIdentifier;
+import com.google.bamboo.soy.parser.SoyFieldIdentifier;
+import com.google.bamboo.soy.parser.SoyFunctionIdentifier;
+import com.google.bamboo.soy.parser.SoyNamespaceIdentifier;
+import com.google.bamboo.soy.parser.SoyPackageIdentifier;
+import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
+import com.google.bamboo.soy.parser.SoyParamSpecificationIdentifier;
+import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
+import com.google.bamboo.soy.parser.SoyTemplateReferenceIdentifier;
+import com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier;
 import com.google.common.collect.ImmutableList;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
-
 import java.util.List;
 
 public class IdentifierSanityAnnotator implements Annotator {

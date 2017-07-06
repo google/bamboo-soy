@@ -14,12 +14,29 @@
 
 package com.google.bamboo.soy.completion;
 
+import static com.intellij.patterns.PlatformPatterns.psiElement;
+
 import com.google.bamboo.soy.ParamUtils;
 import com.google.bamboo.soy.TemplateNameUtils;
 import com.google.bamboo.soy.elements.CallStatementBase;
 import com.google.bamboo.soy.elements.TemplateDefinitionElement;
-import com.google.bamboo.soy.parser.*;
-import com.intellij.codeInsight.completion.*;
+import com.google.bamboo.soy.parser.SoyAliasBlock;
+import com.google.bamboo.soy.parser.SoyAtInjectBody;
+import com.google.bamboo.soy.parser.SoyAtParamBody;
+import com.google.bamboo.soy.parser.SoyBeginCall;
+import com.google.bamboo.soy.parser.SoyBeginDelCall;
+import com.google.bamboo.soy.parser.SoyBeginParamTag;
+import com.google.bamboo.soy.parser.SoyBeginTemplate;
+import com.google.bamboo.soy.parser.SoyExpression;
+import com.google.bamboo.soy.parser.SoyIdentifier;
+import com.google.bamboo.soy.parser.SoyListType;
+import com.google.bamboo.soy.parser.SoyMapType;
+import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
+import com.intellij.codeInsight.completion.CompletionContributor;
+import com.intellij.codeInsight.completion.CompletionParameters;
+import com.intellij.codeInsight.completion.CompletionProvider;
+import com.intellij.codeInsight.completion.CompletionResultSet;
+import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.psi.PsiElement;
@@ -27,44 +44,13 @@ import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static com.intellij.patterns.PlatformPatterns.psiElement;
+import org.jetbrains.annotations.NotNull;
 
 public class SoyCompletionContributor extends CompletionContributor {
-  private static LookupElement soyListTypeLiteral =
-      LookupElementBuilder.create("list").withInsertHandler(new PostfixInsertHandler("<", ">"));
-  private static LookupElement soyMapTypeLiteral =
-      LookupElementBuilder.create("map").withInsertHandler(new PostfixInsertHandler("<", ",>"));
-  private static List<LookupElement> soyTypeLiterals =
-      Stream.concat(
-              Stream.of(
-                      "any",
-                      "null",
-                      "?",
-                      "string",
-                      "bool",
-                      "int",
-                      "float",
-                      "number",
-                      "html",
-                      "uri",
-                      "js",
-                      "css",
-                      "attributes")
-                  .map(LookupElementBuilder::create),
-              Stream.of(soyListTypeLiteral, soyMapTypeLiteral))
-          .collect(Collectors.toList());
-  private static List<LookupElement> kindLiterals =
-      Stream.of("text", "html", "attributes", "uri", "css", "js")
-          .map(LookupElementBuilder::create)
-          .collect(Collectors.toList());
-
   SoyCompletionContributor() {
     // Complete variable names that are in scope when in expressions.
     extend(
@@ -217,7 +203,8 @@ public class SoyCompletionContributor extends CompletionContributor {
 
             if (callStatement == null) return;
 
-            PsiElement identifier = PsiTreeUtil.findChildOfType(callStatement, SoyIdentifier.class);
+            PsiElement identifier =
+                PsiTreeUtil.findChildOfType(callStatement, SoyIdentifier.class);
 
             if (identifier == null) return;
 
@@ -280,4 +267,35 @@ public class SoyCompletionContributor extends CompletionContributor {
   public boolean invokeAutoPopup(@NotNull PsiElement position, char typeChar) {
     return (typeChar == '.' || typeChar == '$');
   }
+
+  private static LookupElement soyListTypeLiteral =
+      LookupElementBuilder.create("list").withInsertHandler(new PostfixInsertHandler("<", ">"));
+
+  private static LookupElement soyMapTypeLiteral =
+      LookupElementBuilder.create("map").withInsertHandler(new PostfixInsertHandler("<", ",>"));
+
+  private static List<LookupElement> soyTypeLiterals =
+      Stream.concat(
+              Stream.of(
+                      "any",
+                      "null",
+                      "?",
+                      "string",
+                      "bool",
+                      "int",
+                      "float",
+                      "number",
+                      "html",
+                      "uri",
+                      "js",
+                      "css",
+                      "attributes")
+                  .map(LookupElementBuilder::create),
+              Stream.of(soyListTypeLiteral, soyMapTypeLiteral))
+          .collect(Collectors.toList());
+
+  private static List<LookupElement> kindLiterals =
+      Stream.of("text", "html", "attributes", "uri", "css", "js")
+          .map(LookupElementBuilder::create)
+          .collect(Collectors.toList());
 }

@@ -14,6 +14,8 @@
 
 package com.google.bamboo.soy.highlight;
 
+import static com.google.bamboo.soy.parser.SoyTypes.OTHER;
+
 import com.google.bamboo.soy.SoyLanguage;
 import com.intellij.lang.Language;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
@@ -28,8 +30,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.templateLanguages.TemplateDataLanguageMappings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import static com.google.bamboo.soy.parser.SoyTypes.OTHER;
 
 public class SoyLayeredHighlighter extends LayeredLexerEditorHighlighter {
   public SoyLayeredHighlighter(

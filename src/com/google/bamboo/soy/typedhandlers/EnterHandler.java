@@ -14,8 +14,11 @@
 
 package com.google.bamboo.soy.typedhandlers;
 
+import static com.intellij.patterns.PlatformPatterns.psiElement;
+
 import com.google.bamboo.soy.SoyLanguage;
 import com.google.bamboo.soy.file.SoyFileType;
+import com.google.bamboo.soy.parser.*;
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Document;
@@ -27,13 +30,12 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.patterns.PsiElementPattern;
 import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
 
-import static com.intellij.patterns.PlatformPatterns.psiElement;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Inserts appropriate characters and indentation after pressing "Enter" in a closure template file.
@@ -44,23 +46,6 @@ import static com.intellij.patterns.PlatformPatterns.psiElement;
  * <p>If pressed right after an opening tag this handler will indent the cursor on the next line.
  */
 public class EnterHandler implements EnterHandlerDelegate {
-  private final PsiElementPattern.Capture<PsiElement> openTagMatcher =
-      psiElement()
-          .andOr(
-              psiElement(SoyBeginTemplate.class),
-              psiElement(SoyBeginCall.class),
-              psiElement(SoyBeginDelCall.class),
-              psiElement(SoyBeginDelegateTemplate.class),
-              psiElement(SoyBeginIf.class),
-              psiElement(SoyBeginElseIf.class),
-              psiElement(SoyBeginFor.class),
-              psiElement(SoyBeginForeach.class),
-              psiElement(SoyBeginCaseClause.class),
-              psiElement(SoyBeginLet.class),
-              psiElement(SoyBeginMsg.class),
-              psiElement(SoyBeginSwitch.class),
-              psiElement(SoyBeginParamTag.class));
-
   @Override
   public Result preprocessEnter(
       @NotNull PsiFile psiFile,
@@ -153,4 +138,21 @@ public class EnterHandler implements EnterHandlerDelegate {
 
     return element.getPrevSibling();
   }
+
+  private final PsiElementPattern.Capture<PsiElement> openTagMatcher =
+      psiElement()
+          .andOr(
+              psiElement(SoyBeginTemplate.class),
+              psiElement(SoyBeginCall.class),
+              psiElement(SoyBeginDelCall.class),
+              psiElement(SoyBeginDelegateTemplate.class),
+              psiElement(SoyBeginIf.class),
+              psiElement(SoyBeginElseIf.class),
+              psiElement(SoyBeginFor.class),
+              psiElement(SoyBeginForeach.class),
+              psiElement(SoyBeginCaseClause.class),
+              psiElement(SoyBeginLet.class),
+              psiElement(SoyBeginMsg.class),
+              psiElement(SoyBeginSwitch.class),
+              psiElement(SoyBeginParamTag.class));
 }

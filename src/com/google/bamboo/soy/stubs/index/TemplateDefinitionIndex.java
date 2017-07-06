@@ -24,10 +24,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class TemplateDefinitionIndex
-    extends StringStubIndexExtension<SoyTemplateDefinitionIdentifier> {
-  public static final StubIndexKey<String, SoyTemplateDefinitionIdentifier> KEY =
-      StubIndexKey.createIndexKey("SoyTemplateDefinitionIdentifier");
+public class TemplateDefinitionIndex extends StringStubIndexExtension<SoyTemplateDefinitionIdentifier> {
+  public static final StubIndexKey<String, SoyTemplateDefinitionIdentifier> KEY = StubIndexKey
+      .createIndexKey("SoyTemplateDefinitionIdentifier");
   public static final TemplateDefinitionIndex INSTANCE = new TemplateDefinitionIndex();
 
   @NotNull

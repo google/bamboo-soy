@@ -14,21 +14,20 @@
 
 package com.google.bamboo.soy.highlight;
 
+import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
+
 import com.google.bamboo.soy.lexer.SoyLexer;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.intellij.lexer.Lexer;
-import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
+import com.intellij.openapi.editor.*;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.tree.IElementType;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
+import org.jetbrains.annotations.NotNull;
 
 public class SoySyntaxHighlighter extends SyntaxHighlighterBase {
   public static final TextAttributesKey COMMENT =

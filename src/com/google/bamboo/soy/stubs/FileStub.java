@@ -43,7 +43,6 @@ public class FileStub extends PsiFileStubImpl<SoyFile> {
     public Type(String debugName, Language language) {
       super(debugName, language);
     }
-
     @Override
     public StubBuilder getBuilder() {
       return new DefaultStubBuilder() {
@@ -60,13 +59,12 @@ public class FileStub extends PsiFileStubImpl<SoyFile> {
     }
 
     @Override
-    public void serialize(@NotNull FileStub stub, @NotNull StubOutputStream dataStream)
-        throws IOException {}
+    public void serialize(@NotNull FileStub stub, @NotNull StubOutputStream dataStream) throws IOException {
+    }
 
     @NotNull
     @Override
-    public FileStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub)
-        throws IOException {
+    public FileStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
       return new FileStub(null);
     }
 

@@ -15,10 +15,10 @@
 package com.google.bamboo.soy.icons;
 
 import com.intellij.openapi.util.IconLoader;
-
 import javax.swing.*;
 
 public class SoyIcons {
 
-  public static final Icon FILE = IconLoader.getIcon("/icons/closure-template.png");
+  public static final Icon FILE =
+      IconLoader.getIcon("/icons/closure-template.png");
 }

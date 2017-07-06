@@ -15,8 +15,54 @@
 package com.google.bamboo.soy.annotators;
 
 import com.google.bamboo.soy.BracedTagUtils;
-import com.google.bamboo.soy.parser.*;
-import com.google.bamboo.soy.parser.impl.*;
+import com.google.bamboo.soy.parser.SoyDelCallStatement;
+import com.google.bamboo.soy.parser.SoyDirectCallStatement;
+import com.google.bamboo.soy.parser.SoyEndCallTag;
+import com.google.bamboo.soy.parser.SoyEndDelCallTag;
+import com.google.bamboo.soy.parser.SoyEndParamTag;
+import com.google.bamboo.soy.parser.SoyParamListElement;
+import com.google.bamboo.soy.parser.impl.SoyAliasBlockImpl;
+import com.google.bamboo.soy.parser.impl.SoyAtParamSingleImpl;
+import com.google.bamboo.soy.parser.impl.SoyBeginCaseClauseImpl;
+import com.google.bamboo.soy.parser.impl.SoyBeginDelegateTemplateImpl;
+import com.google.bamboo.soy.parser.impl.SoyBeginElseIfImpl;
+import com.google.bamboo.soy.parser.impl.SoyBeginForImpl;
+import com.google.bamboo.soy.parser.impl.SoyBeginForeachImpl;
+import com.google.bamboo.soy.parser.impl.SoyBeginIfImpl;
+import com.google.bamboo.soy.parser.impl.SoyBeginLetImpl;
+import com.google.bamboo.soy.parser.impl.SoyBeginMsgImpl;
+import com.google.bamboo.soy.parser.impl.SoyBeginPluralImpl;
+import com.google.bamboo.soy.parser.impl.SoyBeginSelectStatementImpl;
+import com.google.bamboo.soy.parser.impl.SoyBeginSwitchImpl;
+import com.google.bamboo.soy.parser.impl.SoyBeginTemplateImpl;
+import com.google.bamboo.soy.parser.impl.SoyCssStatementImpl;
+import com.google.bamboo.soy.parser.impl.SoyDefaultTagImpl;
+import com.google.bamboo.soy.parser.impl.SoyDelegatePackageBlockImpl;
+import com.google.bamboo.soy.parser.impl.SoyElseTagImpl;
+import com.google.bamboo.soy.parser.impl.SoyEndCallTagImpl;
+import com.google.bamboo.soy.parser.impl.SoyEndDelCallTagImpl;
+import com.google.bamboo.soy.parser.impl.SoyEndDelTemplateTagImpl;
+import com.google.bamboo.soy.parser.impl.SoyEndForTagImpl;
+import com.google.bamboo.soy.parser.impl.SoyEndForeachTagImpl;
+import com.google.bamboo.soy.parser.impl.SoyEndIfTagImpl;
+import com.google.bamboo.soy.parser.impl.SoyEndLetTagImpl;
+import com.google.bamboo.soy.parser.impl.SoyEndMsgTagImpl;
+import com.google.bamboo.soy.parser.impl.SoyEndParamTagImpl;
+import com.google.bamboo.soy.parser.impl.SoyEndPluralTagImpl;
+import com.google.bamboo.soy.parser.impl.SoyEndSelectTagImpl;
+import com.google.bamboo.soy.parser.impl.SoyEndSwitchTagImpl;
+import com.google.bamboo.soy.parser.impl.SoyEndTemplateTagImpl;
+import com.google.bamboo.soy.parser.impl.SoyFallbackMsgClauseImpl;
+import com.google.bamboo.soy.parser.impl.SoyLbStatementImpl;
+import com.google.bamboo.soy.parser.impl.SoyLetCompoundStatementImpl;
+import com.google.bamboo.soy.parser.impl.SoyLetSingleStatementImpl;
+import com.google.bamboo.soy.parser.impl.SoyNamespaceBlockImpl;
+import com.google.bamboo.soy.parser.impl.SoyNilStatementImpl;
+import com.google.bamboo.soy.parser.impl.SoyPrintStatementImpl;
+import com.google.bamboo.soy.parser.impl.SoyRbStatementImpl;
+import com.google.bamboo.soy.parser.impl.SoySpStatementImpl;
+import com.google.bamboo.soy.parser.impl.SoyWhitespaceStatementImpl;
+import com.google.bamboo.soy.parser.impl.SoyXidStatementImpl;
 import com.google.common.collect.ImmutableSet;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
@@ -91,17 +137,20 @@ public class ClosingBraceSanityAnnotator implements Annotator {
   @Override
   public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
     if (psiElement instanceof SoyDirectCallStatement) {
-      checkAndAnnotateSingleOrBlockTag(SoyEndCallTag.class, psiElement, annotationHolder);
+      checkAndAnnotateSingleOrBlockTag(
+          SoyEndCallTag.class, psiElement, annotationHolder);
       return;
     }
 
     if (psiElement instanceof SoyDelCallStatement) {
-      checkAndAnnotateSingleOrBlockTag(SoyEndDelCallTag.class, psiElement, annotationHolder);
+      checkAndAnnotateSingleOrBlockTag(
+          SoyEndDelCallTag.class, psiElement, annotationHolder);
       return;
     }
 
     if (psiElement instanceof SoyParamListElement) {
-      checkAndAnnotateSingleOrBlockTag(SoyEndParamTag.class, psiElement, annotationHolder);
+      checkAndAnnotateSingleOrBlockTag(
+          SoyEndParamTag.class, psiElement, annotationHolder);
       return;
     }
 

@@ -25,7 +25,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-/** Inserts a matching single or double quote when typing one. */
+/**
+ *  Inserts a matching single or double quote when typing one.
+ */
 public class QuoteHandler implements TypedActionHandler {
   private final Set<Character> matchingQuotes = ImmutableSet.of('"', '\'');
   private final TypedActionHandler myOriginalHandler;
@@ -54,7 +56,9 @@ public class QuoteHandler implements TypedActionHandler {
   }
 
   private String getPreviousChar(Document document, int offset) {
-    return offset <= 0 ? " " : document.getText(new TextRange(offset - 1, offset));
+    return offset <= 0
+        ? " "
+        : document.getText(new TextRange(offset - 1, offset));
   }
 
   private String getNextChar(Document document, int offset) {

@@ -14,11 +14,12 @@
 
 package com.google.bamboo.soy.structure
 
+import com.google.bamboo.soy.file.SoyFile
+import com.google.bamboo.soy.file.SoyFileType
 import com.google.bamboo.soy.elements.CallStatementBase
 import com.google.bamboo.soy.elements.ParamListElementBase
 import com.google.bamboo.soy.elements.TemplateBlockBase
-import com.google.bamboo.soy.file.SoyFile
-import com.google.bamboo.soy.file.SoyFileType
+import com.google.bamboo.soy.parser.*
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.structureView.impl.common.PsiTreeElementBase
 import com.intellij.psi.PsiElement
@@ -30,16 +31,16 @@ import javax.swing.Icon
  * Builds a subtree corresponding to a given [PsiElement]
  */
 fun getTreeElement(psiElement: PsiElement): PsiTreeElementBase<PsiElement> =
-        when (psiElement) {
-            is CallStatementBase -> CallTreeElement(psiElement)
-            is SoyLetCompoundStatement -> LetCompoundTreeElement(psiElement)
-            is SoyLetSingleStatement -> LetSingleTreeElement(psiElement)
-            is ParamListElementBase -> ParamTreeElement(psiElement)
-            is TemplateBlockBase -> TemplateTreeElement(psiElement)
-            is SoyFile -> FileTreeElement(psiElement)
-            is SoyMsgStatement -> MsgTreeElement(psiElement)
-            else -> BaseTreeElement(psiElement)
-        }
+    when (psiElement) {
+      is CallStatementBase -> CallTreeElement(psiElement)
+      is SoyLetCompoundStatement -> LetCompoundTreeElement(psiElement)
+      is SoyLetSingleStatement -> LetSingleTreeElement(psiElement)
+      is ParamListElementBase -> ParamTreeElement(psiElement)
+      is TemplateBlockBase -> TemplateTreeElement(psiElement)
+      is SoyFile -> FileTreeElement(psiElement)
+      is SoyMsgStatement -> MsgTreeElement(psiElement)
+      else -> BaseTreeElement(psiElement)
+    }
 
 
 /**
@@ -47,124 +48,124 @@ fun getTreeElement(psiElement: PsiElement): PsiTreeElementBase<PsiElement> =
  * structure view.
  */
 private fun getPresentableName(psiElement: PsiElement): String? =
-        when (psiElement) {
-            is SoyDirectCallStatement -> "call"
-            is SoyDelegateTemplateBlock -> "deltemplate"
-            is SoyDelCallStatement -> "delcall"
-            is SoyForStatement -> "for"
-            is SoyIfStatement -> "if"
-            is SoyMsgStatement -> "msg"
-            is SoyNamespaceBlock -> "namespace"
-            is SoyLetCompoundStatement,
-            is SoyLetSingleStatement -> "let"
-            is SoyParamListElement -> "param"
-            is SoyPluralStatement -> "plural"
-            is SoySelectStatement -> "select"
-            is SoySwitchStatement -> "switch"
-            is SoyTemplateBlock -> "template"
-            else -> null
-        }
+    when (psiElement) {
+      is SoyDirectCallStatement -> "call"
+      is SoyDelegateTemplateBlock -> "deltemplate"
+      is SoyDelCallStatement -> "delcall"
+      is SoyForStatement -> "for"
+      is SoyIfStatement -> "if"
+      is SoyMsgStatement -> "msg"
+      is SoyNamespaceBlock -> "namespace"
+      is SoyLetCompoundStatement,
+      is SoyLetSingleStatement -> "let"
+      is SoyParamListElement -> "param"
+      is SoyPluralStatement -> "plural"
+      is SoySelectStatement -> "select"
+      is SoySwitchStatement -> "switch"
+      is SoyTemplateBlock -> "template"
+      else -> null
+    }
 
 /**
  * A base class for all Soy TreeElements. The descendants would usually override the methods
  * relevant for presentation.
  */
 private open class BaseTreeElement(psiElement: PsiElement)
-    : PsiTreeElementBase<PsiElement>(psiElement) {
-    override fun getChildrenBase(): Collection<StructureViewTreeElement> =
-            getChildren(value)
+  : PsiTreeElementBase<PsiElement>(psiElement) {
+  override fun getChildrenBase(): Collection<StructureViewTreeElement> =
+      getChildren(value)
 
-    override fun getPresentableText(): String? = getPresentableName(value)
+  override fun getPresentableText(): String? = getPresentableName(value)
 
-    override fun getIcon(open: Boolean): Icon? = SoyFileType.INSTANCE.icon
+  override fun getIcon(open: Boolean): Icon? = SoyFileType.INSTANCE.icon
 
-    protected fun getChildren(psiElement: PsiElement): Collection<PsiTreeElementBase<PsiElement>> =
-            psiElement.children.map {
-                child ->
-                if (getPresentableName(child) != null)
-                    listOf(getTreeElement(child))
-                else
-                    getChildren(child)
-            }.flatten()
+  protected fun getChildren(psiElement: PsiElement): Collection<PsiTreeElementBase<PsiElement>> =
+      psiElement.children.map {
+        child ->
+        if (getPresentableName(child) != null)
+          listOf(getTreeElement(child))
+        else
+          getChildren(child)
+      }.flatten()
 
-    private val MAX_TEXT_LENGTH = 50
-    protected fun shortenTextIfLong(@NotNull text: String): String {
-        if (text.length <= MAX_TEXT_LENGTH) {
-            return text
-        }
-
-        var index = MAX_TEXT_LENGTH
-        while (index > MAX_TEXT_LENGTH - 20) {
-            if (!Character.isLetter(text[index])) {
-                break
-            }
-            index--
-        }
-
-        return text.substring(0, if (Character.isLetter(index)) MAX_TEXT_LENGTH else index) + "\u2026"
+  private val MAX_TEXT_LENGTH = 50
+  protected fun shortenTextIfLong(@NotNull text: String): String {
+    if (text.length <= MAX_TEXT_LENGTH) {
+      return text
     }
+
+    var index = MAX_TEXT_LENGTH
+    while (index > MAX_TEXT_LENGTH - 20) {
+      if (!Character.isLetter(text[index])) {
+        break
+      }
+      index--
+    }
+
+    return text.substring(0, if (Character.isLetter(index)) MAX_TEXT_LENGTH else index) + "\u2026"
+  }
 }
 
 /**
  * A TreeElement for call statements.
  */
 private class CallTreeElement(val psiElement: CallStatementBase) : BaseTreeElement(psiElement) {
-    override fun getPresentableText(): String? =
-            getPresentableName(psiElement) + " ${psiElement.templateName}"
+  override fun getPresentableText(): String? =
+      getPresentableName(psiElement) + " ${psiElement.templateName}"
 }
 
 /**
  * A TreeElement for the [SoyFile].
  */
 private class FileTreeElement(val psiFile: SoyFile) : BaseTreeElement(psiFile) {
-    override fun getPresentableText(): String? = psiFile.name
+  override fun getPresentableText(): String? = psiFile.name
 }
 
 /**
  * A TreeElement for the [SoyLetCompoundStatement].
  */
 private class LetCompoundTreeElement(val psiElement: SoyLetCompoundStatement)
-    : BaseTreeElement(psiElement) {
-    override fun getPresentableText(): String? =
-            getPresentableName(psiElement) + " ${psiElement.beginLet.variableDefinitionIdentifier?.name}"
+  : BaseTreeElement(psiElement) {
+  override fun getPresentableText(): String? =
+      getPresentableName(psiElement) + " ${psiElement.beginLet.variableDefinitionIdentifier?.name}"
 }
 
 /**
  * A TreeElement for the [SoyLetSingleStatement].
  */
 private class LetSingleTreeElement(val psiElement: SoyLetSingleStatement)
-    : BaseTreeElement(psiElement) {
-    override fun getPresentableText(): String? =
-            getPresentableName(psiElement) + " ${psiElement.variableDefinitionIdentifier.name}"
+  : BaseTreeElement(psiElement) {
+  override fun getPresentableText(): String? =
+      getPresentableName(psiElement) + " ${psiElement.variableDefinitionIdentifier.name}"
 
-    override fun getLocationString(): String? = " : ${psiElement.expressionList?.text}"
+  override fun getLocationString(): String? = " : ${psiElement.expressionList?.text}"
 }
 
 /**
  * A TreeElement for the [SoyMsgStatement].
  */
 private class MsgTreeElement(val psiElement: SoyMsgStatement)
-    : BaseTreeElement(psiElement) {
-    override fun getLocationString(): String = shortenTextIfLong(psiElement.description ?: "")
+  : BaseTreeElement(psiElement) {
+  override fun getLocationString(): String = shortenTextIfLong(psiElement.description ?: "")
 }
 
 /**
  * A TreeElement for the [SoyParamListElement].
  */
 private class ParamTreeElement(val psiElement: ParamListElementBase) : BaseTreeElement(psiElement) {
-    override fun getPresentableText(): String? =
-            getPresentableName(psiElement) + " ${psiElement.paramName}"
+  override fun getPresentableText(): String? =
+      getPresentableName(psiElement) + " ${psiElement.paramName}"
 
-    override fun getLocationString(): String? =
-            if (psiElement.inlinedValue != null) " : ${psiElement.inlinedValue}" else ""
+  override fun getLocationString(): String? =
+      if (psiElement.inlinedValue != null) " : ${psiElement.inlinedValue}" else ""
 }
 
 /**
  * A TreeElement for the template blocks.
  */
 private class TemplateTreeElement(val psiElement: TemplateBlockBase) : BaseTreeElement(psiElement) {
-    override fun getPresentableText(): String? =
-            getPresentableName(psiElement) + " ${psiElement.templateName}"
+  override fun getPresentableText(): String? =
+      getPresentableName(psiElement) + " ${psiElement.templateName}"
 }
 
 

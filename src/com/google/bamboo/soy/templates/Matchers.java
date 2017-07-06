@@ -14,6 +14,8 @@
 
 package com.google.bamboo.soy.templates;
 
+import static com.intellij.patterns.PlatformPatterns.psiElement;
+
 import com.google.bamboo.soy.parser.SoyDelCallStatement;
 import com.google.bamboo.soy.parser.SoyDelegateTemplateBlock;
 import com.google.bamboo.soy.parser.SoyDirectCallStatement;
@@ -21,14 +23,16 @@ import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.intellij.patterns.PsiElementPattern;
 import com.intellij.psi.PsiElement;
 
-import static com.intellij.patterns.PlatformPatterns.psiElement;
-
 class Matchers {
   static PsiElementPattern.Capture<PsiElement> templateBlockMatcher =
       psiElement()
-          .andOr(psiElement(SoyTemplateBlock.class), psiElement(SoyDelegateTemplateBlock.class));
+          .andOr(
+              psiElement(SoyTemplateBlock.class),
+              psiElement(SoyDelegateTemplateBlock.class));
 
   static PsiElementPattern.Capture<PsiElement> templateCallStatementMatcher =
       psiElement()
-          .andOr(psiElement(SoyDirectCallStatement.class), psiElement(SoyDelCallStatement.class));
+          .andOr(
+              psiElement(SoyDirectCallStatement.class),
+              psiElement(SoyDelCallStatement.class));
 }

@@ -17,10 +17,9 @@ package com.google.bamboo.soy.elements;
 import com.google.bamboo.soy.parser.SoyAttributeKeyValuePair;
 import com.google.bamboo.soy.parser.SoyBeginMsg;
 import com.intellij.psi.PsiElement;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 public interface MsgStatement extends PsiElement {
   @NotNull
@@ -32,7 +31,10 @@ public interface MsgStatement extends PsiElement {
         getBeginMsg()
             .getAttributeKeyValuePairList()
             .stream()
-            .filter(pair -> pair.getAttributeNameIdentifier().getText().equalsIgnoreCase("desc"))
+            .filter(pair -> pair
+                .getAttributeNameIdentifier()
+                .getText()
+                .equalsIgnoreCase("desc"))
             .findFirst();
     if (keyValuePair.isPresent()) {
       return keyValuePair.get().getAnyStringLiteral().getText();

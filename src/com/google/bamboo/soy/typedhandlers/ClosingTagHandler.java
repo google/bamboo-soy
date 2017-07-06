@@ -15,6 +15,7 @@
 package com.google.bamboo.soy.typedhandlers;
 
 import com.google.bamboo.soy.BracedTagUtils;
+import com.google.bamboo.soy.elements.StatementBase;
 import com.google.bamboo.soy.parser.SoyParamListElement;
 import com.google.bamboo.soy.parser.SoyParserDefinition;
 import com.google.bamboo.soy.parser.SoyStatementList;
@@ -34,6 +35,8 @@ import org.jetbrains.annotations.NotNull;
 
 /** Automatically inserts a matching closing tag when "{/" is typed. */
 public class ClosingTagHandler implements TypedActionHandler {
+  private final TypedActionHandler myOriginalHandler;
+
   private static final ImmutableMap<IElementType, String> blockElementToTagName =
       ImmutableMap.<IElementType, String>builder()
           .put(SoyTypes.DIRECT_CALL_STATEMENT, "call")
@@ -50,10 +53,25 @@ public class ClosingTagHandler implements TypedActionHandler {
           .put(SoyTypes.SWITCH_STATEMENT, "switch")
           .put(SoyTypes.TEMPLATE_BLOCK, "template")
           .build();
-  private final TypedActionHandler myOriginalHandler;
 
   public ClosingTagHandler(TypedActionHandler originalHandler) {
     myOriginalHandler = originalHandler;
+  }
+
+  public void execute(@NotNull Editor editor, char charTyped, @NotNull DataContext dataContext) {
+    try {
+      if (isMatchForClosingTag(editor, charTyped)) {
+        int offset = editor.getCaretModel().getOffset();
+        PsiElement el = dataContext.getData(LangDataKeys.PSI_FILE).findElementAt(offset - 1);
+        String closingTag = generateClosingTag(el);
+        if (closingTag != null) {
+          insertClosingTag(editor, offset, closingTag);
+          return;
+        }
+      }
+    } catch (Exception e) {
+    }
+    myOriginalHandler.execute(editor, charTyped, dataContext);
   }
 
   private static boolean isMatchForClosingTag(@NotNull Editor editor, char charTyped) {
@@ -153,21 +171,5 @@ public class ClosingTagHandler implements TypedActionHandler {
 
     // Otherwise, skip.
     return true;
-  }
-
-  public void execute(@NotNull Editor editor, char charTyped, @NotNull DataContext dataContext) {
-    try {
-      if (isMatchForClosingTag(editor, charTyped)) {
-        int offset = editor.getCaretModel().getOffset();
-        PsiElement el = dataContext.getData(LangDataKeys.PSI_FILE).findElementAt(offset - 1);
-        String closingTag = generateClosingTag(el);
-        if (closingTag != null) {
-          insertClosingTag(editor, offset, closingTag);
-          return;
-        }
-      }
-    } catch (Exception e) {
-    }
-    myOriginalHandler.execute(editor, charTyped, dataContext);
   }
 }

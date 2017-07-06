@@ -14,6 +14,8 @@
 
 package com.google.bamboo.soy.file;
 
+import static com.google.bamboo.soy.parser.SoyTypes.OTHER;
+
 import com.google.bamboo.soy.SoyLanguage;
 import com.intellij.lang.Language;
 import com.intellij.lang.LanguageParserDefinitions;
@@ -27,13 +29,10 @@ import com.intellij.psi.impl.source.PsiFileImpl;
 import com.intellij.psi.templateLanguages.ConfigurableTemplateLanguageFileViewProvider;
 import com.intellij.psi.templateLanguages.TemplateDataElementType;
 import com.intellij.psi.templateLanguages.TemplateDataLanguageMappings;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-import static com.google.bamboo.soy.parser.SoyTypes.OTHER;
+import org.jetbrains.annotations.NotNull;
 
 public class SoyFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProvider
     implements ConfigurableTemplateLanguageFileViewProvider {
@@ -59,6 +58,11 @@ public class SoyFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProv
     this.templateLanguage = templateLanguage;
   }
 
+  @Override
+  public boolean supportsIncrementalReparse(@NotNull Language rootLanguage) {
+    return false;
+  }
+
   @NotNull
   private static Language getTemplateDataLanguage(PsiManager manager, VirtualFile file) {
     Language dataLang =
@@ -76,11 +80,6 @@ public class SoyFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProv
     }
 
     return dataLang;
-  }
-
-  @Override
-  public boolean supportsIncrementalReparse(@NotNull Language rootLanguage) {
-    return false;
   }
 
   @NotNull

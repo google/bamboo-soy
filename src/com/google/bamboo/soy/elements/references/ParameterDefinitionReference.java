@@ -24,9 +24,8 @@ import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.util.PsiTreeUtil;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Collection;
+import org.jetbrains.annotations.NotNull;
 
 public class ParameterDefinitionReference extends PsiReferenceBase<PsiElement>
     implements PsiReference {
@@ -45,7 +44,8 @@ public class ParameterDefinitionReference extends PsiReferenceBase<PsiElement>
         PsiTreeUtil.findFirstParent(element, elt -> elt instanceof CallStatementBase);
 
     if (callBegin != null) {
-      PsiElement identifier = PsiTreeUtil.findChildOfType(callBegin, SoyIdentifier.class);
+      PsiElement identifier =
+          PsiTreeUtil.findChildOfType(callBegin, SoyIdentifier.class);
       if (identifier == null) return null;
       PsiElement templateDefinition =
           TemplateNameUtils.findTemplateDefinition(element, identifier.getText());

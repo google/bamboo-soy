@@ -20,6 +20,7 @@ import com.google.bamboo.soy.stubs.FileStub;
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
+
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -54,10 +55,8 @@ public class SoyFile extends PsiFileBase {
   @NotNull
   public String getNamespace() {
     try {
-      return PsiTreeUtil.findChildOfType(this, SoyNamespaceIdentifier.class)
-          .getIdentifier()
-          .getText();
-    } catch (NullPointerException e) {
+      return PsiTreeUtil.findChildOfType(this, SoyNamespaceIdentifier.class).getIdentifier().getText();
+    } catch(NullPointerException e) {
       return "";
     }
   }

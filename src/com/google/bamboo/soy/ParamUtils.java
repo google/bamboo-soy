@@ -20,7 +20,6 @@ import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.util.PsiTreeUtil;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -74,7 +73,8 @@ public class ParamUtils {
 
   public static Collection<PsiNamedElement> getInjectDefinitions(PsiElement element) {
     PsiElement templateBlock = getParentTemplateBlock(element);
-    return PsiTreeUtil.findChildrenOfType(templateBlock, SoyParamDefinitionIdentifier.class)
+    return PsiTreeUtil.findChildrenOfType(
+            templateBlock, SoyParamDefinitionIdentifier.class)
         .stream()
         .map(id -> (PsiNamedElement) id)
         .collect(Collectors.toList());
@@ -83,7 +83,8 @@ public class ParamUtils {
   public static Collection<PsiNamedElement> getLetDefinitions(PsiElement element) {
     PsiElement templateBlock = getParentTemplateBlock(element);
     return PsiTreeUtil.findChildrenOfType(
-            templateBlock, com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier.class)
+            templateBlock,
+            com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier.class)
         .stream()
         .map(id -> (PsiNamedElement) id)
         .collect(Collectors.toList());
@@ -104,6 +105,7 @@ public class ParamUtils {
         element,
         psiElement ->
             psiElement instanceof com.google.bamboo.soy.parser.SoyTemplateBlock
-                || psiElement instanceof com.google.bamboo.soy.parser.SoyDelegateTemplateBlock);
+                || psiElement
+                    instanceof com.google.bamboo.soy.parser.SoyDelegateTemplateBlock);
   }
 }

@@ -27,24 +27,24 @@ import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.psi.PsiFile
 
 class SoyStructureViewFactory : PsiStructureViewFactory {
-    override fun getStructureViewBuilder(psiFile: PsiFile): StructureViewBuilder {
-        return object : TemplateLanguageStructureViewBuilder(psiFile) {
-            override fun createMainView(
-                    fileEditor: FileEditor,
-                    mainFile: PsiFile): StructureViewComposite.StructureViewDescriptor? {
-                if (!psiFile.isValid) return null
+  override fun getStructureViewBuilder(psiFile: PsiFile): StructureViewBuilder {
+    return object : TemplateLanguageStructureViewBuilder(psiFile) {
+      override fun createMainView(
+          fileEditor: FileEditor,
+          mainFile: PsiFile): StructureViewComposite.StructureViewDescriptor? {
+        if (!psiFile.isValid) return null
 
-                val builder = object : TreeBasedStructureViewBuilder() {
-                    override fun createStructureViewModel(editor: Editor?): StructureViewModel {
-                        return SoyStructureViewModel(psiFile as SoyFile, editor)
-                    }
-                }
-
-                val structureView = builder.createStructureView(fileEditor, psiFile.project)
-
-                return StructureViewComposite.StructureViewDescriptor(
-                        SoyFileType.INSTANCE.name, structureView, null)
-            }
+        val builder = object : TreeBasedStructureViewBuilder() {
+          override fun createStructureViewModel(editor: Editor?): StructureViewModel {
+            return SoyStructureViewModel(psiFile as SoyFile, editor)
+          }
         }
+
+        val structureView = builder.createStructureView(fileEditor, psiFile.project)
+
+        return StructureViewComposite.StructureViewDescriptor(
+            SoyFileType.INSTANCE.name, structureView, null)
+      }
     }
+  }
 }

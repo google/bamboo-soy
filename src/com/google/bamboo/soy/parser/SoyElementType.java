@@ -16,8 +16,7 @@ package com.google.bamboo.soy.parser;
 
 import com.google.bamboo.soy.SoyLanguage;
 import com.intellij.psi.tree.IElementType;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.*;
 
 public class SoyElementType extends IElementType {
   public SoyElementType(@NotNull @NonNls String debugName) {

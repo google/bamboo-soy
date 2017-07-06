@@ -18,12 +18,11 @@ import com.google.bamboo.soy.ParamUtils;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.NotNull;
 
 public class VariableReference extends PsiReferenceBase<PsiElement> implements PsiReference {
   private String identifier;
