@@ -68,7 +68,8 @@ public class TemplateNameUtils {
         .flatMap(
             (key) ->
                 TemplateDefinitionIndex.INSTANCE
-                    .get(key, file.getProject(), GlobalSearchScope.fileScope(file))
+                    .get(
+                        key, file.getProject(), GlobalSearchScope.fileScope(file.getOriginalFile()))
                     .stream())
         .collect(Collectors.toList());
   }
