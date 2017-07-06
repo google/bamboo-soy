@@ -14,6 +14,7 @@
 
 package com.google.bamboo.soy.typedhandlers;
 
+import com.google.common.collect.ImmutableSet;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -22,18 +23,13 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDocumentManager;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  *  Inserts a matching single or double quote when typing one.
  */
 public class QuoteHandler implements TypedActionHandler {
-  private final Set<Character> matchingQuotes = new HashSet<>(
-      Stream.of('"', '\'').collect(Collectors.toList())
-  );
+  private final Set<Character> matchingQuotes = ImmutableSet.of('"', '\'');
   private final TypedActionHandler myOriginalHandler;
 
   public QuoteHandler(TypedActionHandler originalHandler) {
