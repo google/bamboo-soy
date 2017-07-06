@@ -49,8 +49,9 @@ public class TemplateDefinitionReference extends PsiReferenceBase<PsiElement>
   public boolean isReferenceTo(PsiElement element) {
     ResolveResult[] results = multiResolve(false);
     for (ResolveResult result : results) {
-      if (this.getElement().getManager().areElementsEquivalent(result.getElement(), element))
+      if (this.getElement().getManager().areElementsEquivalent(result.getElement(), element)) {
         return true;
+      }
     }
     return false;
   }

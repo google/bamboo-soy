@@ -16,8 +16,11 @@ package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.stubs.TemplateDefinitionStub;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.util.IncorrectOperationException;
+import org.jetbrains.annotations.NotNull;
 
 public class TemplateDefinitionMixin extends SoyStubBasedPsiElementBase<TemplateDefinitionStub>
     implements TemplateDefinitionElement {
@@ -35,10 +38,11 @@ public class TemplateDefinitionMixin extends SoyStubBasedPsiElementBase<Template
 
   @Override
   public String getName() {
-    try {
-      return getStub().name;
-    } catch (NullPointerException e) {
-      return getText();
-    }
+    return getStub() != null ? getStub().name : getText();
+  }
+
+  @Override
+  public PsiElement setName(@NotNull String s) throws IncorrectOperationException {
+    return null;
   }
 }

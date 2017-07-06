@@ -21,6 +21,8 @@ import com.google.bamboo.soy.parser.impl.SoyTemplateDefinitionIdentifierImpl;
 import com.google.bamboo.soy.stubs.index.TemplateDefinitionIndex;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.stubs.IndexSink;
+import com.intellij.psi.stubs.NamedStub;
+import com.intellij.psi.stubs.NamedStubBase;
 import com.intellij.psi.stubs.StubBase;
 import com.intellij.psi.stubs.StubElement;
 import com.intellij.psi.stubs.StubInputStream;
@@ -29,13 +31,13 @@ import com.intellij.util.io.StringRef;
 import java.io.IOException;
 import org.jetbrains.annotations.NotNull;
 
-public class TemplateDefinitionStub extends StubBase<SoyTemplateDefinitionIdentifier> {
+public class TemplateDefinitionStub extends NamedStubBase<SoyTemplateDefinitionIdentifier> {
   static final Type TYPE = new Type();
   public final String name;
   public final String fullyQualifiedName;
 
   TemplateDefinitionStub(StubElement parent, String name, String fullyQualifiedName) {
-    super(parent, TYPE);
+    super(parent, TYPE, name);
     this.name = name;
     this.fullyQualifiedName = fullyQualifiedName;
   }
