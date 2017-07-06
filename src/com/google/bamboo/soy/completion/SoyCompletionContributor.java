@@ -44,54 +44,17 @@ import org.jetbrains.annotations.NotNull;
 public class SoyCompletionContributor extends CompletionContributor {
 
   SoyCompletionContributor() {
-    // Complete variable names that are in scope when in expressions.
-    extend(
-        CompletionType.BASIC,
-        psiElement().inside(SoyExpression.class),
-        new CompletionProvider<CompletionParameters>() {
-          @Override
-          protected void addCompletions(
-              @NotNull CompletionParameters completionParameters,
-              ProcessingContext processingContext,
-              @NotNull CompletionResultSet completionResultSet) {
-            Collection<PsiNamedElement> params =
-                ParamUtils.getIdentifiersInScope(completionParameters.getPosition());
-            completionResultSet.addAllElements(
-                params
-                    .stream()
-                    .map(PsiNamedElement::getName)
-                    .map(param -> "$" + param)
-                    .map(LookupElementBuilder::create)
-                    .collect(Collectors.toList()));
-          }
-        });
+    extendWithVisibilityKeyword();
+    extendWithKindKeyword();
+    extendWithVariableNamesInScope();
+    extendWithTemplateCallIdentifiers();
+    extendWithIdentifierFragementsForAlias();
+    extendWithParameterNames();
+    extendWithParameterTypes();
+  }
 
-    // Complete template names for function calls.
-    extend(
-        CompletionType.BASIC,
-        psiElement()
-            .andOr(
-                psiElement().inside(SoyBeginCall.class),
-                psiElement().inside(SoyBeginDelCall.class)),
-        new CompletionProvider<CompletionParameters>() {
-          @Override
-          protected void addCompletions(
-              @NotNull CompletionParameters completionParameters,
-              ProcessingContext processingContext,
-              @NotNull CompletionResultSet completionResultSet) {
-            Collection<TemplateDefinitionElement> templates =
-                TemplateNameUtils.findLocalTemplateDefinitions(completionParameters.getPosition());
-            completionResultSet.addAllElements(
-                templates
-                    .stream()
-                    .map(PsiElement::getText)
-                    .filter(identifier -> identifier.startsWith("."))
-                    .map(LookupElementBuilder::create)
-                    .collect(Collectors.toList()));
-          }
-        });
-
-    // Complete `visibility="private"` in template definition open tag.
+  /** Complete the "visibility" keyword in template definition open tags. */
+  private void extendWithVisibilityKeyword() {
     extend(
         CompletionType.BASIC,
         psiElement().andOr(psiElement().inside(SoyBeginTemplate.class)),
@@ -116,8 +79,111 @@ public class SoyCompletionContributor extends CompletionContributor {
             }
           }
         });
+  }
 
-    // Complete fully qualified template identifiers fragments for function calls.
+  /**
+   * Complete the "kind" keyword in begin parameter tags and complete the supported kind literals in
+   * the string literal.
+   */
+  // TODO(thso): Add support for same completion in let statements.
+  private void extendWithKindKeyword() {
+    // Complete "kind" keyword after param identifier.
+    extend(
+        CompletionType.BASIC,
+        psiElement().inside(SoyBeginParamTag.class),
+        new CompletionProvider<CompletionParameters>() {
+          @Override
+          protected void addCompletions(
+              @NotNull CompletionParameters completionParameters,
+              ProcessingContext processingContext,
+              @NotNull CompletionResultSet completionResultSet) {
+            PsiElement prevSibling = completionParameters.getPosition().getPrevSibling();
+            while (prevSibling != null) {
+              if (!(prevSibling instanceof PsiWhiteSpace)) {
+                if (prevSibling instanceof SoyParamSpecificationIdentifier) {
+                  completionResultSet.addElement(
+                      LookupElementBuilder.create("kind")
+                          .withInsertHandler(new PostfixInsertHandler("=\"", "\"")));
+                }
+
+                return;
+              }
+
+              prevSibling = prevSibling.getPrevSibling();
+            }
+          }
+        });
+
+    // Complete supported kind literals for names for {param .. /} in template function calls.
+    extend(
+        CompletionType.BASIC,
+        psiElement().inside(SoyBeginParamTag.class).afterLeaf("="),
+        new CompletionProvider<CompletionParameters>() {
+          @Override
+          protected void addCompletions(
+              @NotNull CompletionParameters completionParameters,
+              ProcessingContext processingContext,
+              @NotNull CompletionResultSet completionResultSet) {
+            completionResultSet.addAllElements(kindLiterals);
+          }
+        });
+  }
+
+  /** Complete variable names that are in scope when in an expression. */
+  private void extendWithVariableNamesInScope() {
+    extend(
+        CompletionType.BASIC,
+        psiElement().inside(SoyExpression.class),
+        new CompletionProvider<CompletionParameters>() {
+          @Override
+          protected void addCompletions(
+              @NotNull CompletionParameters completionParameters,
+              ProcessingContext processingContext,
+              @NotNull CompletionResultSet completionResultSet) {
+            Collection<PsiNamedElement> params =
+                ParamUtils.getIdentifiersInScope(completionParameters.getPosition());
+            completionResultSet.addAllElements(
+                params
+                    .stream()
+                    .map(PsiNamedElement::getName)
+                    .map(param -> "$" + param)
+                    .map(LookupElementBuilder::create)
+                    .collect(Collectors.toList()));
+          }
+        });
+  }
+
+  /**
+   * Complete local template identifiers and global fully qualified template name fragments at
+   * template call site.
+   */
+  private void extendWithTemplateCallIdentifiers() {
+    // Complete local template identifiers.
+    extend(
+        CompletionType.BASIC,
+        psiElement()
+            .andOr(
+                psiElement().inside(SoyBeginCall.class),
+                psiElement().inside(SoyBeginDelCall.class)),
+        new CompletionProvider<CompletionParameters>() {
+          @Override
+          protected void addCompletions(
+              @NotNull CompletionParameters completionParameters,
+              ProcessingContext processingContext,
+              @NotNull CompletionResultSet completionResultSet) {
+            Collection<TemplateDefinitionElement> templates =
+                TemplateNameUtils.findLocalTemplateDefinitions(completionParameters.getPosition());
+            completionResultSet.addAllElements(
+                templates
+                    .stream()
+                    .map(PsiElement::getText)
+                    .filter(identifier -> identifier.startsWith("."))
+                    .map(LookupElementBuilder::create)
+                    .collect(Collectors.toList()));
+          }
+        });
+
+    // Complete fully qualified template identifiers fragments.
     extend(
         CompletionType.BASIC,
         psiElement()
@@ -147,8 +213,10 @@ public class SoyCompletionContributor extends CompletionContributor {
                     .collect(Collectors.toList()));
           }
         });
+  }
 
-    // Complete fully qualified namespace fragments for alias declaration.
+  /** Complete fully qualified namespace fragments for alias declaration. */
+  private void extendWithIdentifierFragementsForAlias() {
     extend(
         CompletionType.BASIC,
         psiElement().andOr(psiElement().inside(SoyAliasBlock.class)),
@@ -175,8 +243,10 @@ public class SoyCompletionContributor extends CompletionContributor {
                     .collect(Collectors.toList()));
           }
         });
+  }
 
-    // Complete parameter names for {param .. /} in template function calls.
+  /** Complete parameter names for {param .. /} in template function calls. */
+  private void extendWithParameterNames() {
     extend(
         CompletionType.BASIC,
         psiElement()
@@ -221,48 +291,10 @@ public class SoyCompletionContributor extends CompletionContributor {
                 parameters.stream().map(LookupElementBuilder::create).collect(Collectors.toList()));
           }
         });
+  }
 
-    // Complete "kind" keyword after param identifier.
-    extend(
-        CompletionType.BASIC,
-        psiElement().inside(SoyBeginParamTag.class),
-        new CompletionProvider<CompletionParameters>() {
-          @Override
-          protected void addCompletions(
-              @NotNull CompletionParameters completionParameters,
-              ProcessingContext processingContext,
-              @NotNull CompletionResultSet completionResultSet) {
-            PsiElement prevSibling = completionParameters.getPosition().getPrevSibling();
-            while (prevSibling != null) {
-              if (!(prevSibling instanceof PsiWhiteSpace)) {
-                if (prevSibling instanceof SoyParamSpecificationIdentifier) {
-                  completionResultSet.addElement(
-                      LookupElementBuilder.create("kind")
-                          .withInsertHandler(new PostfixInsertHandler("=\"", "\"")));
-                }
-
-                return;
-              }
-
-              prevSibling = prevSibling.getPrevSibling();
-            }
-          }
-        });
-
-    // Complete supported kind literal for names for {param .. /} in template function calls.
-    extend(
-        CompletionType.BASIC,
-        psiElement().inside(SoyBeginParamTag.class).afterLeaf("="),
-        new CompletionProvider<CompletionParameters>() {
-          @Override
-          protected void addCompletions(
-              @NotNull CompletionParameters completionParameters,
-              ProcessingContext processingContext,
-              @NotNull CompletionResultSet completionResultSet) {
-            completionResultSet.addAllElements(kindLiterals);
-          }
-        });
-
+  /** Complete types in {@param ...} . */
+  private void extendWithParameterTypes() {
     // Complete types in @param.
     extend(
         CompletionType.BASIC,
