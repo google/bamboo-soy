@@ -40,6 +40,12 @@ public class FileStub extends PsiFileStubImpl<SoyFile> {
     return TYPE;
   }
 
+  public String getNamespace() {
+    NamespaceDeclarationStub namespaceDeclaration =
+        (NamespaceDeclarationStub) findChildStubByType(NamespaceDeclarationStub.TYPE);
+    return namespaceDeclaration == null ? "" : namespaceDeclaration.getName();
+  }
+
   static class Type extends IStubFileElementType<FileStub> {
     public static final int VERSION = 4;
 

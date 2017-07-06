@@ -14,7 +14,7 @@
 
 package com.google.bamboo.soy.elements;
 
-import com.google.bamboo.soy.stubs.TemplateDefinitionStub;
+import com.google.bamboo.soy.stubs.NamespaceDeclarationStub;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.stubs.IStubElementType;
@@ -22,17 +22,17 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 
-public class TemplateDefinitionMixin extends SoyStubBasedPsiElementBase<TemplateDefinitionStub>
-    implements TemplateDefinitionElement {
-  public TemplateDefinitionMixin(TemplateDefinitionStub stub, IStubElementType type) {
+public class NamespaceDeclarationMixin extends SoyStubBasedPsiElementBase<NamespaceDeclarationStub>
+    implements NamespaceDeclarationElement {
+  public NamespaceDeclarationMixin(NamespaceDeclarationStub stub, IStubElementType type) {
     super(stub, type);
   }
 
-  public TemplateDefinitionMixin(ASTNode node) {
+  public NamespaceDeclarationMixin(ASTNode node) {
     super(node);
   }
 
-  public TemplateDefinitionMixin(TemplateDefinitionStub stub, IElementType type, ASTNode node) {
+  public NamespaceDeclarationMixin(NamespaceDeclarationStub stub, IElementType type, ASTNode node) {
     super(stub, type, node);
   }
 

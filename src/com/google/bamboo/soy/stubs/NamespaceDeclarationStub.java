@@ -15,9 +15,9 @@
 package com.google.bamboo.soy.stubs;
 
 import com.google.bamboo.soy.SoyLanguage;
-import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
-import com.google.bamboo.soy.parser.impl.SoyTemplateDefinitionIdentifierImpl;
-import com.google.bamboo.soy.stubs.index.TemplateDefinitionIndex;
+import com.google.bamboo.soy.parser.SoyNamespaceDeclarationIdentifier;
+import com.google.bamboo.soy.parser.impl.SoyNamespaceDeclarationIdentifierImpl;
+import com.google.bamboo.soy.stubs.index.NamespaceDeclarationIndex;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.stubs.IndexSink;
 import com.intellij.psi.stubs.NamedStubBase;
@@ -28,63 +28,55 @@ import com.intellij.util.io.StringRef;
 import java.io.IOException;
 import org.jetbrains.annotations.NotNull;
 
-public class TemplateDefinitionStub extends NamedStubBase<SoyTemplateDefinitionIdentifier> {
+public class NamespaceDeclarationStub extends NamedStubBase<SoyNamespaceDeclarationIdentifier> {
   static final Type TYPE = new Type();
 
-  TemplateDefinitionStub(StubElement parent, String name) {
+  NamespaceDeclarationStub(StubElement parent, String name) {
     super(parent, TYPE, name);
   }
 
-  String getFullyQualifiedName() {
-    return getNamespace() + getName();
-  }
-
-  String getNamespace() {
-    return StubUtils.getContainingStubFile(this).getNamespace();
-  }
-
   static class Type
-      extends IStubElementType<TemplateDefinitionStub, SoyTemplateDefinitionIdentifier> {
+      extends IStubElementType<NamespaceDeclarationStub, SoyNamespaceDeclarationIdentifier> {
     Type() {
-      super("TEMPLATE_DEFINITION_IDENTIFIER", SoyLanguage.INSTANCE);
+      super("NAMESPACE_DECLARATION_IDENTIFIER", SoyLanguage.INSTANCE);
     }
 
     @Override
-    public SoyTemplateDefinitionIdentifier createPsi(@NotNull TemplateDefinitionStub stub) {
-      return new SoyTemplateDefinitionIdentifierImpl(stub, this);
+    public SoyNamespaceDeclarationIdentifier createPsi(@NotNull NamespaceDeclarationStub stub) {
+      return new SoyNamespaceDeclarationIdentifierImpl(stub, this);
     }
 
     @NotNull
     @Override
-    public TemplateDefinitionStub createStub(
-        @NotNull SoyTemplateDefinitionIdentifier psi, StubElement parentStub) {
-      return new TemplateDefinitionStub(parentStub, psi.getName());
+    public NamespaceDeclarationStub createStub(
+        @NotNull SoyNamespaceDeclarationIdentifier psi, StubElement parentStub) {
+      return new NamespaceDeclarationStub(parentStub, psi.getName());
     }
 
     @NotNull
     @Override
     public String getExternalId() {
-      return "TEMPLATE_DEFINITION_IDENTIFIER";
+      return "NAMESPACE_DECLARATION_IDENTIFIER";
     }
 
     @Override
     public void serialize(
-        @NotNull TemplateDefinitionStub stub, @NotNull StubOutputStream dataStream)
+        @NotNull NamespaceDeclarationStub stub, @NotNull StubOutputStream dataStream)
         throws IOException {
       dataStream.writeName(stub.getName());
     }
 
     @NotNull
     @Override
-    public TemplateDefinitionStub deserialize(
+    public NamespaceDeclarationStub deserialize(
         @NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
       final StringRef ref = dataStream.readName();
-      return new TemplateDefinitionStub(parentStub, ref.getString());
+      return new NamespaceDeclarationStub(parentStub, ref.getString());
     }
 
     @Override
-    public void indexStub(@NotNull TemplateDefinitionStub stub, @NotNull IndexSink sink) {
-      sink.occurrence(TemplateDefinitionIndex.KEY, stub.getFullyQualifiedName());
+    public void indexStub(@NotNull NamespaceDeclarationStub stub, @NotNull IndexSink sink) {
+      sink.occurrence(NamespaceDeclarationIndex.KEY, stub.getName());
     }
   }
 }

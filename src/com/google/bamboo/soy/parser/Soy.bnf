@@ -202,6 +202,13 @@ ParamSpecificationIdentifier ::= Identifier {
   methods=[getReference]
 }
 
+NamespaceDeclarationIdentifier ::= Identifier {
+  mixin="com.google.bamboo.soy.elements.NamespaceDeclarationMixin"
+  implements="com.google.bamboo.soy.elements.NamespaceDeclarationElement"
+  stubClass = "com.google.bamboo.soy.stubs.NamespaceDeclarationStub"
+  elementTypeFactory = "com.google.bamboo.soy.stubs.StubFactory.getType"
+}
+
 NamespaceIdentifier ::= Identifier
 
 AliasIdentifier ::= Identifier
@@ -281,7 +288,7 @@ CatchallBraces ::= <<BracedTag ()>>
 
 NamespaceBlock ::= <<BracedTag NamespaceTagBody>>
 
-private NamespaceTagBody ::= NAMESPACE NamespaceIdentifier [AttributeList] {
+private NamespaceTagBody ::= NAMESPACE NamespaceDeclarationIdentifier [AttributeList] {
   pin = 1
   recoverWhile = "recoverEndOfTag"
 }

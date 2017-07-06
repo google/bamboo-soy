@@ -12,18 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.bamboo.soy.stubs;
+package com.google.bamboo.soy.elements;
 
-import com.google.common.collect.ImmutableMap;
-import com.intellij.psi.stubs.IStubElementType;
+import com.google.bamboo.soy.stubs.NamespaceDeclarationStub;
+import com.intellij.psi.PsiNamedElement;
+import com.intellij.psi.StubBasedPsiElement;
 
-public abstract class StubFactory {
-  private static ImmutableMap<String, IStubElementType> stubTypeByElement =
-      ImmutableMap.of(
-          "TEMPLATE_DEFINITION_IDENTIFIER", TemplateDefinitionStub.TYPE,
-          "NAMESPACE_DECLARATION_IDENTIFIER", NamespaceDeclarationStub.TYPE);
-
-  public static IStubElementType<?, ?> getType(String elementName) {
-    return stubTypeByElement.get(elementName);
-  }
+/** The PSI element that represents the namespace name in a namespace definition. */
+public interface NamespaceDeclarationElement
+    extends StubBasedPsiElement<NamespaceDeclarationStub>, PsiNamedElement {
+  String getName();
 }

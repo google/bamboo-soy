@@ -15,7 +15,10 @@
 package com.google.bamboo.soy;
 
 import com.google.bamboo.soy.elements.TemplateDefinitionElement;
+import com.google.bamboo.soy.file.SoyFile;
 import com.google.bamboo.soy.parser.SoyAliasBlock;
+import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
+import com.google.bamboo.soy.stubs.index.NamespaceDeclarationIndex;
 import com.google.bamboo.soy.stubs.index.TemplateDefinitionIndex;
 import com.google.common.collect.ImmutableList;
 import com.intellij.openapi.project.Project;
@@ -23,14 +26,15 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TemplateNameUtils {
+  /* Finds the only TemplateDefinition by its exact name. */
   public static TemplateDefinitionElement findTemplateDefinition(
       PsiElement element, String templateIdentifier) {
     List<TemplateDefinitionElement> definitions =
@@ -38,29 +42,23 @@ public class TemplateNameUtils {
     return definitions.size() >= 1 ? definitions.get(0) : null;
   }
 
+  /* Finds the matching TemplateDefinition by their exact name. */
   public static List<TemplateDefinitionElement> findTemplateDefinitions(
-      PsiElement element, String templateIdentifier) {
-    if (templateIdentifier.startsWith(".")) {
-      return findLocalTemplateDefinitions(element)
-          .stream()
-          .filter(elt -> elt.getName().equals(templateIdentifier))
-          .collect(Collectors.toList());
+      PsiElement element, String identifier) {
+    if (identifier.startsWith(".")) {
+      identifier = ((SoyFile) element.getContainingFile()).getNamespace() + identifier;
     } else {
-      String normalizedIdentifier =
-          normalizeTemplateIdentifier(element.getContainingFile(), templateIdentifier);
-      return findTemplateDefinitions(element.getProject(), normalizedIdentifier);
+      identifier = normalizeTemplateIdentifier(element.getContainingFile(), identifier);
     }
-  }
 
-  private static ImmutableList<TemplateDefinitionElement> findTemplateDefinitions(
-      Project project, String fullyQualifiedIdentifier) {
+    Project project = element.getProject();
     return ImmutableList.copyOf(
         TemplateDefinitionIndex.INSTANCE.get(
-            fullyQualifiedIdentifier, project, GlobalSearchScope.allScope(project)));
+            identifier, project, GlobalSearchScope.allScope(project)));
   }
 
-  public static Collection<TemplateDefinitionElement> findLocalTemplateDefinitions(
-      PsiElement element) {
+  /* Finds all template names in the given file. */
+  public static List<String> findLocalTemplateNames(PsiElement element) {
     PsiFile file = element.getContainingFile();
     return TemplateDefinitionIndex.INSTANCE
         .getAllKeys(file.getProject())
@@ -70,50 +68,48 @@ public class TemplateNameUtils {
                 TemplateDefinitionIndex.INSTANCE
                     .get(
                         key, file.getProject(), GlobalSearchScope.fileScope(file.getOriginalFile()))
-                    .stream())
+                    .stream()
+                    .map(SoyTemplateDefinitionIdentifier::getName))
         .collect(Collectors.toList());
   }
 
-  // TODO(thso): Simplify implementation instead of piggybacking on the complete template identifier
-  // cache.
-  public static Collection<String> getTemplateNamespaceFragments(
-      Project project, String identifier) {
-    List<String> possibleCompletions = new ArrayList<>();
-
-    TemplateDefinitionIndex.INSTANCE
+  /* Finds all namespace names starting with the given prefix */
+  public static List<String> getTemplateNamespaceFragments(Project project, String prefix) {
+    return NamespaceDeclarationIndex.INSTANCE
         .getAllKeys(project)
-        .forEach(
-            (key) -> {
-              if (key.startsWith(identifier)) {
-                String rest = key.substring(identifier.length());
-                if (rest.contains(".")) {
-                  possibleCompletions.add(identifier + rest.split("\\.")[0]);
-                }
-              }
-            });
-    return possibleCompletions;
+        .stream()
+        .filter((key) -> key.startsWith(prefix))
+        .map((name) -> getNextFragment(name, prefix))
+        .collect(Collectors.toList());
   }
 
+  /*
+   * Finds all fully qualified template names starting with a given prefix with respect to
+   * aliases and template visibility.
+   * */
   public static Collection<String> getTemplateNameIdentifiersFragments(
       Project project, PsiElement identifierElement, String identifier) {
-    List<String> possibleCompletions = new ArrayList<>();
-
-    List<String> templates = new ArrayList<>();
-    templates.addAll(TemplateDefinitionIndex.INSTANCE.getAllKeys(project));
-
     Map<String, String> aliases = getNamespaceAliases(identifierElement.getContainingFile());
-    templates.addAll(aliases.values());
+    return denormalizeTemplateNames(
+            aliases,
+            TemplateDefinitionIndex.INSTANCE
+                .getAllKeys(project)
+                .stream()
+                .filter((key) -> !key.endsWith("_")))
+        .filter((key) -> key.startsWith(identifier))
+        .map((name) -> getNextFragment(name, identifier))
+        .collect(Collectors.toList());
+  }
 
-    String normalizedIdentifier =
-        normalizeTemplateIdentifier(identifierElement.getContainingFile(), identifier);
-    for (String template : templates) {
-      if (template.startsWith(normalizedIdentifier)) {
-        String rest = template.replaceFirst(normalizedIdentifier, "");
-        possibleCompletions.add(identifier + rest.split("\\.")[0]);
-      }
-    }
-
-    return possibleCompletions;
+  private static Stream<String> denormalizeTemplateNames(
+      Map<String, String> aliases, Stream<String> templateNames) {
+    return templateNames.flatMap(
+        (name) -> {
+          String namespace = getNamespaceFromName(name);
+          return aliases.containsKey(namespace)
+              ? Stream.of(name, name.replace(namespace, aliases.get(namespace)))
+              : Stream.of(name);
+        });
   }
 
   private static String normalizeTemplateIdentifier(PsiFile file, String templateIdentifier) {
@@ -152,5 +148,14 @@ public class TemplateNameUtils {
           }
         });
     return aliases;
+  }
+
+  private static String getNextFragment(final String name, final String beginning) {
+    return beginning + name.substring(beginning.length()).split("\\.")[0];
+  }
+
+  private static String getNamespaceFromName(final String name) {
+    int lastDot = name.lastIndexOf('.');
+    return lastDot == -1 ? "" : name.substring(0, lastDot);
   }
 }
