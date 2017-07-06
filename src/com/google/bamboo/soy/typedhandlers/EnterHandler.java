@@ -18,7 +18,19 @@ import static com.intellij.patterns.PlatformPatterns.psiElement;
 
 import com.google.bamboo.soy.SoyLanguage;
 import com.google.bamboo.soy.file.SoyFileType;
-import com.google.bamboo.soy.parser.*;
+import com.google.bamboo.soy.parser.SoyBeginCall;
+import com.google.bamboo.soy.parser.SoyBeginCaseClause;
+import com.google.bamboo.soy.parser.SoyBeginDelCall;
+import com.google.bamboo.soy.parser.SoyBeginDelegateTemplate;
+import com.google.bamboo.soy.parser.SoyBeginElseIf;
+import com.google.bamboo.soy.parser.SoyBeginFor;
+import com.google.bamboo.soy.parser.SoyBeginForeach;
+import com.google.bamboo.soy.parser.SoyBeginIf;
+import com.google.bamboo.soy.parser.SoyBeginLet;
+import com.google.bamboo.soy.parser.SoyBeginMsg;
+import com.google.bamboo.soy.parser.SoyBeginParamTag;
+import com.google.bamboo.soy.parser.SoyBeginSwitch;
+import com.google.bamboo.soy.parser.SoyBeginTemplate;
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Document;
@@ -28,12 +40,14 @@ import com.intellij.openapi.editor.actionSystem.EditorActionHandler;
 import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.patterns.PsiElementPattern;
-import com.intellij.psi.*;
+import com.intellij.psi.PsiComment;
+import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
-
 import java.util.Collection;
 import java.util.Collections;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

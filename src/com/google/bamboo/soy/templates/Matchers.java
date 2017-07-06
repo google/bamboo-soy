@@ -26,13 +26,9 @@ import com.intellij.psi.PsiElement;
 class Matchers {
   static PsiElementPattern.Capture<PsiElement> templateBlockMatcher =
       psiElement()
-          .andOr(
-              psiElement(SoyTemplateBlock.class),
-              psiElement(SoyDelegateTemplateBlock.class));
+          .andOr(psiElement(SoyTemplateBlock.class), psiElement(SoyDelegateTemplateBlock.class));
 
   static PsiElementPattern.Capture<PsiElement> templateCallStatementMatcher =
       psiElement()
-          .andOr(
-              psiElement(SoyDirectCallStatement.class),
-              psiElement(SoyDelCallStatement.class));
+          .andOr(psiElement(SoyDirectCallStatement.class), psiElement(SoyDelCallStatement.class));
 }

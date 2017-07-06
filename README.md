@@ -1,6 +1,24 @@
-# Bamboo
+# Bamboo Soy
 
-Intellij plugin for syntax highlighting, autocompletion and static analysis for your closure template files.
+The smartest Intellij plugin for Soy. 
+
+Adds syntax highlighting, autocompletion and static analysis for your closure template files.
+
+## Features
+
+ * Syntax highlighting, including full HTML support
+ * Parser designed to support incomplete code constructs & unbalanced tags (things don’t break when you type)
+ * Supports latest syntax (`@inject`, `xid` and `css` function expressions, ...)
+ * References, go-to definition
+ * Documentation lookup
+ * Autocompletion
+   * Template and namespace identifiers 
+   * Variable identifiers in scope
+ * Live templates for `xid`, `css`, `if-else`, `call`, `delcall`, ... 
+ * Enter handler in comments and after opening tags to preserve structure and correct indentation of code
+ * Inspections - Static analysis for
+   * Missing required or invalid parameters
+   * Unused parameters
 
 ## Release notes
 

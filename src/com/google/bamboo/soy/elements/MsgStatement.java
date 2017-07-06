@@ -31,10 +31,7 @@ public interface MsgStatement extends PsiElement {
         getBeginMsg()
             .getAttributeKeyValuePairList()
             .stream()
-            .filter(pair -> pair
-                .getAttributeNameIdentifier()
-                .getText()
-                .equalsIgnoreCase("desc"))
+            .filter(pair -> pair.getAttributeNameIdentifier().getText().equalsIgnoreCase("desc"))
             .findFirst();
     if (keyValuePair.isPresent()) {
       return keyValuePair.get().getAnyStringLiteral().getText();

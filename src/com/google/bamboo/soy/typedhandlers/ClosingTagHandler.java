@@ -15,7 +15,6 @@
 package com.google.bamboo.soy.typedhandlers;
 
 import com.google.bamboo.soy.BracedTagUtils;
-import com.google.bamboo.soy.elements.StatementBase;
 import com.google.bamboo.soy.parser.SoyParamListElement;
 import com.google.bamboo.soy.parser.SoyParserDefinition;
 import com.google.bamboo.soy.parser.SoyStatementList;

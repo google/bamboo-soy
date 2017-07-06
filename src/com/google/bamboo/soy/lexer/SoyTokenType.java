@@ -16,7 +16,8 @@ package com.google.bamboo.soy.lexer;
 
 import com.google.bamboo.soy.SoyLanguage;
 import com.intellij.psi.tree.IElementType;
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
 
 public class SoyTokenType extends IElementType {
   public SoyTokenType(@NotNull @NonNls String debugName) {

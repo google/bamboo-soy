@@ -199,8 +199,7 @@ public class SoyCompletionContributor extends CompletionContributor {
 
             if (callStatement == null) return;
 
-            PsiElement identifier =
-                PsiTreeUtil.findChildOfType(callStatement, SoyIdentifier.class);
+            PsiElement identifier = PsiTreeUtil.findChildOfType(callStatement, SoyIdentifier.class);
 
             if (identifier == null) return;
 

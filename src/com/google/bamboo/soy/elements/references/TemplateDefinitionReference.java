@@ -16,7 +16,11 @@ package com.google.bamboo.soy.elements.references;
 
 import com.google.bamboo.soy.TemplateNameUtils;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.*;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiElementResolveResult;
+import com.intellij.psi.PsiPolyVariantReference;
+import com.intellij.psi.PsiReferenceBase;
+import com.intellij.psi.ResolveResult;
 import org.jetbrains.annotations.NotNull;
 
 public class TemplateDefinitionReference extends PsiReferenceBase<PsiElement>

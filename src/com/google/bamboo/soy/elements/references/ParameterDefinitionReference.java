@@ -44,8 +44,7 @@ public class ParameterDefinitionReference extends PsiReferenceBase<PsiElement>
         PsiTreeUtil.findFirstParent(element, elt -> elt instanceof CallStatementBase);
 
     if (callBegin != null) {
-      PsiElement identifier =
-          PsiTreeUtil.findChildOfType(callBegin, SoyIdentifier.class);
+      PsiElement identifier = PsiTreeUtil.findChildOfType(callBegin, SoyIdentifier.class);
       if (identifier == null) return null;
       PsiElement templateDefinition =
           TemplateNameUtils.findTemplateDefinition(element, identifier.getText());

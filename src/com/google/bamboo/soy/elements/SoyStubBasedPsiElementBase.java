@@ -21,9 +21,9 @@ import com.intellij.psi.stubs.StubElement;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class SoyStubBasedPsiElementBase<T extends StubElement> extends StubBasedPsiElementBase<T> {
-  public SoyStubBasedPsiElementBase(@NotNull T stub,
-      @NotNull IStubElementType nodeType) {
+public abstract class SoyStubBasedPsiElementBase<T extends StubElement>
+    extends StubBasedPsiElementBase<T> {
+  public SoyStubBasedPsiElementBase(@NotNull T stub, @NotNull IStubElementType nodeType) {
     super(stub, nodeType);
   }
 
