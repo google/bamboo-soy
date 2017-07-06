@@ -18,24 +18,24 @@ import com.google.bamboo.soy.highlight.SoySyntaxHighlighter;
 import com.google.bamboo.soy.icons.SoyIcons;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
-import com.intellij.openapi.options.colors.*;
+import com.intellij.openapi.options.colors.AttributesDescriptor;
+import com.intellij.openapi.options.colors.ColorDescriptor;
+import com.intellij.openapi.options.colors.ColorSettingsPage;
 import java.util.Map;
-import javax.swing.*;
-import org.jetbrains.annotations.*;
+import javax.swing.Icon;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class SoyColorSettingsPage implements ColorSettingsPage {
   private static final AttributesDescriptor[] DESCRIPTORS =
       new AttributesDescriptor[] {
-        new AttributesDescriptor(
-            "Numeric and boolean literals", SoySyntaxHighlighter.NUMBER),
+        new AttributesDescriptor("Numeric and boolean literals", SoySyntaxHighlighter.NUMBER),
         new AttributesDescriptor("Built-in types", SoySyntaxHighlighter.BUILTIN_TYPE),
         new AttributesDescriptor("Comments", SoySyntaxHighlighter.COMMENT),
         new AttributesDescriptor("Tag names", SoySyntaxHighlighter.KEYWORD),
-        new AttributesDescriptor(
-            "Operators words", SoySyntaxHighlighter.OPERATOR_LITERAL),
+        new AttributesDescriptor("Operators words", SoySyntaxHighlighter.OPERATOR_LITERAL),
         new AttributesDescriptor("String literals", SoySyntaxHighlighter.STRING),
-        new AttributesDescriptor(
-            "Variable references", SoySyntaxHighlighter.VARIABLE_REFERENCE),
+        new AttributesDescriptor("Variable references", SoySyntaxHighlighter.VARIABLE_REFERENCE),
       };
 
   @Nullable

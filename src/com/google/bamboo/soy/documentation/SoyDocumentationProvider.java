@@ -135,10 +135,7 @@ public class SoyDocumentationProvider extends AbstractDocumentationProvider {
     PsiElement optCommentBefore =
         lookupCommentRecursivelyBefore(
             firstParent(
-                firstParent(
-                    element,
-                    SoyBeginTemplate.class,
-                    SoyBeginDelegateTemplate.class),
+                firstParent(element, SoyBeginTemplate.class, SoyBeginDelegateTemplate.class),
                 SoyTemplateBlock.class,
                 SoyDelegateTemplateBlock.class));
     return optCommentBefore != null ? optCommentBefore.getText() : null;
@@ -148,8 +145,7 @@ public class SoyDocumentationProvider extends AbstractDocumentationProvider {
   private static String getOptionalDocCommentAfter(PsiElement element) {
     PsiElement optCommentAfter =
         lookupCommentRecursivelyAfter(
-            firstParent(
-                element, SoyAtParamSingle.class, SoyAtInjectSingle.class));
+            firstParent(element, SoyAtParamSingle.class, SoyAtInjectSingle.class));
     return optCommentAfter != null ? optCommentAfter.getText() : null;
   }
 

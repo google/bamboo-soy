@@ -137,20 +137,17 @@ public class ClosingBraceSanityAnnotator implements Annotator {
   @Override
   public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
     if (psiElement instanceof SoyDirectCallStatement) {
-      checkAndAnnotateSingleOrBlockTag(
-          SoyEndCallTag.class, psiElement, annotationHolder);
+      checkAndAnnotateSingleOrBlockTag(SoyEndCallTag.class, psiElement, annotationHolder);
       return;
     }
 
     if (psiElement instanceof SoyDelCallStatement) {
-      checkAndAnnotateSingleOrBlockTag(
-          SoyEndDelCallTag.class, psiElement, annotationHolder);
+      checkAndAnnotateSingleOrBlockTag(SoyEndDelCallTag.class, psiElement, annotationHolder);
       return;
     }
 
     if (psiElement instanceof SoyParamListElement) {
-      checkAndAnnotateSingleOrBlockTag(
-          SoyEndParamTag.class, psiElement, annotationHolder);
+      checkAndAnnotateSingleOrBlockTag(SoyEndParamTag.class, psiElement, annotationHolder);
       return;
     }
 

@@ -15,7 +15,7 @@
 package com.google.bamboo.soy;
 
 import com.google.bamboo.soy.elements.TemplateDefinitionElement;
-import com.google.bamboo.soy.parser.*;
+import com.google.bamboo.soy.parser.SoyAliasBlock;
 import com.google.bamboo.soy.stubs.index.TemplateDefinitionIndex;
 import com.google.common.collect.ImmutableList;
 import com.intellij.openapi.project.Project;
@@ -23,8 +23,11 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class TemplateNameUtils {
@@ -51,22 +54,23 @@ public class TemplateNameUtils {
 
   private static ImmutableList<TemplateDefinitionElement> findTemplateDefinitions(
       Project project, String fullyQualifiedIdentifier) {
-    return ImmutableList.copyOf(TemplateDefinitionIndex.INSTANCE.get(
-        fullyQualifiedIdentifier,
-        project,
-        GlobalSearchScope.allScope(project)));
+    return ImmutableList.copyOf(
+        TemplateDefinitionIndex.INSTANCE.get(
+            fullyQualifiedIdentifier, project, GlobalSearchScope.allScope(project)));
   }
 
   public static Collection<TemplateDefinitionElement> findLocalTemplateDefinitions(
       PsiElement element) {
     PsiFile file = element.getContainingFile();
-    return TemplateDefinitionIndex.INSTANCE.getAllKeys(file.getProject())
+    return TemplateDefinitionIndex.INSTANCE
+        .getAllKeys(file.getProject())
         .stream()
-        .flatMap((key) -> TemplateDefinitionIndex.INSTANCE
-            .get(key, file.getProject(), GlobalSearchScope.fileScope(file))
-            .stream())
-        .collect(
-            Collectors.toList());
+        .flatMap(
+            (key) ->
+                TemplateDefinitionIndex.INSTANCE
+                    .get(key, file.getProject(), GlobalSearchScope.fileScope(file))
+                    .stream())
+        .collect(Collectors.toList());
   }
 
   // TODO(thso): Simplify implementation instead of piggybacking on the complete template identifier
@@ -75,15 +79,17 @@ public class TemplateNameUtils {
       Project project, String identifier) {
     List<String> possibleCompletions = new ArrayList<>();
 
-    TemplateDefinitionIndex.INSTANCE.getAllKeys(project)
-        .forEach((key) -> {
-          if (key.startsWith(identifier)) {
-            String rest = key.substring(identifier.length());
-            if (rest.contains(".")) {
-              possibleCompletions.add(identifier + rest.split("\\.")[0]);
-            }
-          }
-        });
+    TemplateDefinitionIndex.INSTANCE
+        .getAllKeys(project)
+        .forEach(
+            (key) -> {
+              if (key.startsWith(identifier)) {
+                String rest = key.substring(identifier.length());
+                if (rest.contains(".")) {
+                  possibleCompletions.add(identifier + rest.split("\\.")[0]);
+                }
+              }
+            });
     return possibleCompletions;
   }
 

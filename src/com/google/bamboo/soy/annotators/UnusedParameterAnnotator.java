@@ -32,8 +32,7 @@ import org.jetbrains.annotations.NotNull;
 public class UnusedParameterAnnotator implements Annotator {
   @Override
   public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder annotationHolder) {
-    if (element instanceof SoyTemplateBlock
-        || element instanceof SoyDelegateTemplateBlock) {
+    if (element instanceof SoyTemplateBlock || element instanceof SoyDelegateTemplateBlock) {
 
       // Abort if values are passed with data="...", parameter are sometimes defined for the sake
       // of added documentation even when not technically used directly in the template body.
