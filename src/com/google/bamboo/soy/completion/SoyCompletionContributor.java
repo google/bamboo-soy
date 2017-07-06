@@ -20,18 +20,7 @@ import com.google.bamboo.soy.ParamUtils;
 import com.google.bamboo.soy.TemplateNameUtils;
 import com.google.bamboo.soy.elements.CallStatementBase;
 import com.google.bamboo.soy.elements.TemplateDefinitionElement;
-import com.google.bamboo.soy.parser.SoyAliasBlock;
-import com.google.bamboo.soy.parser.SoyAtInjectBody;
-import com.google.bamboo.soy.parser.SoyAtParamBody;
-import com.google.bamboo.soy.parser.SoyBeginCall;
-import com.google.bamboo.soy.parser.SoyBeginDelCall;
-import com.google.bamboo.soy.parser.SoyBeginParamTag;
-import com.google.bamboo.soy.parser.SoyBeginTemplate;
-import com.google.bamboo.soy.parser.SoyExpression;
-import com.google.bamboo.soy.parser.SoyIdentifier;
-import com.google.bamboo.soy.parser.SoyListType;
-import com.google.bamboo.soy.parser.SoyMapType;
-import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
+import com.google.bamboo.soy.parser.*;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
@@ -44,13 +33,16 @@ import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.jetbrains.annotations.NotNull;
 
 public class SoyCompletionContributor extends CompletionContributor {
+
   SoyCompletionContributor() {
     // Complete variable names that are in scope when in expressions.
     extend(
@@ -189,7 +181,10 @@ public class SoyCompletionContributor extends CompletionContributor {
         CompletionType.BASIC,
         psiElement()
             .inside(SoyBeginParamTag.class)
-            .andNot(psiElement().inside(SoyBeginParamTag.class).afterLeaf("=")),
+            .and(
+                psiElement()
+                    .afterLeafSkipping(
+                        psiElement(PsiWhiteSpace.class), psiElement().withText("param"))),
         new CompletionProvider<CompletionParameters>() {
           @Override
           protected void addCompletions(
@@ -201,11 +196,15 @@ public class SoyCompletionContributor extends CompletionContributor {
                 (CallStatementBase)
                     PsiTreeUtil.findFirstParent(position, elt -> elt instanceof CallStatementBase);
 
-            if (callStatement == null) return;
+            if (callStatement == null) {
+              return;
+            }
 
             PsiElement identifier = PsiTreeUtil.findChildOfType(callStatement, SoyIdentifier.class);
 
-            if (identifier == null) return;
+            if (identifier == null) {
+              return;
+            }
 
             PsiElement templateDefinition =
                 TemplateNameUtils.findTemplateDefinition(position, identifier.getText());
@@ -223,7 +222,34 @@ public class SoyCompletionContributor extends CompletionContributor {
           }
         });
 
-    // Complete parameter names for {param .. /} in template function calls.
+    // Complete "kind" keyword after param identifier.
+    extend(
+        CompletionType.BASIC,
+        psiElement().inside(SoyBeginParamTag.class),
+        new CompletionProvider<CompletionParameters>() {
+          @Override
+          protected void addCompletions(
+              @NotNull CompletionParameters completionParameters,
+              ProcessingContext processingContext,
+              @NotNull CompletionResultSet completionResultSet) {
+            PsiElement prevSibling = completionParameters.getPosition().getPrevSibling();
+            while (prevSibling != null) {
+              if (!(prevSibling instanceof PsiWhiteSpace)) {
+                if (prevSibling instanceof SoyParamSpecificationIdentifier) {
+                  completionResultSet.addElement(
+                      LookupElementBuilder.create("kind")
+                          .withInsertHandler(new PostfixInsertHandler("=\"", "\"")));
+                }
+
+                return;
+              }
+
+              prevSibling = prevSibling.getPrevSibling();
+            }
+          }
+        });
+
+    // Complete supported kind literal for names for {param .. /} in template function calls.
     extend(
         CompletionType.BASIC,
         psiElement().inside(SoyBeginParamTag.class).afterLeaf("="),
