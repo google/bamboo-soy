@@ -39,10 +39,10 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Inserts appropriate characters and indentation after pressing "Enter" in a closure template file.
- * <p>
+ *
  * <p>In comments this handler inserts "*" on the next line and moves the cursor behind it when
  * pressing "Enter".
- * <p>
+ *
  * <p>If pressed right after an opening tag this handler will indent the cursor on the next line.
  */
 public class EnterHandler implements EnterHandlerDelegate {
