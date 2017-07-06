@@ -16,9 +16,10 @@ package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.parser.SoyParamListElement;
 import com.intellij.psi.PsiElement;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public interface CallStatementBase extends PsiElement {
   @NotNull

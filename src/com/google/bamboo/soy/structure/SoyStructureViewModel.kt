@@ -23,11 +23,11 @@ import com.intellij.openapi.editor.Editor
 
 class SoyStructureViewModel(val file: SoyFile,
                             editor: Editor?) : TextEditorBasedStructureViewModel(editor,
-    file),
-    StructureViewModel.ElementInfoProvider {
-  override fun getRoot(): StructureViewTreeElement = getTreeElement(file)
+        file),
+        StructureViewModel.ElementInfoProvider {
+    override fun getRoot(): StructureViewTreeElement = getTreeElement(file)
 
-  override fun isAlwaysShowsPlus(p0: StructureViewTreeElement?): Boolean = false
+    override fun isAlwaysShowsPlus(p0: StructureViewTreeElement?): Boolean = false
 
-  override fun isAlwaysLeaf(p0: StructureViewTreeElement?): Boolean = false
+    override fun isAlwaysLeaf(p0: StructureViewTreeElement?): Boolean = false
 }

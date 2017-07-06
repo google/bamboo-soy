@@ -25,10 +25,6 @@ import org.jetbrains.annotations.Nullable;
 public class SoyLanguage extends Language {
   public static final SoyLanguage INSTANCE = new SoyLanguage();
 
-  public static LanguageFileType getDefaultTemplateLang() {
-    return StdFileTypes.HTML;
-  }
-
   private SoyLanguage() {
     super("ClosureTemplate");
   }
@@ -38,5 +34,9 @@ public class SoyLanguage extends Language {
       @NotNull @NonNls final String ID,
       @NotNull @NonNls final String... mimeTypes) {
     super(baseLanguage, ID, mimeTypes);
+  }
+
+  public static LanguageFileType getDefaultTemplateLang() {
+    return StdFileTypes.HTML;
   }
 }

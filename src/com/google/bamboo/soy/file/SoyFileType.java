@@ -24,8 +24,10 @@ import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.fileTypes.TemplateLanguageFileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import javax.swing.*;
-import org.jetbrains.annotations.*;
 
 public class SoyFileType extends LanguageFileType implements TemplateLanguageFileType {
   public static final SoyFileType INSTANCE = new SoyFileType();

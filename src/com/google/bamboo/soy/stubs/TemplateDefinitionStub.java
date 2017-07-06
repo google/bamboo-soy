@@ -36,7 +36,8 @@ public class TemplateDefinitionStub extends StubBase<SoyTemplateDefinitionIdenti
     this.fullyQualifiedName = fullyQualifiedName;
   }
 
-  static class Type extends IStubElementType<TemplateDefinitionStub, SoyTemplateDefinitionIdentifier> {
+  static class Type
+      extends IStubElementType<TemplateDefinitionStub, SoyTemplateDefinitionIdentifier> {
     Type() {
       super("TEMPLATE_DEFINITION_IDENTIFIER", SoyLanguage.INSTANCE);
     }
@@ -48,8 +49,9 @@ public class TemplateDefinitionStub extends StubBase<SoyTemplateDefinitionIdenti
 
     @NotNull
     @Override
-    public TemplateDefinitionStub createStub(@NotNull SoyTemplateDefinitionIdentifier psi, StubElement parentStub) {
-      String namespace = ((SoyFile)psi.getContainingFile()).getNamespace();
+    public TemplateDefinitionStub createStub(
+        @NotNull SoyTemplateDefinitionIdentifier psi, StubElement parentStub) {
+      String namespace = ((SoyFile) psi.getContainingFile()).getNamespace();
       return new TemplateDefinitionStub(parentStub, psi.getName(), namespace + psi.getName());
     }
 
@@ -60,14 +62,17 @@ public class TemplateDefinitionStub extends StubBase<SoyTemplateDefinitionIdenti
     }
 
     @Override
-    public void serialize(@NotNull TemplateDefinitionStub stub, @NotNull StubOutputStream dataStream) throws IOException {
+    public void serialize(
+        @NotNull TemplateDefinitionStub stub, @NotNull StubOutputStream dataStream)
+        throws IOException {
       dataStream.writeName(stub.name);
       dataStream.writeName(stub.fullyQualifiedName);
     }
 
     @NotNull
     @Override
-    public TemplateDefinitionStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
+    public TemplateDefinitionStub deserialize(
+        @NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
       final StringRef ref = dataStream.readName();
       final StringRef ref2 = dataStream.readName();
       return new TemplateDefinitionStub(parentStub, ref.getString(), ref2.getString());

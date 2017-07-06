@@ -14,13 +14,7 @@
 
 package com.google.bamboo.soy.documentation;
 
-import com.google.bamboo.soy.parser.SoyAtInjectSingle;
-import com.google.bamboo.soy.parser.SoyAtParamSingle;
-import com.google.bamboo.soy.parser.SoyBeginDelegateTemplate;
-import com.google.bamboo.soy.parser.SoyBeginTemplate;
-import com.google.bamboo.soy.parser.SoyDelegateTemplateBlock;
-import com.google.bamboo.soy.parser.SoyTemplateBlock;
-import com.google.bamboo.soy.parser.SoyTypes;
+import com.google.bamboo.soy.parser.*;
 import com.google.common.collect.ImmutableList;
 import com.intellij.lang.documentation.AbstractDocumentationProvider;
 import com.intellij.openapi.editor.Document;
@@ -30,11 +24,12 @@ import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SoyDocumentationProvider extends AbstractDocumentationProvider {
 
@@ -135,10 +130,7 @@ public class SoyDocumentationProvider extends AbstractDocumentationProvider {
     PsiElement optCommentBefore =
         lookupCommentRecursivelyBefore(
             firstParent(
-                firstParent(
-                    element,
-                    SoyBeginTemplate.class,
-                    SoyBeginDelegateTemplate.class),
+                firstParent(element, SoyBeginTemplate.class, SoyBeginDelegateTemplate.class),
                 SoyTemplateBlock.class,
                 SoyDelegateTemplateBlock.class));
     return optCommentBefore != null ? optCommentBefore.getText() : null;
@@ -148,8 +140,7 @@ public class SoyDocumentationProvider extends AbstractDocumentationProvider {
   private static String getOptionalDocCommentAfter(PsiElement element) {
     PsiElement optCommentAfter =
         lookupCommentRecursivelyAfter(
-            firstParent(
-                element, SoyAtParamSingle.class, SoyAtInjectSingle.class));
+            firstParent(element, SoyAtParamSingle.class, SoyAtInjectSingle.class));
     return optCommentAfter != null ? optCommentAfter.getText() : null;
   }
 

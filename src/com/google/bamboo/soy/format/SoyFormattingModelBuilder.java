@@ -16,21 +16,9 @@ package com.google.bamboo.soy.format;
 
 import com.google.bamboo.soy.elements.ParamListElementBase;
 import com.google.bamboo.soy.elements.StatementBase;
-import com.google.bamboo.soy.parser.SoyAtParamList;
-import com.google.bamboo.soy.parser.SoyCaseClause;
-import com.google.bamboo.soy.parser.SoyDefaultClause;
-import com.google.bamboo.soy.parser.SoyStatementList;
-import com.google.bamboo.soy.parser.SoyTypes;
-import com.intellij.formatting.Alignment;
-import com.intellij.formatting.ChildAttributes;
-import com.intellij.formatting.FormattingModel;
-import com.intellij.formatting.Indent;
-import com.intellij.formatting.Wrap;
-import com.intellij.formatting.templateLanguages.BlockWithParent;
-import com.intellij.formatting.templateLanguages.DataLanguageBlockWrapper;
-import com.intellij.formatting.templateLanguages.TemplateLanguageBlock;
-import com.intellij.formatting.templateLanguages.TemplateLanguageBlockFactory;
-import com.intellij.formatting.templateLanguages.TemplateLanguageFormattingModelBuilder;
+import com.google.bamboo.soy.parser.*;
+import com.intellij.formatting.*;
+import com.intellij.formatting.templateLanguages.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
@@ -43,11 +31,19 @@ import com.intellij.psi.formatter.xml.SyntheticBlock;
 import com.intellij.psi.templateLanguages.SimpleTemplateLanguageFormattingModelBuilder;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.xml.XmlTag;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public class SoyFormattingModelBuilder extends TemplateLanguageFormattingModelBuilder {
+  private static boolean isAlwaysIndented(PsiElement element) {
+    return element instanceof ParamListElementBase
+        || element instanceof SoyAtParamList
+        || element instanceof SoyDefaultClause
+        || element instanceof SoyCaseClause;
+  }
+
   @Override
   public TemplateLanguageBlock createTemplateLanguageBlock(
       @NotNull ASTNode node,
@@ -261,12 +257,5 @@ public class SoyFormattingModelBuilder extends TemplateLanguageFormattingModelBu
       return myNode.getPsi() instanceof SoyStatementList
           || myNode.getPsi() instanceof StatementBase;
     }
-  }
-
-  private static boolean isAlwaysIndented(PsiElement element) {
-    return element instanceof ParamListElementBase
-        || element instanceof SoyAtParamList
-        || element instanceof SoyDefaultClause
-        || element instanceof SoyCaseClause;
   }
 }

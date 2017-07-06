@@ -36,7 +36,8 @@ public class PostfixInsertHandler implements InsertHandler<LookupElement> {
     Project project = editor.getProject();
 
     if (project != null) {
-      EditorModificationUtil.insertStringAtCaret(editor, closingTagBeforeCaret + closingTagAfterCaret);
+      EditorModificationUtil.insertStringAtCaret(
+          editor, closingTagBeforeCaret + closingTagAfterCaret);
       PsiDocumentManager.getInstance(project).commitDocument(editor.getDocument());
       EditorModificationUtil.moveCaretRelatively(editor, -closingTagAfterCaret.length());
     }

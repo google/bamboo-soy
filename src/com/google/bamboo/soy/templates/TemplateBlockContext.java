@@ -14,13 +14,13 @@
 
 package com.google.bamboo.soy.templates;
 
-import static com.intellij.patterns.PlatformPatterns.psiElement;
-
 import com.google.bamboo.soy.file.SoyFileType;
 import com.intellij.codeInsight.template.TemplateContextType;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
+
+import static com.intellij.patterns.PlatformPatterns.psiElement;
 
 public class TemplateBlockContext extends TemplateContextType {
   protected TemplateBlockContext() {
