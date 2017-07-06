@@ -14,17 +14,22 @@
 
 package com.google.bamboo.soy.typedhandlers;
 
+import com.google.common.collect.ImmutableSet;
 import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.actionSystem.TypedActionHandler;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDocumentManager;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Set;
+
 /**
- * Automatically inserts a matching quote when typing one.
+ *  Inserts a matching single or double quote when typing one.
  */
 public class QuoteHandler implements TypedActionHandler {
+  private final Set<Character> matchingQuotes = ImmutableSet.of('"', '\'');
   private final TypedActionHandler myOriginalHandler;
 
   public QuoteHandler(TypedActionHandler originalHandler) {
@@ -32,21 +37,33 @@ public class QuoteHandler implements TypedActionHandler {
   }
 
   public void execute(@NotNull Editor editor, char charTyped, @NotNull DataContext dataContext) {
-    if (charTyped == '"') {
+    if (matchingQuotes.contains(charTyped)) {
+      Document document = editor.getDocument();
       int caretOffset = editor.getCaretModel().getOffset();
-      String nextChar =
-          caretOffset >= editor.getDocument().getTextLength()
-              ? ""
-              : editor.getDocument().getText(new TextRange(caretOffset, caretOffset + 1));
 
-      if (!nextChar.equals(charTyped + "")) {
-        editor.getDocument().insertString(editor.getCaretModel().getOffset(), charTyped + "");
+      String prevChar = getPreviousChar(document, caretOffset);
+      String nextChar = getNextChar(document, caretOffset);
+
+      if (prevChar.equals(" ") && !nextChar.equals(charTyped + "")) {
+        document.insertString(editor.getCaretModel().getOffset(), charTyped + "");
         if (editor.getProject() != null) {
-          PsiDocumentManager.getInstance(editor.getProject()).commitDocument(editor.getDocument());
+          PsiDocumentManager.getInstance(editor.getProject()).commitDocument(document);
         }
       }
     }
 
     myOriginalHandler.execute(editor, charTyped, dataContext);
+  }
+
+  private String getPreviousChar(Document document, int offset) {
+    return offset <= 0
+        ? " "
+        : document.getText(new TextRange(offset - 1, offset));
+  }
+
+  private String getNextChar(Document document, int offset) {
+    return offset >= document.getTextLength()
+        ? " "
+        : document.getText(new TextRange(offset, offset + 1));
   }
 }
