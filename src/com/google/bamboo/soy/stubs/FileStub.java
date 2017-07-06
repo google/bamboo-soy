@@ -19,11 +19,14 @@ import com.google.bamboo.soy.file.SoyFile;
 import com.intellij.lang.Language;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.StubBuilder;
-import com.intellij.psi.stubs.*;
+import com.intellij.psi.stubs.DefaultStubBuilder;
+import com.intellij.psi.stubs.PsiFileStubImpl;
+import com.intellij.psi.stubs.StubElement;
+import com.intellij.psi.stubs.StubInputStream;
+import com.intellij.psi.stubs.StubOutputStream;
 import com.intellij.psi.tree.IStubFileElementType;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
+import org.jetbrains.annotations.NotNull;
 
 public class FileStub extends PsiFileStubImpl<SoyFile> {
   public static final Type TYPE = new Type("SoyFile", SoyLanguage.INSTANCE);
@@ -43,6 +46,7 @@ public class FileStub extends PsiFileStubImpl<SoyFile> {
     public Type(String debugName, Language language) {
       super(debugName, language);
     }
+
     @Override
     public StubBuilder getBuilder() {
       return new DefaultStubBuilder() {
@@ -59,12 +63,13 @@ public class FileStub extends PsiFileStubImpl<SoyFile> {
     }
 
     @Override
-    public void serialize(@NotNull FileStub stub, @NotNull StubOutputStream dataStream) throws IOException {
-    }
+    public void serialize(@NotNull FileStub stub, @NotNull StubOutputStream dataStream)
+        throws IOException {}
 
     @NotNull
     @Override
-    public FileStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
+    public FileStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub)
+        throws IOException {
       return new FileStub(null);
     }
 
