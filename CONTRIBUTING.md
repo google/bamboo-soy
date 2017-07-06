@@ -3,6 +3,14 @@
 We'd love to accept your patches and contributions to this project. There are
 just a few small guidelines you need to follow.
 
+## Code style
+
+The code should be in compliance with [Google Style Guide](https://google.github.io/styleguide/javaguide.html).
+
+Please use [google-java-format](https://github.com/google/google-java-format) for Java formatting
+and [intellij-java-google-style](https://github.com/google/styleguide/blob/gh-pages/intellij-java-google-style.xml)
+style settings if you are using Intellij.
+
 ## Contributor License Agreement
 
 Contributions to this project must be accompanied by a Contributor License
