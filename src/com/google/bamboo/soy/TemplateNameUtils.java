@@ -26,6 +26,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +49,8 @@ public class TemplateNameUtils {
     if (identifier.startsWith(".")) {
       identifier = ((SoyFile) element.getContainingFile()).getNamespace() + identifier;
     } else {
-      identifier = normalizeTemplateIdentifier(element.getContainingFile(), identifier);
+      Map<String, String> aliases = getNamespaceAliases(element.getContainingFile());
+      identifier = normalizeTemplateIdentifier(aliases, identifier);
     }
 
     Project project = element.getProject();
@@ -95,6 +97,7 @@ public class TemplateNameUtils {
             TemplateDefinitionIndex.INSTANCE
                 .getAllKeys(project)
                 .stream()
+                // Assuming that private templates are those whose name ends with _
                 .filter((key) -> !key.endsWith("_")))
         .filter((key) -> key.startsWith(identifier))
         .map((name) -> getNextFragment(name, identifier))
@@ -105,18 +108,22 @@ public class TemplateNameUtils {
       Map<String, String> aliases, Stream<String> templateNames) {
     return templateNames.flatMap(
         (name) -> {
-          String namespace = getNamespaceFromName(name);
-          return aliases.containsKey(namespace)
-              ? Stream.of(name, name.replace(namespace, aliases.get(namespace)))
-              : Stream.of(name);
+          List<String> variants = new ArrayList<>();
+          variants.add(name);
+          for (Map.Entry<String, String> entry : aliases.entrySet()) {
+            if (name.startsWith(entry.getKey())) {
+              variants.add(name.replace(entry.getKey(), entry.getValue()));
+            }
+          }
+          return variants.stream();
         });
   }
 
-  private static String normalizeTemplateIdentifier(PsiFile file, String templateIdentifier) {
+  private static String normalizeTemplateIdentifier(
+      Map<String, String> aliases, String templateIdentifier) {
     if (templateIdentifier.startsWith(".")) {
       return templateIdentifier;
     } else {
-      Map<String, String> aliases = getNamespaceAliases(file);
       for (String aliasesNamespace : aliases.keySet()) {
         String alias = aliases.get(aliasesNamespace);
         if (templateIdentifier.startsWith(alias)) {
@@ -130,21 +137,20 @@ public class TemplateNameUtils {
   private static Map<String, String> getNamespaceAliases(PsiFile file) {
     Collection<SoyAliasBlock> aliasElements =
         PsiTreeUtil.findChildrenOfType(file, SoyAliasBlock.class);
-
     Map<String, String> aliases = new HashMap<>();
-
     aliasElements.forEach(
         alias -> {
           if (alias.getNamespaceIdentifier() != null) {
             String namespaceIdentifier = alias.getNamespaceIdentifier().getText();
-
+            String aliasIdentifier;
             if (alias.getAliasIdentifier() != null) {
-              aliases.put(namespaceIdentifier, alias.getAliasIdentifier().getText());
+              aliasIdentifier = alias.getAliasIdentifier().getText();
             } else {
               String[] namespaceFragments = namespaceIdentifier.split("\\.");
-              String aliasIdentifier = namespaceFragments[namespaceFragments.length - 1];
-              aliases.put(namespaceIdentifier, aliasIdentifier);
+              aliasIdentifier = namespaceFragments[namespaceFragments.length - 1];
             }
+            // Adding dots to prevent in-token matching.
+            aliases.put(namespaceIdentifier + ".", aliasIdentifier + ".");
           }
         });
     return aliases;
@@ -152,10 +158,5 @@ public class TemplateNameUtils {
 
   private static String getNextFragment(final String name, final String beginning) {
     return beginning + name.substring(beginning.length()).split("\\.")[0];
-  }
-
-  private static String getNamespaceFromName(final String name) {
-    int lastDot = name.lastIndexOf('.');
-    return lastDot == -1 ? "" : name.substring(0, lastDot);
   }
 }
