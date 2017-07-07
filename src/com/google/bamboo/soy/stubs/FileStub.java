@@ -40,6 +40,7 @@ public class FileStub extends PsiFileStubImpl<SoyFile> {
     return TYPE;
   }
 
+  // May only be called when the stub tree is fully constructed.
   public String getNamespace() {
     NamespaceDeclarationStub namespaceDeclaration =
         (NamespaceDeclarationStub) findChildStubByType(NamespaceDeclarationStub.TYPE);

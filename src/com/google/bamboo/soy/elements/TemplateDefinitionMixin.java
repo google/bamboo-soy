@@ -36,7 +36,7 @@ public class TemplateDefinitionMixin extends SoyStubBasedPsiElementBase<Template
     super(stub, type, node);
   }
 
-  @Override
+  @NotNull @Override
   public String getName() {
     return getStub() != null ? getStub().getName() : getText();
   }

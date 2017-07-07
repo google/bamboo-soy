@@ -35,10 +35,12 @@ public class TemplateDefinitionStub extends NamedStubBase<SoyTemplateDefinitionI
     super(parent, TYPE, name);
   }
 
+  // May only be called when the stub tree is fully constructed.
   String getFullyQualifiedName() {
-    return getNamespace() + getName();
+    return getName().startsWith(".") ? getNamespace() + getName() : getName();
   }
 
+  // May only be called when the stub tree is fully constructed.
   String getNamespace() {
     return StubUtils.getContainingStubFile(this).getNamespace();
   }
