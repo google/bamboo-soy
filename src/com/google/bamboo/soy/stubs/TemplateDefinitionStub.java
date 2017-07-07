@@ -58,7 +58,9 @@ public class TemplateDefinitionStub extends NamedStubBase<SoyTemplateDefinitionI
     public TemplateDefinitionStub createStub(
         @NotNull SoyTemplateDefinitionIdentifier psi, StubElement parentStub) {
       String namespace = ((SoyFile) psi.getContainingFile()).getNamespace();
-      return new TemplateDefinitionStub(parentStub, psi.getName(), namespace + psi.getName());
+      String name = psi.getName();
+      return new TemplateDefinitionStub(
+          parentStub, name, name.startsWith(".") ? namespace + name : name);
     }
 
     @NotNull
