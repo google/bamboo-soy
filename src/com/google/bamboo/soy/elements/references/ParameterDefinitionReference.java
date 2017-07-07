@@ -49,11 +49,11 @@ public class ParameterDefinitionReference extends PsiReferenceBase<PsiElement>
       PsiElement templateDefinition =
           TemplateNameUtils.findTemplateDefinition(element, identifier.getText());
 
-      Collection<PsiNamedElement> parameters =
+      Collection<ParamUtils.Variable> parameters =
           ParamUtils.getParametersAndInjectDefinitions(templateDefinition);
-      for (PsiNamedElement param : parameters) {
-        if (param.getName().equals(parameterName)) {
-          return param;
+      for (ParamUtils.Variable parameter : parameters) {
+        if (parameter.name.equals(parameterName)) {
+          return parameter.element;
         }
       }
     }

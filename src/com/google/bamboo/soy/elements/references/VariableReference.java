@@ -42,13 +42,13 @@ public class VariableReference extends PsiReferenceBase<PsiElement> implements P
 
   @NotNull
   private ResolveResult[] multiResolve() {
-    final Collection<PsiNamedElement> definitions =
+    final Collection<ParamUtils.Variable> definitions =
         ParamUtils.getIdentifiersInScope(this.getElement());
 
     List<ResolveResult> results = new ArrayList<>();
-    for (PsiNamedElement definition : definitions) {
-      if (definition.getName().equals(this.identifier)) {
-        results.add(new PsiElementResolveResult(definition));
+    for (ParamUtils.Variable definition : definitions) {
+      if (definition.name.equals(this.identifier)) {
+        results.add(new PsiElementResolveResult(definition.element));
       }
     }
     return results.toArray(new ResolveResult[results.size()]);
@@ -65,7 +65,7 @@ public class VariableReference extends PsiReferenceBase<PsiElement> implements P
   public Object[] getVariants() {
     return ParamUtils.getParamDefinitions(this.getElement())
         .stream()
-        .map(PsiElement::getText)
+        .map(v -> v.name)
         .map(LookupElementBuilder::create)
         .collect(Collectors.toList())
         .toArray();

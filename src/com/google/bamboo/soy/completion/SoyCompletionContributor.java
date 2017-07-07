@@ -87,7 +87,7 @@ public class SoyCompletionContributor extends CompletionContributor {
     extendWithKindKeyword();
     extendWithVariableNamesInScope();
     extendWithTemplateCallIdentifiers();
-    extendWithIdentifierFragementsForAlias();
+    extendWithIdentifierFragmentsForAlias();
     extendWithParameterNames();
     extendWithParameterTypes();
   }
@@ -188,13 +188,12 @@ public class SoyCompletionContributor extends CompletionContributor {
               @NotNull CompletionParameters completionParameters,
               ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
-            Collection<PsiNamedElement> params =
+            Collection<ParamUtils.Variable> params =
                 ParamUtils.getIdentifiersInScope(completionParameters.getPosition());
             completionResultSet.addAllElements(
                 params
                     .stream()
-                    .map(PsiNamedElement::getName)
-                    .map(param -> "$" + param)
+                    .map(param -> "$" + param.name)
                     .map(LookupElementBuilder::create)
                     .collect(Collectors.toList()));
           }
@@ -260,7 +259,7 @@ public class SoyCompletionContributor extends CompletionContributor {
   }
 
   /** Complete fully qualified namespace fragments for alias declaration. */
-  private void extendWithIdentifierFragementsForAlias() {
+  private void extendWithIdentifierFragmentsForAlias() {
     extend(
         CompletionType.BASIC,
         psiElement().andOr(psiElement().inside(SoyAliasBlock.class)),
@@ -322,17 +321,21 @@ public class SoyCompletionContributor extends CompletionContributor {
 
             PsiElement templateDefinition =
                 TemplateNameUtils.findTemplateDefinition(position, identifier.getText());
-            Collection<String> parameters =
+
+            Collection<String> givenParameters = ParamUtils.getGivenParameters(callStatement);
+            Collection<ParamUtils.Variable> parameters =
                 ParamUtils.getParamDefinitions(templateDefinition)
                     .stream()
-                    .map(PsiElement::getText)
+                    .filter(v -> !givenParameters.contains(v.name))
                     .collect(Collectors.toList());
-            Collection<String> givenParameters = ParamUtils.getGivenParameters(callStatement);
-
-            parameters.removeAll(givenParameters);
 
             completionResultSet.addAllElements(
-                parameters.stream().map(LookupElementBuilder::create).collect(Collectors.toList()));
+                parameters
+                    .stream()
+                    .map(
+                        (variable) ->
+                            LookupElementBuilder.create(variable.name).withTypeText(variable.type))
+                    .collect(Collectors.toList()));
           }
         });
   }
