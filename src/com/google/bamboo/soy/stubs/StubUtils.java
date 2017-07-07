@@ -14,16 +14,17 @@
 
 package com.google.bamboo.soy.stubs;
 
-import com.google.common.collect.ImmutableMap;
-import com.intellij.psi.stubs.IStubElementType;
+import com.intellij.psi.stubs.StubElement;
 
-public abstract class StubFactory {
-  private static ImmutableMap<String, IStubElementType> stubTypeByElement =
-      ImmutableMap.of(
-          "TEMPLATE_DEFINITION_IDENTIFIER", TemplateDefinitionStub.TYPE,
-          "NAMESPACE_DECLARATION_IDENTIFIER", NamespaceDeclarationStub.TYPE);
-
-  public static IStubElementType<?, ?> getType(String elementName) {
-    return stubTypeByElement.get(elementName);
+public abstract class StubUtils {
+  public static FileStub getContainingStubFile(StubElement e) {
+    StubElement parent = e.getParentStub();
+    while (parent != null) {
+      if (parent instanceof FileStub) {
+        return (FileStub) parent;
+      }
+      parent = parent.getParentStub();
+    }
+    return null;
   }
 }

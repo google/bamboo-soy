@@ -15,7 +15,7 @@
 package com.google.bamboo.soy.file;
 
 import com.google.bamboo.soy.SoyLanguage;
-import com.google.bamboo.soy.parser.SoyNamespaceIdentifier;
+import com.google.bamboo.soy.parser.SoyNamespaceDeclarationIdentifier;
 import com.google.bamboo.soy.stubs.FileStub;
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;
@@ -50,14 +50,12 @@ public class SoyFile extends PsiFileBase {
     return super.getIcon(flags);
   }
 
-  @NotNull
   public String getNamespace() {
-    try {
-      return PsiTreeUtil.findChildOfType(this, SoyNamespaceIdentifier.class)
-          .getIdentifier()
-          .getText();
-    } catch (NullPointerException e) {
-      return "";
+    if (getStub() != null) {
+      return getStub().getNamespace();
     }
+    SoyNamespaceDeclarationIdentifier namespaceDeclaration =
+        PsiTreeUtil.findChildOfType(this, SoyNamespaceDeclarationIdentifier.class);
+    return namespaceDeclaration == null ? "" : namespaceDeclaration.getName();
   }
 }

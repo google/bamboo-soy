@@ -15,15 +15,12 @@
 package com.google.bamboo.soy.stubs;
 
 import com.google.bamboo.soy.SoyLanguage;
-import com.google.bamboo.soy.file.SoyFile;
 import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
 import com.google.bamboo.soy.parser.impl.SoyTemplateDefinitionIdentifierImpl;
 import com.google.bamboo.soy.stubs.index.TemplateDefinitionIndex;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.stubs.IndexSink;
-import com.intellij.psi.stubs.NamedStub;
 import com.intellij.psi.stubs.NamedStubBase;
-import com.intellij.psi.stubs.StubBase;
 import com.intellij.psi.stubs.StubElement;
 import com.intellij.psi.stubs.StubInputStream;
 import com.intellij.psi.stubs.StubOutputStream;
@@ -33,13 +30,19 @@ import org.jetbrains.annotations.NotNull;
 
 public class TemplateDefinitionStub extends NamedStubBase<SoyTemplateDefinitionIdentifier> {
   static final Type TYPE = new Type();
-  public final String name;
-  public final String fullyQualifiedName;
 
-  TemplateDefinitionStub(StubElement parent, String name, String fullyQualifiedName) {
+  TemplateDefinitionStub(StubElement parent, String name) {
     super(parent, TYPE, name);
-    this.name = name;
-    this.fullyQualifiedName = fullyQualifiedName;
+  }
+
+  // May only be called when the stub tree is fully constructed.
+  String getFullyQualifiedName() {
+    return getName().startsWith(".") ? getNamespace() + getName() : getName();
+  }
+
+  // May only be called when the stub tree is fully constructed.
+  String getNamespace() {
+    return StubUtils.getContainingStubFile(this).getNamespace();
   }
 
   static class Type
@@ -57,10 +60,7 @@ public class TemplateDefinitionStub extends NamedStubBase<SoyTemplateDefinitionI
     @Override
     public TemplateDefinitionStub createStub(
         @NotNull SoyTemplateDefinitionIdentifier psi, StubElement parentStub) {
-      String namespace = ((SoyFile) psi.getContainingFile()).getNamespace();
-      String name = psi.getName();
-      return new TemplateDefinitionStub(
-          parentStub, name, name.startsWith(".") ? namespace + name : name);
+      return new TemplateDefinitionStub(parentStub, psi.getName());
     }
 
     @NotNull
@@ -73,8 +73,7 @@ public class TemplateDefinitionStub extends NamedStubBase<SoyTemplateDefinitionI
     public void serialize(
         @NotNull TemplateDefinitionStub stub, @NotNull StubOutputStream dataStream)
         throws IOException {
-      dataStream.writeName(stub.name);
-      dataStream.writeName(stub.fullyQualifiedName);
+      dataStream.writeName(stub.getName());
     }
 
     @NotNull
@@ -82,13 +81,12 @@ public class TemplateDefinitionStub extends NamedStubBase<SoyTemplateDefinitionI
     public TemplateDefinitionStub deserialize(
         @NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
       final StringRef ref = dataStream.readName();
-      final StringRef ref2 = dataStream.readName();
-      return new TemplateDefinitionStub(parentStub, ref.getString(), ref2.getString());
+      return new TemplateDefinitionStub(parentStub, ref.getString());
     }
 
     @Override
     public void indexStub(@NotNull TemplateDefinitionStub stub, @NotNull IndexSink sink) {
-      sink.occurrence(TemplateDefinitionIndex.KEY, stub.fullyQualifiedName);
+      sink.occurrence(TemplateDefinitionIndex.KEY, stub.getFullyQualifiedName());
     }
   }
 }
