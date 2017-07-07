@@ -48,7 +48,7 @@ public class MissingParametersAnnotator implements Annotator {
       Collection<String> requiredParameter =
           ParamUtils.getParamDefinitions(templateDefinition, true)
               .stream()
-              .map(PsiNamedElement::getName)
+              .map(p -> p.name)
               .collect(Collectors.toList());
 
       if (!givenParameters.containsAll(requiredParameter)) {

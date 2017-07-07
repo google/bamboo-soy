@@ -26,30 +26,42 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ParamUtils {
-  public static Collection<PsiNamedElement> getIdentifiersInScope(PsiElement element) {
-    Collection<PsiNamedElement> identifiers = getLetDefinitions(element);
+  public static class Variable {
+    public final String name;
+    public final String type;
+    public final PsiElement element;
+
+    public Variable(String name, String type, PsiElement element) {
+      this.name = name;
+      this.type = type;
+      this.element = element;
+    }
+  }
+
+  public static Collection<Variable> getIdentifiersInScope(PsiElement element) {
+    Collection<Variable> identifiers = getLetDefinitions(element);
     identifiers.addAll(getParametersAndInjectDefinitions(element));
     return identifiers;
   }
 
-  public static Collection<PsiNamedElement> getParametersAndInjectDefinitions(PsiElement element) {
-    Collection<PsiNamedElement> identifiers = getParamDefinitions(element);
+  public static Collection<Variable> getParametersAndInjectDefinitions(PsiElement element) {
+    Collection<Variable> identifiers = getParamDefinitions(element);
     identifiers.addAll(getInjectDefinitions(element));
     return identifiers;
   }
 
-  public static Collection<PsiNamedElement> getParamDefinitions(PsiElement element) {
+  public static Collection<Variable> getParamDefinitions(PsiElement element) {
     return getParamDefinitions(element, false);
   }
 
-  public static Collection<PsiNamedElement> getParamDefinitions(
+  public static Collection<Variable> getParamDefinitions(
       PsiElement element, boolean excludeOptionalParameters) {
     PsiElement templateBlock = getParentTemplateBlock(element);
 
     if (templateBlock == null) {
       return new ArrayList<>();
     } else {
-      List<PsiNamedElement> params = new ArrayList<>();
+      List<Variable> params = new ArrayList<>();
 
       Collection<SoyAtParamBody> paramDefinitions =
           PsiTreeUtil.findChildrenOfType(templateBlock, SoyAtParamBody.class);
@@ -64,27 +76,33 @@ public class ParamUtils {
 
       for (SoyAtParamBody paramDefinition : paramDefinitions) {
         if (paramDefinition.getParamDefinitionIdentifier() != null) {
-          params.add(paramDefinition.getParamDefinitionIdentifier());
+          params.add(
+              new Variable(
+                  paramDefinition.getParamDefinitionIdentifier().getText(),
+                  paramDefinition.getTypeExpression() == null
+                      ? ""
+                      : paramDefinition.getTypeExpression().getText(),
+                  paramDefinition));
         }
       }
       return params;
     }
   }
 
-  public static Collection<PsiNamedElement> getInjectDefinitions(PsiElement element) {
+  public static Collection<Variable> getInjectDefinitions(PsiElement element) {
     PsiElement templateBlock = getParentTemplateBlock(element);
     return PsiTreeUtil.findChildrenOfType(templateBlock, SoyParamDefinitionIdentifier.class)
         .stream()
-        .map(id -> (PsiNamedElement) id)
+        .map(id -> new Variable(id.getText(), "", id))
         .collect(Collectors.toList());
   }
 
-  public static Collection<PsiNamedElement> getLetDefinitions(PsiElement element) {
+  public static Collection<Variable> getLetDefinitions(PsiElement element) {
     PsiElement templateBlock = getParentTemplateBlock(element);
     return PsiTreeUtil.findChildrenOfType(
             templateBlock, com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier.class)
         .stream()
-        .map(id -> (PsiNamedElement) id)
+        .map(id -> new Variable(id.getText(), "", id))
         .collect(Collectors.toList());
   }
 

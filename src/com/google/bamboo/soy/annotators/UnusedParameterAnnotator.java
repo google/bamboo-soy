@@ -38,7 +38,7 @@ public class UnusedParameterAnnotator implements Annotator {
       // of added documentation even when not technically used directly in the template body.
       if (element.getText().contains("data=")) return;
 
-      Collection<PsiNamedElement> parameterElements = ParamUtils.getParamDefinitions(element);
+      Collection<ParamUtils.Variable> parameters = ParamUtils.getParamDefinitions(element);
 
       Collection<String> usedVariableIdentifiers =
           PsiTreeUtil.findChildrenOfType(element, IdentifierElement.class)
@@ -50,17 +50,17 @@ public class UnusedParameterAnnotator implements Annotator {
               .map(id -> id.substring(1))
               .collect(Collectors.toList());
 
-      for (PsiNamedElement parameterElement : parameterElements) {
+      for (ParamUtils.Variable parameter : parameters) {
         boolean isMatched = false;
         for (String usedIdentifier : usedVariableIdentifiers) {
-          if (usedIdentifier.startsWith(parameterElement.getName())) {
+          if (usedIdentifier.startsWith(parameter.name)) {
             isMatched = true;
             break;
           }
         }
 
         if (!isMatched) {
-          annotationHolder.createErrorAnnotation(parameterElement, "Unused parameter.");
+          annotationHolder.createErrorAnnotation(parameter.element, "Unused parameter.");
         }
       }
     }
