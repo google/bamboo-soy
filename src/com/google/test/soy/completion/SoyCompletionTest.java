@@ -15,6 +15,7 @@
 package com.google.test.soy.completion;
 
 import com.google.bamboo.soy.file.SoyFileType;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.test.soy.SoyCodeInsightFixtureTestCase;
 import com.intellij.codeInsight.completion.CompletionType;
@@ -32,7 +33,8 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
     myFixture.configureByText(SoyFileType.INSTANCE, inputText);
     myFixture.complete(CompletionType.BASIC, 1);
     List<String> actualCompletions = myFixture.getLookupElementStrings();
-    assertSameElements(actualCompletions, expectedCompletions);
+    assertSameElements(
+        actualCompletions == null ? ImmutableList.of() : actualCompletions, expectedCompletions);
   }
 
   protected void doTest(String inputText, String expectedText) throws Throwable {
@@ -65,7 +67,8 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
 
   public void testLookupWithPartialAlias() throws Throwable {
     doTest(
-        "{alias outer as inner}{template}{call i<caret>", "{alias outer as inner}{template}{call inner");
+        "{alias outer as inner}{template}{call i<caret>",
+        "{alias outer as inner}{template}{call inner");
     doTest(
         "{alias outer as inner}{template}{call inner.<caret>",
         ImmutableSet.of("inner.space", "inner.spaceship"));
@@ -80,5 +83,11 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
     doTest(
         "{alias outer.space}{template}{call spaceship.e<caret>",
         "{alias outer.space}{template}{call spaceship.e");
+  }
+
+  public void testVariablesInScope() throws Throwable {
+    doTest(
+        "{template .foo}{@param dimension: number}{@inject force: number}{let $multiplier: 10}{<caret>",
+        ImmutableSet.of("$dimension", "$force", "$multiplier"));
   }
 }

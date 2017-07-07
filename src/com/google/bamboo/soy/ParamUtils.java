@@ -80,7 +80,7 @@ public class ParamUtils {
           PsiElement typeExpression = paramDefinition.getTypeExpression();
           params.add(
               new Variable(
-                  identifier.getText(),
+                  identifier.getName(),
                   typeExpression == null ? "" : typeExpression.getText(),
                   identifier));
         }
@@ -93,7 +93,7 @@ public class ParamUtils {
     PsiElement templateBlock = getParentTemplateBlock(element);
     return PsiTreeUtil.findChildrenOfType(templateBlock, SoyParamDefinitionIdentifier.class)
         .stream()
-        .map(id -> new Variable(id.getText(), "", id))
+        .map(id -> new Variable(id.getName(), "", id))
         .collect(Collectors.toList());
   }
 
@@ -102,7 +102,7 @@ public class ParamUtils {
     return PsiTreeUtil.findChildrenOfType(
             templateBlock, com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier.class)
         .stream()
-        .map(id -> new Variable(id.getText(), "", id))
+        .map(id -> new Variable(id.getName(), "", id))
         .collect(Collectors.toList());
   }
 
