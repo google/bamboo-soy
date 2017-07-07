@@ -29,9 +29,9 @@ public class ParamUtils {
   public static class Variable {
     public final String name;
     public final String type;
-    public final PsiElement element;
+    public final PsiNamedElement element;
 
-    public Variable(String name, String type, PsiElement element) {
+    public Variable(String name, String type, PsiNamedElement element) {
       this.name = name;
       this.type = type;
       this.element = element;
@@ -76,13 +76,13 @@ public class ParamUtils {
 
       for (SoyAtParamBody paramDefinition : paramDefinitions) {
         if (paramDefinition.getParamDefinitionIdentifier() != null) {
+          PsiNamedElement identifier = paramDefinition.getParamDefinitionIdentifier();
+          PsiElement typeExpression = paramDefinition.getTypeExpression();
           params.add(
               new Variable(
-                  paramDefinition.getParamDefinitionIdentifier().getText(),
-                  paramDefinition.getTypeExpression() == null
-                      ? ""
-                      : paramDefinition.getTypeExpression().getText(),
-                  paramDefinition));
+                  identifier.getText(),
+                  typeExpression == null ? "" : typeExpression.getText(),
+                  identifier));
         }
       }
       return params;
