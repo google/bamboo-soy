@@ -24,6 +24,7 @@ import com.google.bamboo.soy.parser.SoyAtInjectBody;
 import com.google.bamboo.soy.parser.SoyAtParamBody;
 import com.google.bamboo.soy.parser.SoyBeginCall;
 import com.google.bamboo.soy.parser.SoyBeginDelCall;
+import com.google.bamboo.soy.parser.SoyBeginLet;
 import com.google.bamboo.soy.parser.SoyBeginParamTag;
 import com.google.bamboo.soy.parser.SoyBeginTemplate;
 import com.google.bamboo.soy.parser.SoyExpression;
@@ -32,6 +33,7 @@ import com.google.bamboo.soy.parser.SoyListType;
 import com.google.bamboo.soy.parser.SoyMapType;
 import com.google.bamboo.soy.parser.SoyParamSpecificationIdentifier;
 import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
+import com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
@@ -124,10 +126,14 @@ public class SoyCompletionContributor extends CompletionContributor {
    */
   // TODO(thso): Add support for same completion in let statements.
   private void extendWithKindKeyword() {
-    // Complete "kind" keyword after param identifier.
+    // Complete "kind" keyword after the identifier for let statements and parameters in template
+    // function calls.
     extend(
         CompletionType.BASIC,
-        psiElement().inside(SoyBeginParamTag.class),
+        psiElement()
+            .andOr(
+                psiElement().inside(SoyBeginParamTag.class),
+                psiElement().inside(SoyBeginLet.class)),
         new CompletionProvider<CompletionParameters>() {
           @Override
           protected void addCompletions(
@@ -137,7 +143,8 @@ public class SoyCompletionContributor extends CompletionContributor {
             PsiElement prevSibling = completionParameters.getPosition().getPrevSibling();
             while (prevSibling != null) {
               if (!(prevSibling instanceof PsiWhiteSpace)) {
-                if (prevSibling instanceof SoyParamSpecificationIdentifier) {
+                if (prevSibling instanceof SoyParamSpecificationIdentifier
+                    || prevSibling instanceof SoyVariableDefinitionIdentifier) {
                   completionResultSet.addElement(
                       LookupElementBuilder.create("kind")
                           .withInsertHandler(new PostfixInsertHandler("=\"", "\"")));
@@ -151,10 +158,14 @@ public class SoyCompletionContributor extends CompletionContributor {
           }
         });
 
-    // Complete supported kind literals for names for {param .. /} in template function calls.
+    // Complete supported kind literals for names for let statements and parameters in template
+    // function calls.
     extend(
         CompletionType.BASIC,
-        psiElement().inside(SoyBeginParamTag.class).afterLeaf("="),
+        psiElement()
+            .andOr(
+                psiElement().inside(SoyBeginParamTag.class).afterLeaf("="),
+                psiElement().inside(SoyBeginLet.class).afterLeaf("=")),
         new CompletionProvider<CompletionParameters>() {
           @Override
           protected void addCompletions(
