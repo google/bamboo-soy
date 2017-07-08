@@ -14,10 +14,10 @@
 
 package com.google.bamboo.soy.structure
 
-import com.google.bamboo.soy.file.SoyFile
-import com.google.bamboo.soy.file.SoyFileType
 import com.google.bamboo.soy.elements.CallStatementBase
 import com.google.bamboo.soy.elements.ParamListElementBase
+import com.google.bamboo.soy.file.SoyFile
+import com.google.bamboo.soy.file.SoyFileType
 import com.google.bamboo.soy.parser.*
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.structureView.impl.common.PsiTreeElementBase

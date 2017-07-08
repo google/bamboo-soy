@@ -14,7 +14,6 @@
 
 package com.google.bamboo.soy.stubs;
 
-import com.google.bamboo.soy.ParamUtils.Variable;
 import com.google.bamboo.soy.SoyLanguage;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.impl.SoyAtParamSingleImpl;
@@ -75,7 +74,8 @@ public class AtParamStub extends NamedStubBase<SoyAtParamSingle> {
         throws IOException {
       final StringRef ref = dataStream.readName();
       final StringRef ref2 = dataStream.readName();
-      return new AtParamStub(parentStub, ref.getString(), ref2.getString(), dataStream.readBoolean());
+      return new AtParamStub(
+          parentStub, ref.getString(), ref2.getString(), dataStream.readBoolean());
     }
 
     @Override

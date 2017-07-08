@@ -16,10 +16,8 @@ package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.ParamUtils.Variable;
 import com.google.bamboo.soy.parser.SoyBeginDelegateTemplate;
-import com.google.bamboo.soy.parser.SoyBeginTemplate;
 import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
 import com.google.bamboo.soy.stubs.TemplateBlockStub;
-import com.google.bamboo.soy.stubs.TemplateDefinitionStub;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.StubBasedPsiElement;
 import java.util.List;

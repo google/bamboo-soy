@@ -32,7 +32,6 @@ import com.google.bamboo.soy.parser.SoyIdentifier;
 import com.google.bamboo.soy.parser.SoyListType;
 import com.google.bamboo.soy.parser.SoyMapType;
 import com.google.bamboo.soy.parser.SoyParamSpecificationIdentifier;
-import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier;
 import com.intellij.codeInsight.completion.CompletionContributor;

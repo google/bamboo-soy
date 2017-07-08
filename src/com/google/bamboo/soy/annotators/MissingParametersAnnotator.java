@@ -15,9 +15,7 @@
 package com.google.bamboo.soy.annotators;
 
 import com.google.bamboo.soy.ParamUtils;
-import com.google.bamboo.soy.TemplateNameUtils;
 import com.google.bamboo.soy.elements.CallStatementBase;
-import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.google.bamboo.soy.parser.SoyTemplateReferenceIdentifier;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;

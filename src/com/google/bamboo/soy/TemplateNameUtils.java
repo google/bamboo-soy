@@ -14,7 +14,6 @@
 
 package com.google.bamboo.soy;
 
-import com.google.bamboo.soy.elements.TemplateDefinitionElement;
 import com.google.bamboo.soy.file.SoyFile;
 import com.google.bamboo.soy.parser.SoyAliasBlock;
 import com.google.bamboo.soy.parser.SoyTemplateBlock;
@@ -37,8 +36,7 @@ public class TemplateNameUtils {
   /* Finds the only SoyTemplateBlock by its exact name. */
   public static SoyTemplateBlock findTemplateDeclaration(
       PsiElement element, String templateIdentifier) {
-    List<SoyTemplateBlock> declarations =
-        findTemplateDeclarations(element, templateIdentifier);
+    List<SoyTemplateBlock> declarations = findTemplateDeclarations(element, templateIdentifier);
     return declarations.size() >= 1 ? declarations.get(0) : null;
   }
 

@@ -17,7 +17,6 @@ package com.google.bamboo.soy.stubs;
 import com.google.bamboo.soy.SoyLanguage;
 import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
 import com.google.bamboo.soy.parser.impl.SoyTemplateDefinitionIdentifierImpl;
-import com.google.bamboo.soy.stubs.index.TemplateBlockIndex;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.stubs.IndexSink;
 import com.intellij.psi.stubs.NamedStubBase;
