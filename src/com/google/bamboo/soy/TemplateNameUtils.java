@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/* A helper class for template and namespace lookups. All operations are only using stub trees. */
 public class TemplateNameUtils {
   /* Finds the only SoyTemplateBlock by its exact name. */
   public static SoyTemplateBlock findTemplateDeclaration(
