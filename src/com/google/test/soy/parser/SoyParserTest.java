@@ -50,6 +50,10 @@ public class SoyParserTest extends ParsingTestCase {
     doTest(true);
   }
 
+  public void testIncompleteTree() throws Throwable {
+    doTest(true);
+  }
+
   public void testIfStatement() throws Throwable {
     doTest(true);
   }
