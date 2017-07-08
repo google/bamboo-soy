@@ -75,7 +75,6 @@ public class TemplateBlockStub extends StubBase<SoyTemplateBlock> {
     @Override
     public void serialize(@NotNull TemplateBlockStub stub, @NotNull StubOutputStream dataStream)
         throws IOException {
-      dataStream.writeName(stub.getName());
       dataStream.writeBoolean(stub.isDelegate);
     }
 

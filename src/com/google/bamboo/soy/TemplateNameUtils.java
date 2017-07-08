@@ -14,10 +14,10 @@
 
 package com.google.bamboo.soy;
 
-import com.google.bamboo.soy.elements.TemplateBlockElement;
 import com.google.bamboo.soy.elements.TemplateDefinitionElement;
 import com.google.bamboo.soy.file.SoyFile;
 import com.google.bamboo.soy.parser.SoyAliasBlock;
+import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.google.bamboo.soy.stubs.index.NamespaceDeclarationIndex;
 import com.google.bamboo.soy.stubs.index.TemplateBlockIndex;
 import com.intellij.openapi.project.Project;
@@ -57,7 +57,7 @@ public class TemplateNameUtils {
     return TemplateBlockIndex.INSTANCE
         .get(identifier, project, GlobalSearchScope.allScope(project))
         .stream()
-        .map(TemplateBlockElement::getDefinitionIdentifier)
+        .map(SoyTemplateBlock::getDefinitionIdentifier)
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }
@@ -74,7 +74,7 @@ public class TemplateNameUtils {
                     .get(
                         key, file.getProject(), GlobalSearchScope.fileScope(file.getOriginalFile()))
                     .stream()
-                    .map(TemplateBlockElement::getName))
+                    .map(SoyTemplateBlock::getName))
         .collect(Collectors.toList());
   }
 
