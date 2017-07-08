@@ -18,7 +18,6 @@ import com.google.bamboo.soy.parser.SoyAtInjectSingle;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.SoyBeginDelegateTemplate;
 import com.google.bamboo.soy.parser.SoyBeginTemplate;
-import com.google.bamboo.soy.parser.SoyDelegateTemplateBlock;
 import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.common.collect.ImmutableList;
@@ -136,8 +135,7 @@ public class SoyDocumentationProvider extends AbstractDocumentationProvider {
         lookupCommentRecursivelyBefore(
             firstParent(
                 firstParent(element, SoyBeginTemplate.class, SoyBeginDelegateTemplate.class),
-                SoyTemplateBlock.class,
-                SoyDelegateTemplateBlock.class));
+                SoyTemplateBlock.class));
     return optCommentBefore != null ? optCommentBefore.getText() : null;
   }
 

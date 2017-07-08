@@ -16,7 +16,8 @@ package com.google.bamboo.soy.format;
 
 import com.google.bamboo.soy.elements.ParamListElementBase;
 import com.google.bamboo.soy.elements.StatementBase;
-import com.google.bamboo.soy.parser.SoyAtParamList;
+import com.google.bamboo.soy.parser.SoyAtInjectSingle;
+import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.SoyCaseClause;
 import com.google.bamboo.soy.parser.SoyDefaultClause;
 import com.google.bamboo.soy.parser.SoyStatementList;
@@ -48,6 +49,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SoyFormattingModelBuilder extends TemplateLanguageFormattingModelBuilder {
+  private static boolean isAlwaysIndented(PsiElement element) {
+    return element instanceof ParamListElementBase
+        || element instanceof SoyAtParamSingle
+        || element instanceof SoyAtInjectSingle
+        || element instanceof SoyDefaultClause
+        || element instanceof SoyCaseClause;
+  }
+
   @Override
   public TemplateLanguageBlock createTemplateLanguageBlock(
       @NotNull ASTNode node,
@@ -261,12 +270,5 @@ public class SoyFormattingModelBuilder extends TemplateLanguageFormattingModelBu
       return myNode.getPsi() instanceof SoyStatementList
           || myNode.getPsi() instanceof StatementBase;
     }
-  }
-
-  private static boolean isAlwaysIndented(PsiElement element) {
-    return element instanceof ParamListElementBase
-        || element instanceof SoyAtParamList
-        || element instanceof SoyDefaultClause
-        || element instanceof SoyCaseClause;
   }
 }

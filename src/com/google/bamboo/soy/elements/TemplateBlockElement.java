@@ -14,11 +14,27 @@
 
 package com.google.bamboo.soy.elements;
 
+import com.google.bamboo.soy.ParamUtils.Variable;
+import com.google.bamboo.soy.parser.SoyBeginDelegateTemplate;
 import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
-import com.intellij.psi.PsiElement;
+import com.google.bamboo.soy.stubs.TemplateBlockStub;
+import com.intellij.psi.PsiNamedElement;
+import com.intellij.psi.StubBasedPsiElement;
+import java.util.List;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface BeginTemplateBase extends PsiElement {
+/** The PSI element that represents the template block definition. */
+public interface TemplateBlockElement
+    extends StubBasedPsiElement<TemplateBlockStub>, PsiNamedElement {
   @Nullable
-  SoyTemplateDefinitionIdentifier getTemplateDefinitionIdentifier();
+  SoyBeginDelegateTemplate getBeginDelegateTemplate();
+
+  @Nullable
+  SoyTemplateDefinitionIdentifier getDefinitionIdentifier();
+
+  boolean isDelegate();
+
+  @NotNull
+  List<Variable> getParameters();
 }

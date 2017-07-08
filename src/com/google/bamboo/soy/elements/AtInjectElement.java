@@ -14,24 +14,19 @@
 
 package com.google.bamboo.soy.elements;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
-import com.intellij.util.IncorrectOperationException;
+import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
+import com.google.bamboo.soy.parser.SoyTypeExpression;
+import com.intellij.psi.PsiNamedElement;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class ParamDefinitionMixin extends ASTWrapperPsiElement implements ParamDefinitionElement {
-  public ParamDefinitionMixin(@NotNull ASTNode node) {
-    super(node);
-  }
+public interface AtInjectElement extends PsiNamedElement {
+  @Nullable
+  SoyParamDefinitionIdentifier getParamDefinitionIdentifier();
 
-  @Override
-  public String getName() {
-    return getText();
-  }
+  @Nullable
+  SoyTypeExpression getTypeExpression();
 
-  @Override
-  public PsiElement setName(@NotNull String s) throws IncorrectOperationException {
-    return null;
-  }
+  @NotNull
+  String getType();
 }

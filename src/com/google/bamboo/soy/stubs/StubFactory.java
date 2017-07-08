@@ -20,8 +20,10 @@ import com.intellij.psi.stubs.IStubElementType;
 public abstract class StubFactory {
   private static ImmutableMap<String, IStubElementType> stubTypeByElement =
       ImmutableMap.of(
+          "TEMPLATE_BLOCK", TemplateBlockStub.TYPE,
           "TEMPLATE_DEFINITION_IDENTIFIER", TemplateDefinitionStub.TYPE,
-          "NAMESPACE_DECLARATION_IDENTIFIER", NamespaceDeclarationStub.TYPE);
+          "NAMESPACE_DECLARATION_IDENTIFIER", NamespaceDeclarationStub.TYPE,
+          "AT_PARAM_SINGLE", AtParamStub.TYPE);
 
   public static IStubElementType<?, ?> getType(String elementName) {
     return stubTypeByElement.get(elementName);

@@ -14,13 +14,11 @@
 
 package com.google.bamboo.soy;
 
-import com.google.bamboo.soy.elements.TemplateDefinitionElement;
 import com.google.bamboo.soy.file.SoyFile;
 import com.google.bamboo.soy.parser.SoyAliasBlock;
-import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
+import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.google.bamboo.soy.stubs.index.NamespaceDeclarationIndex;
-import com.google.bamboo.soy.stubs.index.TemplateDefinitionIndex;
-import com.google.common.collect.ImmutableList;
+import com.google.bamboo.soy.stubs.index.TemplateBlockIndex;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -34,17 +32,17 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/* A helper class for template and namespace lookups. All operations are only using stub trees. */
 public class TemplateNameUtils {
-  /* Finds the only TemplateDefinition by its exact name. */
-  public static TemplateDefinitionElement findTemplateDefinition(
+  /* Finds the only SoyTemplateBlock by its exact name. */
+  public static SoyTemplateBlock findTemplateDeclaration(
       PsiElement element, String templateIdentifier) {
-    List<TemplateDefinitionElement> definitions =
-        findTemplateDefinitions(element, templateIdentifier);
-    return definitions.size() >= 1 ? definitions.get(0) : null;
+    List<SoyTemplateBlock> declarations = findTemplateDeclarations(element, templateIdentifier);
+    return declarations.size() >= 1 ? declarations.get(0) : null;
   }
 
-  /* Finds the matching TemplateDefinition by their exact name. */
-  public static List<TemplateDefinitionElement> findTemplateDefinitions(
+  /* Finds the matching SoyTemplateBlock by their exact name. */
+  public static List<SoyTemplateBlock> findTemplateDeclarations(
       PsiElement element, String identifier) {
     if (identifier.startsWith(".")) {
       identifier = ((SoyFile) element.getContainingFile()).getNamespace() + identifier;
@@ -54,24 +52,26 @@ public class TemplateNameUtils {
     }
 
     Project project = element.getProject();
-    return ImmutableList.copyOf(
-        TemplateDefinitionIndex.INSTANCE.get(
-            identifier, project, GlobalSearchScope.allScope(project)));
+    return TemplateBlockIndex.INSTANCE
+        .get(identifier, project, GlobalSearchScope.allScope(project))
+        .stream()
+        .filter((block) -> block.getDefinitionIdentifier() != null)
+        .collect(Collectors.toList());
   }
 
   /* Finds all template names in the given file. */
   public static List<String> findLocalTemplateNames(PsiElement element) {
     PsiFile file = element.getContainingFile();
-    return TemplateDefinitionIndex.INSTANCE
+    return TemplateBlockIndex.INSTANCE
         .getAllKeys(file.getProject())
         .stream()
         .flatMap(
             (key) ->
-                TemplateDefinitionIndex.INSTANCE
+                TemplateBlockIndex.INSTANCE
                     .get(
                         key, file.getProject(), GlobalSearchScope.fileScope(file.getOriginalFile()))
                     .stream()
-                    .map(SoyTemplateDefinitionIdentifier::getName))
+                    .map(SoyTemplateBlock::getName))
         .collect(Collectors.toList());
   }
 
@@ -94,7 +94,7 @@ public class TemplateNameUtils {
     Map<String, String> aliases = getNamespaceAliases(identifierElement.getContainingFile());
     return denormalizeTemplateNames(
             aliases,
-            TemplateDefinitionIndex.INSTANCE
+            TemplateBlockIndex.INSTANCE
                 .getAllKeys(project)
                 .stream()
                 // Assuming that private templates are those whose name ends with _

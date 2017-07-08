@@ -17,7 +17,6 @@ package com.google.bamboo.soy.stubs;
 import com.google.bamboo.soy.SoyLanguage;
 import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
 import com.google.bamboo.soy.parser.impl.SoyTemplateDefinitionIdentifierImpl;
-import com.google.bamboo.soy.stubs.index.TemplateDefinitionIndex;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.stubs.IndexSink;
 import com.intellij.psi.stubs.NamedStubBase;
@@ -85,8 +84,6 @@ public class TemplateDefinitionStub extends NamedStubBase<SoyTemplateDefinitionI
     }
 
     @Override
-    public void indexStub(@NotNull TemplateDefinitionStub stub, @NotNull IndexSink sink) {
-      sink.occurrence(TemplateDefinitionIndex.KEY, stub.getFullyQualifiedName());
-    }
+    public void indexStub(@NotNull TemplateDefinitionStub stub, @NotNull IndexSink sink) {}
   }
 }

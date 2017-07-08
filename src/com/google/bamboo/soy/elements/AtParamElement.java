@@ -14,7 +14,27 @@
 
 package com.google.bamboo.soy.elements;
 
+import com.google.bamboo.soy.ParamUtils.Variable;
+import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
+import com.google.bamboo.soy.parser.SoyTypeExpression;
+import com.google.bamboo.soy.stubs.AtParamStub;
 import com.intellij.psi.PsiNamedElement;
+import com.intellij.psi.StubBasedPsiElement;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-/** The PSI element that represents the parameter name in an @param statement. */
-public interface ParamDefinitionElement extends PsiNamedElement {}
+public interface AtParamElement extends StubBasedPsiElement<AtParamStub>, PsiNamedElement {
+  @Nullable
+  SoyParamDefinitionIdentifier getParamDefinitionIdentifier();
+
+  @Nullable
+  SoyTypeExpression getTypeExpression();
+
+  @NotNull
+  String getType();
+
+  boolean isOptional();
+
+  @NotNull
+  Variable toVariable();
+}

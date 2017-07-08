@@ -14,36 +14,36 @@
 
 package com.google.bamboo.soy.elements;
 
-import com.google.bamboo.soy.stubs.TemplateDefinitionStub;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.stubs.IStubElementType;
-import com.intellij.psi.tree.IElementType;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 
-public class TemplateDefinitionMixin extends SoyStubBasedPsiElementBase<TemplateDefinitionStub>
-    implements TemplateDefinitionElement {
-  public TemplateDefinitionMixin(TemplateDefinitionStub stub, IStubElementType type) {
-    super(stub, type);
-  }
-
-  public TemplateDefinitionMixin(ASTNode node) {
+public abstract class AtInjectMixin extends ASTWrapperPsiElement implements AtInjectElement {
+  public AtInjectMixin(@NotNull ASTNode node) {
     super(node);
   }
 
-  public TemplateDefinitionMixin(TemplateDefinitionStub stub, IElementType type, ASTNode node) {
-    super(stub, type, node);
-  }
-
-  @NotNull
   @Override
   public String getName() {
-    return getStub() != null ? getStub().getName() : getText();
+    if (getParamDefinitionIdentifier() != null) {
+      return getParamDefinitionIdentifier().getText();
+    }
+    return null;
   }
 
   @Override
   public PsiElement setName(@NotNull String s) throws IncorrectOperationException {
     return null;
+  }
+
+  @NotNull
+  @Override
+  public String getType() {
+    if (getTypeExpression() != null) {
+      return getTypeExpression().getText();
+    }
+    return "";
   }
 }

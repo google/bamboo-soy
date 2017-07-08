@@ -15,15 +15,14 @@
 package com.google.bamboo.soy.annotators;
 
 import com.google.bamboo.soy.ParamUtils;
-import com.google.bamboo.soy.TemplateNameUtils;
 import com.google.bamboo.soy.elements.CallStatementBase;
 import com.google.bamboo.soy.parser.SoyTemplateReferenceIdentifier;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,18 +42,17 @@ public class MissingParametersAnnotator implements Annotator {
 
       if (identifier == null) return;
 
-      PsiElement templateDefinition =
-          TemplateNameUtils.findTemplateDefinition(statement, identifier.getText());
-      Collection<String> requiredParameter =
-          ParamUtils.getParamDefinitions(templateDefinition, true)
+      List<String> requiredParameters =
+          ParamUtils.getParametersForInvocation(statement, identifier.getText())
               .stream()
-              .map(p -> p.name)
+              .filter((var) -> !var.isOptional)
+              .map((var) -> var.name)
               .collect(Collectors.toList());
 
-      if (!givenParameters.containsAll(requiredParameter)) {
-        requiredParameter.removeAll(givenParameters);
+      if (!givenParameters.containsAll(requiredParameters)) {
+        requiredParameters.removeAll(givenParameters);
         annotationHolder.createErrorAnnotation(
-            identifier, "Missing required parameters: " + String.join(",", requiredParameter));
+            identifier, "Missing required parameters: " + String.join(",", requiredParameters));
       }
     }
   }

@@ -14,11 +14,10 @@
 
 package com.google.bamboo.soy.structure
 
-import com.google.bamboo.soy.file.SoyFile
-import com.google.bamboo.soy.file.SoyFileType
 import com.google.bamboo.soy.elements.CallStatementBase
 import com.google.bamboo.soy.elements.ParamListElementBase
-import com.google.bamboo.soy.elements.TemplateBlockBase
+import com.google.bamboo.soy.file.SoyFile
+import com.google.bamboo.soy.file.SoyFileType
 import com.google.bamboo.soy.parser.*
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.structureView.impl.common.PsiTreeElementBase
@@ -36,7 +35,7 @@ fun getTreeElement(psiElement: PsiElement): PsiTreeElementBase<PsiElement> =
       is SoyLetCompoundStatement -> LetCompoundTreeElement(psiElement)
       is SoyLetSingleStatement -> LetSingleTreeElement(psiElement)
       is ParamListElementBase -> ParamTreeElement(psiElement)
-      is TemplateBlockBase -> TemplateTreeElement(psiElement)
+      is SoyTemplateBlock -> TemplateTreeElement(psiElement)
       is SoyFile -> FileTreeElement(psiElement)
       is SoyMsgStatement -> MsgTreeElement(psiElement)
       else -> BaseTreeElement(psiElement)
@@ -50,7 +49,6 @@ fun getTreeElement(psiElement: PsiElement): PsiTreeElementBase<PsiElement> =
 private fun getPresentableName(psiElement: PsiElement): String? =
     when (psiElement) {
       is SoyDirectCallStatement -> "call"
-      is SoyDelegateTemplateBlock -> "deltemplate"
       is SoyDelCallStatement -> "delcall"
       is SoyForStatement -> "for"
       is SoyIfStatement -> "if"
@@ -62,7 +60,7 @@ private fun getPresentableName(psiElement: PsiElement): String? =
       is SoyPluralStatement -> "plural"
       is SoySelectStatement -> "select"
       is SoySwitchStatement -> "switch"
-      is SoyTemplateBlock -> "template"
+      is SoyTemplateBlock -> if (psiElement.isDelegate) "deltemplate" else "template"
       else -> null
     }
 
@@ -163,9 +161,9 @@ private class ParamTreeElement(val psiElement: ParamListElementBase) : BaseTreeE
 /**
  * A TreeElement for the template blocks.
  */
-private class TemplateTreeElement(val psiElement: TemplateBlockBase) : BaseTreeElement(psiElement) {
+private class TemplateTreeElement(val psiElement: SoyTemplateBlock) : BaseTreeElement(psiElement) {
   override fun getPresentableText(): String? =
-      getPresentableName(psiElement) + " ${psiElement.templateName}"
+      getPresentableName(psiElement) + " ${psiElement.name}"
 }
 
 

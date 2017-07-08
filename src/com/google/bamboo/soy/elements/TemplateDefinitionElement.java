@@ -22,5 +22,6 @@ import org.jetbrains.annotations.NotNull;
 /** The PSI element that represents the template name in a template block definition. */
 public interface TemplateDefinitionElement
     extends StubBasedPsiElement<TemplateDefinitionStub>, PsiNamedElement {
-  @NotNull String getName();
+  @NotNull
+  String getName();
 }

@@ -20,8 +20,8 @@ import com.google.bamboo.soy.ParamUtils;
 import com.google.bamboo.soy.TemplateNameUtils;
 import com.google.bamboo.soy.elements.CallStatementBase;
 import com.google.bamboo.soy.parser.SoyAliasBlock;
-import com.google.bamboo.soy.parser.SoyAtInjectBody;
-import com.google.bamboo.soy.parser.SoyAtParamBody;
+import com.google.bamboo.soy.parser.SoyAtInjectSingle;
+import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.SoyBeginCall;
 import com.google.bamboo.soy.parser.SoyBeginDelCall;
 import com.google.bamboo.soy.parser.SoyBeginLet;
@@ -42,7 +42,6 @@ import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
@@ -319,12 +318,9 @@ public class SoyCompletionContributor extends CompletionContributor {
               return;
             }
 
-            PsiElement templateDefinition =
-                TemplateNameUtils.findTemplateDefinition(position, identifier.getText());
-
             Collection<String> givenParameters = ParamUtils.getGivenParameters(callStatement);
-            Collection<ParamUtils.Variable> parameters =
-                ParamUtils.getParamDefinitions(templateDefinition)
+            List<ParamUtils.Variable> parameters =
+                ParamUtils.getParametersForInvocation(position, identifier.getText())
                     .stream()
                     .filter(v -> !givenParameters.contains(v.name))
                     .collect(Collectors.toList());
@@ -347,8 +343,8 @@ public class SoyCompletionContributor extends CompletionContributor {
         CompletionType.BASIC,
         psiElement()
             .andOr(
-                psiElement().inside(SoyAtParamBody.class).afterLeaf(":"),
-                psiElement().inside(SoyAtInjectBody.class).afterLeaf(":"),
+                psiElement().inside(SoyAtParamSingle.class).afterLeaf(":"),
+                psiElement().inside(SoyAtInjectSingle.class).afterLeaf(":"),
 
                 // List type literal.
                 psiElement().inside(SoyListType.class).afterLeaf("<"),
