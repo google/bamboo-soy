@@ -36,7 +36,7 @@ public class TemplateDefinitionReference extends PsiReferenceBase<PsiElement>
   @Override
   public ResolveResult[] multiResolve(boolean incompleteCode) {
     return PsiElementResolveResult.createResults(
-        TemplateNameUtils.findTemplateDefinitions(this.getElement(), templateName));
+        TemplateNameUtils.findTemplateDeclarations(this.getElement(), templateName));
   }
 
   @Override

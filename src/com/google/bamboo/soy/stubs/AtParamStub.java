@@ -14,6 +14,7 @@
 
 package com.google.bamboo.soy.stubs;
 
+import com.google.bamboo.soy.ParamUtils.Variable;
 import com.google.bamboo.soy.SoyLanguage;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.impl.SoyAtParamSingleImpl;
@@ -29,15 +30,13 @@ import org.jetbrains.annotations.NotNull;
 
 public class AtParamStub extends NamedStubBase<SoyAtParamSingle> {
   static final Type TYPE = new Type();
-  final String type;
+  public final String type;
+  public final boolean isOptional;
 
-  AtParamStub(StubElement parent, String name, String type) {
+  AtParamStub(StubElement parent, String name, String type, boolean isOptional) {
     super(parent, TYPE, name);
     this.type = type;
-  }
-
-  public String getType() {
-    return type;
+    this.isOptional = isOptional;
   }
 
   static class Type extends IStubElementType<AtParamStub, SoyAtParamSingle> {
@@ -53,7 +52,7 @@ public class AtParamStub extends NamedStubBase<SoyAtParamSingle> {
     @NotNull
     @Override
     public AtParamStub createStub(@NotNull SoyAtParamSingle psi, StubElement parentStub) {
-      return new AtParamStub(parentStub, psi.getName(), psi.getType());
+      return new AtParamStub(parentStub, psi.getName(), psi.getType(), psi.isOptional());
     }
 
     @NotNull
@@ -66,7 +65,8 @@ public class AtParamStub extends NamedStubBase<SoyAtParamSingle> {
     public void serialize(@NotNull AtParamStub stub, @NotNull StubOutputStream dataStream)
         throws IOException {
       dataStream.writeName(stub.getName());
-      dataStream.writeName(stub.getType());
+      dataStream.writeName(stub.type);
+      dataStream.writeBoolean(stub.isOptional);
     }
 
     @NotNull
@@ -75,7 +75,7 @@ public class AtParamStub extends NamedStubBase<SoyAtParamSingle> {
         throws IOException {
       final StringRef ref = dataStream.readName();
       final StringRef ref2 = dataStream.readName();
-      return new AtParamStub(parentStub, ref.getString(), ref2.getString());
+      return new AtParamStub(parentStub, ref.getString(), ref2.getString(), dataStream.readBoolean());
     }
 
     @Override

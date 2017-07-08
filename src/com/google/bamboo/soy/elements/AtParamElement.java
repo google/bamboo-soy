@@ -14,6 +14,7 @@
 
 package com.google.bamboo.soy.elements;
 
+import com.google.bamboo.soy.ParamUtils.Variable;
 import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyTypeExpression;
 import com.google.bamboo.soy.stubs.AtParamStub;
@@ -36,4 +37,9 @@ public interface AtParamElement extends StubBasedPsiElement<AtParamStub>, PsiNam
 
   @NotNull
   String getType();
+
+  boolean isOptional();
+
+  @NotNull
+  Variable toVariable();
 }

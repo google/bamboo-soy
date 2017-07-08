@@ -30,21 +30,20 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class TemplateNameUtils {
-  /* Finds the only TemplateDefinition by its exact name. */
-  public static TemplateDefinitionElement findTemplateDefinition(
+  /* Finds the only SoyTemplateBlock by its exact name. */
+  public static SoyTemplateBlock findTemplateDeclaration(
       PsiElement element, String templateIdentifier) {
-    List<TemplateDefinitionElement> definitions =
-        findTemplateDefinitions(element, templateIdentifier);
-    return definitions.size() >= 1 ? definitions.get(0) : null;
+    List<SoyTemplateBlock> declarations =
+        findTemplateDeclarations(element, templateIdentifier);
+    return declarations.size() >= 1 ? declarations.get(0) : null;
   }
 
-  /* Finds the matching TemplateDefinition by their exact name. */
-  public static List<TemplateDefinitionElement> findTemplateDefinitions(
+  /* Finds the matching SoyTemplateBlock by their exact name. */
+  public static List<SoyTemplateBlock> findTemplateDeclarations(
       PsiElement element, String identifier) {
     if (identifier.startsWith(".")) {
       identifier = ((SoyFile) element.getContainingFile()).getNamespace() + identifier;
@@ -57,8 +56,7 @@ public class TemplateNameUtils {
     return TemplateBlockIndex.INSTANCE
         .get(identifier, project, GlobalSearchScope.allScope(project))
         .stream()
-        .map(SoyTemplateBlock::getDefinitionIdentifier)
-        .filter(Objects::nonNull)
+        .filter((block) -> block.getDefinitionIdentifier() != null)
         .collect(Collectors.toList());
   }
 

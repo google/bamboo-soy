@@ -14,6 +14,7 @@
 
 package com.google.bamboo.soy.stubs;
 
+import com.google.bamboo.soy.ParamUtils.Variable;
 import com.google.bamboo.soy.SoyLanguage;
 import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.google.bamboo.soy.parser.impl.SoyTemplateBlockImpl;
@@ -25,6 +26,8 @@ import com.intellij.psi.stubs.StubElement;
 import com.intellij.psi.stubs.StubInputStream;
 import com.intellij.psi.stubs.StubOutputStream;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 public class TemplateBlockStub extends StubBase<SoyTemplateBlock> {
@@ -48,6 +51,15 @@ public class TemplateBlockStub extends StubBase<SoyTemplateBlock> {
     TemplateDefinitionStub templateDefinition =
         (TemplateDefinitionStub) findChildStubByType(TemplateDefinitionStub.TYPE);
     return templateDefinition == null ? "" : templateDefinition.getName();
+  }
+
+  // May only be called when the stub tree is fully constructed.
+  public List<Variable> getParameters() {
+    return getChildrenStubs()
+        .stream()
+        .filter((stub) -> stub instanceof AtParamStub)
+        .map((stub) -> ((AtParamStub) stub).getPsi().toVariable())
+        .collect(Collectors.toList());
   }
 
   static class Type extends IStubElementType<TemplateBlockStub, SoyTemplateBlock> {

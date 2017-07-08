@@ -15,16 +15,13 @@
 package com.google.bamboo.soy.elements.references;
 
 import com.google.bamboo.soy.ParamUtils;
-import com.google.bamboo.soy.TemplateNameUtils;
 import com.google.bamboo.soy.elements.CallStatementBase;
 import com.google.bamboo.soy.parser.SoyIdentifier;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.util.PsiTreeUtil;
-import java.util.Collection;
 import org.jetbrains.annotations.NotNull;
 
 public class ParameterDefinitionReference extends PsiReferenceBase<PsiElement>
@@ -46,16 +43,13 @@ public class ParameterDefinitionReference extends PsiReferenceBase<PsiElement>
     if (callBegin != null) {
       PsiElement identifier = PsiTreeUtil.findChildOfType(callBegin, SoyIdentifier.class);
       if (identifier == null) return null;
-      PsiElement templateDefinition =
-          TemplateNameUtils.findTemplateDefinition(element, identifier.getText());
 
-      Collection<ParamUtils.Variable> parameters =
-          ParamUtils.getParametersAndInjectDefinitions(templateDefinition);
-      for (ParamUtils.Variable parameter : parameters) {
-        if (parameter.name.equals(parameterName)) {
-          return parameter.element;
-        }
-      }
+      return ParamUtils.getParametersForInvocation(element, identifier.getText())
+          .stream()
+          .filter((var) -> var.name.equals(parameterName))
+          .findAny()
+          .map((var) -> var.element)
+          .orElse(null);
     }
 
     return null;

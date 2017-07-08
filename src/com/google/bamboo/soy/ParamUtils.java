@@ -16,7 +16,7 @@ package com.google.bamboo.soy;
 
 import com.google.bamboo.soy.elements.CallStatementBase;
 import com.google.bamboo.soy.parser.SoyAtInjectSingle;
-import com.google.bamboo.soy.parser.SoyAtParamSingle;
+import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -38,45 +38,28 @@ public class ParamUtils {
     return identifiers;
   }
 
-  public static Collection<Variable> getParamDefinitions(PsiElement element) {
-    return getParamDefinitions(element, false);
+  public static List<Variable> getParamDefinitions(PsiElement element) {
+    SoyTemplateBlock templateBlock = getParentTemplateBlock(element);
+    return templateBlock != null ? templateBlock.getParameters() : new ArrayList<>();
   }
 
-  public static Collection<Variable> getParamDefinitions(
-      PsiElement element, boolean excludeOptionalParameters) {
-    PsiElement templateBlock = getParentTemplateBlock(element);
+  /* Only uses stub tree. */
+  public static List<Variable> getParametersForInvocation(PsiElement position, String identifier) {
+    SoyTemplateBlock templateBlock =
+        TemplateNameUtils.findTemplateDeclaration(position, identifier);
 
     if (templateBlock == null) {
       return new ArrayList<>();
-    } else {
-      List<Variable> params = new ArrayList<>();
-
-      Collection<SoyAtParamSingle> paramDefinitions =
-          PsiTreeUtil.findChildrenOfType(templateBlock, SoyAtParamSingle.class);
-
-      if (excludeOptionalParameters) {
-        paramDefinitions =
-            paramDefinitions
-                .stream()
-                .filter(definition -> !definition.getText().contains("@param?"))
-                .collect(Collectors.toList());
-      }
-
-      for (SoyAtParamSingle paramDefinition : paramDefinitions) {
-        if (paramDefinition.getName() != null) {
-          params.add(
-              new Variable(paramDefinition.getName(), paramDefinition.getType(), paramDefinition));
-        }
-      }
-      return params;
     }
+
+    return templateBlock.getParameters();
   }
 
   public static Collection<Variable> getInjectDefinitions(PsiElement element) {
     PsiElement templateBlock = getParentTemplateBlock(element);
     return PsiTreeUtil.findChildrenOfType(templateBlock, SoyAtInjectSingle.class)
         .stream()
-        .map(id -> new Variable(id.getName(), "", id))
+        .map(id -> new Variable(id.getName(), "", false, id))
         .collect(Collectors.toList());
   }
 
@@ -85,7 +68,7 @@ public class ParamUtils {
     return PsiTreeUtil.findChildrenOfType(
             templateBlock, com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier.class)
         .stream()
-        .map(id -> new Variable(id.getName(), "", id))
+        .map(id -> new Variable(id.getName(), "", false, id))
         .collect(Collectors.toList());
   }
 
@@ -99,19 +82,23 @@ public class ParamUtils {
         .collect(Collectors.toList());
   }
 
-  private static PsiElement getParentTemplateBlock(PsiElement element) {
-    return PsiTreeUtil.findFirstParent(
-        element, psiElement -> psiElement instanceof com.google.bamboo.soy.parser.SoyTemplateBlock);
+  private static SoyTemplateBlock getParentTemplateBlock(PsiElement element) {
+    return (SoyTemplateBlock)
+        PsiTreeUtil.findFirstParent(
+            element,
+            psiElement -> psiElement instanceof com.google.bamboo.soy.parser.SoyTemplateBlock);
   }
 
   public static class Variable {
     public final String name;
     public final String type;
+    public final boolean isOptional;
     public final PsiNamedElement element;
 
-    public Variable(String name, String type, PsiNamedElement element) {
+    public Variable(String name, String type, boolean isOptional, PsiNamedElement element) {
       this.name = name;
       this.type = type;
+      this.isOptional = isOptional;
       this.element = element;
     }
   }

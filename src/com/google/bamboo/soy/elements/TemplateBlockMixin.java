@@ -14,6 +14,8 @@
 
 package com.google.bamboo.soy.elements;
 
+import com.google.bamboo.soy.ParamUtils.Variable;
+import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
 import com.google.bamboo.soy.stubs.TemplateBlockStub;
 import com.intellij.lang.ASTNode;
@@ -22,6 +24,8 @@ import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,8 +43,12 @@ public abstract class TemplateBlockMixin extends SoyStubBasedPsiElementBase<Temp
     super(stub, type, node);
   }
 
-  @NotNull @Override
+  @NotNull
+  @Override
   public String getName() {
+    if (getStub() != null) {
+      return getStub().getName();
+    }
     SoyTemplateDefinitionIdentifier identifier = getDefinitionIdentifier();
     return identifier == null ? "" : identifier.getName();
   }
@@ -56,7 +64,19 @@ public abstract class TemplateBlockMixin extends SoyStubBasedPsiElementBase<Temp
   }
 
   @Override
-  public boolean isDelegate () {
+  public boolean isDelegate() {
     return getStub() != null ? getStub().isDelegate : getBeginDelegateTemplate() != null;
+  }
+
+  @NotNull
+  @Override
+  public List<Variable> getParameters() {
+    if (getStub() != null) {
+      return getStub().getParameters();
+    }
+    return PsiTreeUtil.findChildrenOfType(this, SoyAtParamSingle.class)
+        .stream()
+        .map(SoyAtParamSingle::toVariable)
+        .collect(Collectors.toList());
   }
 }

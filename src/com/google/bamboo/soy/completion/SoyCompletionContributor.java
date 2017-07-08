@@ -32,6 +32,7 @@ import com.google.bamboo.soy.parser.SoyIdentifier;
 import com.google.bamboo.soy.parser.SoyListType;
 import com.google.bamboo.soy.parser.SoyMapType;
 import com.google.bamboo.soy.parser.SoyParamSpecificationIdentifier;
+import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier;
 import com.intellij.codeInsight.completion.CompletionContributor;
@@ -318,12 +319,9 @@ public class SoyCompletionContributor extends CompletionContributor {
               return;
             }
 
-            PsiElement templateDefinition =
-                TemplateNameUtils.findTemplateDefinition(position, identifier.getText());
-
             Collection<String> givenParameters = ParamUtils.getGivenParameters(callStatement);
-            Collection<ParamUtils.Variable> parameters =
-                ParamUtils.getParamDefinitions(templateDefinition)
+            List<ParamUtils.Variable> parameters =
+                ParamUtils.getParametersForInvocation(position, identifier.getText())
                     .stream()
                     .filter(v -> !givenParameters.contains(v.name))
                     .collect(Collectors.toList());
