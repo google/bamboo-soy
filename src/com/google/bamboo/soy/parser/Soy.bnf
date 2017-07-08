@@ -191,10 +191,7 @@ VariableDefinitionIdentifier ::= Identifier {
 }
 
 ParamDefinitionIdentifier ::= Identifier {
-  mixin="com.google.bamboo.soy.elements.ParamDefinitionMixin"
-  implements="com.google.bamboo.soy.elements.ParamDefinitionElement"
-  methods=[setName getName]
-}
+ }
 
 ParamSpecificationIdentifier ::= Identifier {
   mixin="com.google.bamboo.soy.elements.ParamIdentifierMixin"
@@ -280,7 +277,7 @@ private EndTag ::= EndCallTag | EndDelCallTag | EndDelTemplateTag | EndForeachTa
 
 BlockList ::= (Block | OTHER | COMMENT_BLOCK | HTML_COMMENT)*
 
-private Block ::= NamespaceBlock | AliasBlock | TemplateBlock | DelegatePackageBlock | DelegateTemplateBlock | CatchallBraces
+private Block ::= NamespaceBlock | AliasBlock | TemplateBlock | DelegatePackageBlock | CatchallBraces
 
 CatchallBraces ::= <<BracedTag ()>>
 
@@ -304,38 +301,50 @@ private AliasBody ::= ALIAS NamespaceIdentifier [AS AliasIdentifier] {
 
 // Template block
 
-TemplateBlock ::=
+TemplateBlock ::= LocalTemplateBlock | DelegateTemplateBlock {
+  mixin="com.google.bamboo.soy.elements.TemplateBlockMixin"
+  implements="com.google.bamboo.soy.elements.TemplateBlockElement"
+  stubClass = "com.google.bamboo.soy.stubs.TemplateBlockStub"
+  elementTypeFactory = "com.google.bamboo.soy.stubs.StubFactory.getType"
+}
+
+private LocalTemplateBlock ::=
     BeginTemplate
     [AtParamList]
     [<<StatementList !()>>]
     EndTemplateTag {
   pin = 1
-  implements="com.google.bamboo.soy.elements.TemplateBlockBase"
 }
 
-BeginTemplate ::= <<BracedTag BeginTemplateBody>> {
-  implements="com.google.bamboo.soy.elements.BeginTemplateBase"
-}
+BeginTemplate ::= <<BracedTag BeginTemplateBody>>
 
 private BeginTemplateBody ::= TEMPLATE (TemplateDefinitionIdentifier [AttributeList] | AttributeList) {
   pin = 1
   recoverWhile = "recoverEndOfTag"
 }
 
-AtParamList ::= (AtParamSingle [DocComment]| AtInjectSingle [DocComment])+
+private AtParamList ::= (AtParamSingle [DocComment]| AtInjectSingle [DocComment])+
 
-AtParamSingle ::= <<BracedTag AtParamBody>>
+AtParamSingle ::= <<BracedTag AtParamBody>> {
+  implements = "com.google.bamboo.soy.elements.AtParamElement"
+  mixin = "com.google.bamboo.soy.elements.AtParamMixin"
+  stubClass = "com.google.bamboo.soy.stubs.AtParamStub"
+  elementTypeFactory = "com.google.bamboo.soy.stubs.StubFactory.getType"
+}
 
 DocComment ::= (HORIZONTAL_SPACE | LINE_TERMINATOR)* DOC_COMMENT_BLOCK
 
-AtParamBody ::= (AT_PARAM | AT_PARAM_OPT) ParamDefinitionIdentifier COLON TypeExpression {
+private AtParamBody ::= (AT_PARAM | AT_PARAM_OPT) ParamDefinitionIdentifier COLON TypeExpression {
   pin = 1
   recoverWhile = "recoverEndOfTag"
 }
 
-AtInjectSingle ::= <<BracedTag AtInjectBody>>
+AtInjectSingle ::= <<BracedTag AtInjectBody>> {
+  implements = "com.google.bamboo.soy.elements.AtInjectElement"
+  mixin = "com.google.bamboo.soy.elements.AtInjectMixin"
+}
 
-AtInjectBody ::= (AT_INJECT | AT_INJECT_OPT) ParamDefinitionIdentifier COLON TypeExpression {
+private AtInjectBody ::= (AT_INJECT | AT_INJECT_OPT) ParamDefinitionIdentifier COLON TypeExpression {
   pin = 1
   recoverWhile = "recoverEndOfTag"
 }
@@ -371,18 +380,15 @@ RecordTypeField ::= FieldIdentifier COLON TypeExpression {
 
 // DelTemplate block
 
-DelegateTemplateBlock ::=
+private DelegateTemplateBlock ::=
     BeginDelegateTemplate
     [AtParamList]
     [<<StatementList !()>>]
     EndDelTemplateTag {
   pin = 1
-  implements="com.google.bamboo.soy.elements.DelegateTemplateBlockBase"
 }
 
-BeginDelegateTemplate ::= <<BracedTag BeginDelegateTemplateBody>> {
-  implements="com.google.bamboo.soy.elements.BeginTemplateBase"
-}
+BeginDelegateTemplate ::= <<BracedTag BeginDelegateTemplateBody>>
 
 private BeginDelegateTemplateBody ::= DELTEMPLATE TemplateDefinitionIdentifier [AttributeList] {
   pin = 1

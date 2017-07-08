@@ -123,7 +123,7 @@
     <fileIndentOptionsProvider implementation="com.google.bamboo.soy.format.SoyFileIndentOptionsProvider"/>
 
     <stubIndex implementation="com.google.bamboo.soy.stubs.index.NamespaceDeclarationIndex"/>
-    <stubIndex implementation="com.google.bamboo.soy.stubs.index.TemplateDefinitionIndex"/>
+    <stubIndex implementation="com.google.bamboo.soy.stubs.index.TemplateBlockIndex"/>
 
     <!-- Annotators -->
     <annotator
