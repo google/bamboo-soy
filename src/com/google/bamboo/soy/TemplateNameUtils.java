@@ -90,7 +90,7 @@ public class TemplateNameUtils {
    * aliases and template visibility.
    * */
   public static Collection<String> getTemplateNameIdentifiersFragments(
-      Project project, PsiElement identifierElement, String identifier) {
+      Project project, PsiElement identifierElement, String identifier, boolean isDelegate) {
     Map<String, String> aliases = getNamespaceAliases(identifierElement.getContainingFile());
     return denormalizeTemplateNames(
             aliases,
@@ -98,7 +98,13 @@ public class TemplateNameUtils {
                 .getAllKeys(project)
                 .stream()
                 // Assuming that private templates are those whose name ends with _
-                .filter((key) -> !key.endsWith("_")))
+                .filter((key) -> !key.endsWith("_"))
+                .filter(
+                    (key) ->
+                        TemplateBlockIndex.INSTANCE
+                            .get(key, project, GlobalSearchScope.allScope(project))
+                            .stream()
+                            .anyMatch((block) -> block.isDelegate() == isDelegate)))
         .filter((key) -> key.startsWith(identifier))
         .map((name) -> getNextFragment(name, identifier))
         .collect(Collectors.toList());

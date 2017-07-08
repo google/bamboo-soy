@@ -243,10 +243,18 @@ public class SoyCompletionContributor extends CompletionContributor {
                     completionParameters.getPosition(), SoyIdentifier.class);
             String identifier = identifierElement == null ? "" : identifierElement.getText();
 
+            boolean isDelegate =
+                PsiTreeUtil.getParentOfType(
+                        identifierElement, SoyBeginCall.class, SoyBeginDelCall.class)
+                    instanceof SoyBeginDelCall;
+
             String prefix = identifier.replaceFirst("IntellijIdeaRulezzz", "");
             Collection<String> completions =
                 TemplateNameUtils.getTemplateNameIdentifiersFragments(
-                    completionParameters.getPosition().getProject(), identifierElement, prefix);
+                    completionParameters.getPosition().getProject(),
+                    identifierElement,
+                    prefix,
+                    isDelegate);
 
             completionResultSet.addAllElements(
                 completions
