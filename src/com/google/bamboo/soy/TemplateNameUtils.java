@@ -97,45 +97,60 @@ public class TemplateNameUtils {
     Map<String, String> aliases = getNamespaceAliases(identifierElement.getContainingFile());
     String normalizedIdentifier = normalizeIdentifier(aliases, identifier);
 
-    return TemplateBlockIndex.INSTANCE
-        .getAllKeys(project)
-        .stream()
+    List<Fragment> templateFragments =
+        TemplateBlockIndex.INSTANCE
+            .getAllKeys(project)
+            .stream()
 
-        // Project identifier into normalized key space and find matches.
-        .filter((key) -> key.startsWith(normalizedIdentifier))
+            // Project identifier into normalized key space and find matches.
+            .filter((key) -> key.startsWith(normalizedIdentifier))
 
-        // Filter out private templates, assuming those end with "_".
-        .filter((key) -> !key.endsWith("_"))
+            // Filter out private templates, assuming those end with "_".
+            .filter((key) -> !key.endsWith("_"))
 
-        // Filter out deltemplates or normal templates based on `isDelegate`.
-        .filter(
-            (key) ->
-                TemplateBlockIndex.INSTANCE
-                    .get(key, project, GlobalSearchScope.allScope(project))
-                    .stream()
-                    .anyMatch((block) -> block.isDelegate() == isDelegate))
+            // Filter out deltemplates or normal templates based on `isDelegate`.
+            .filter(
+                (key) ->
+                    TemplateBlockIndex.INSTANCE
+                        .get(key, project, GlobalSearchScope.allScope(project))
+                        .stream()
+                        .anyMatch((block) -> block.isDelegate() == isDelegate))
 
-        // Remove matches that come from same file.
-        .filter(
-            (key) ->
-                isDelegate
-                    || TemplateBlockIndex.INSTANCE
-                        .get(
-                            key,
-                            project,
-                            GlobalSearchScope.fileScope(
-                                identifierElement.getContainingFile().getOriginalFile()))
-                        .isEmpty())
+            // Remove matches that come from same file.
+            .filter(
+                (key) ->
+                    isDelegate
+                        || TemplateBlockIndex.INSTANCE
+                            .get(
+                                key,
+                                project,
+                                GlobalSearchScope.fileScope(
+                                    identifierElement.getContainingFile().getOriginalFile()))
+                            .isEmpty())
 
-        // Project matches into denormalized key space.
-        .map((key) -> denormalizeIdentifier(aliases, key))
+            // Project matches into denormalized key space.
+            .map((key) -> denormalizeIdentifier(aliases, key))
 
-        // Ensure that once denormalized the template identifiers still match.
-        .filter((key) -> key.startsWith(identifier))
+            // Ensure that once denormalized the template identifiers still match.
+            .filter((key) -> key.startsWith(identifier))
 
-        // Collect next fragments.
-        .map((name) -> getNextFragment(name, identifier))
-        .collect(Collectors.toList());
+            // Collect next fragments.
+            .map((key) -> getNextFragment(key, identifier))
+            .collect(Collectors.toList());
+
+    // Add the matching alias fragments.
+    List<Fragment> aliasesFragments =
+        aliases
+            .values()
+            .stream()
+            .map((alias) -> alias + "__end__")
+            .filter((key) -> key.startsWith(identifier))
+            .map((key) -> getNextFragment(key, identifier))
+            .filter((key) -> !key.text.contains("__end__"))
+            .collect(Collectors.toList());
+    templateFragments.addAll(aliasesFragments);
+
+    return templateFragments;
   }
 
   private static String denormalizeIdentifier(Map<String, String> aliases, String identifier) {
@@ -192,8 +207,8 @@ public class TemplateNameUtils {
   }
 
   public static class Fragment {
-    public String text;
-    public boolean isFinalFragment;
+    public final String text;
+    public final boolean isFinalFragment;
 
     Fragment(String text, boolean isFinalFragment) {
       this.text = text;
