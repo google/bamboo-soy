@@ -112,23 +112,23 @@ public class TemplateNameUtils {
 
             // Filter out deltemplates or normal templates based on `isDelegate`.
             .filter(
-                (key) ->
-                    TemplateBlockIndex.INSTANCE
-                        .get(key, project, GlobalSearchScope.allScope(project))
-                        .stream()
-                        .anyMatch((block) -> block.isDelegate() == isDelegate))
+                (key) -> {
+                  GlobalSearchScope scope = GlobalSearchScope.allScope(project);
 
-            // Remove matches that come from same file.
-            .filter(
-                (key) ->
-                    isDelegate
-                        || TemplateBlockIndex.INSTANCE
-                            .get(
-                                key,
-                                project,
+                  if (!isDelegate) {
+                    // Only look for templates declared outside of same file.
+                    scope =
+                        scope.intersectWith(
+                            GlobalSearchScope.notScope(
                                 GlobalSearchScope.fileScope(
-                                    identifierElement.getContainingFile().getOriginalFile()))
-                            .isEmpty())
+                                    identifierElement.getContainingFile().getOriginalFile())));
+                  }
+
+                  return TemplateBlockIndex.INSTANCE
+                      .get(key, project, scope)
+                      .stream()
+                      .anyMatch((block) -> block.isDelegate() == isDelegate);
+                })
 
             // Project matches into denormalized key space.
             .flatMap((key) -> denormalizeIdentifier(aliases, key))
