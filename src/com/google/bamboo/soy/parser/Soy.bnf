@@ -1,5 +1,6 @@
 {
   parserClass="com.google.bamboo.soy.parser.SoyParser"
+  parserUtilClass="com.google.bamboo.soy.parser.SoyParserUtil"
 
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
@@ -267,11 +268,6 @@ EndPluralTag ::= <<BracedTag END_PLURAL>>
 EndSelectTag ::= <<BracedTag END_SELECT>>
 EndSwitchTag ::= <<BracedTag END_SWITCH>>
 EndTemplateTag ::= <<BracedTag END_TEMPLATE>>
-// This little rule is needed to exclude from matching CatchallBraces in statements so that a block
-// or nested statement can actually be closed.
-private EndTag ::= EndCallTag | EndDelCallTag | EndDelTemplateTag | EndForeachTag | EndForTag |
-    EndIfTag | EndLetTag | EndMsgTag | EndParamTag | EndPluralTag | EndSelectTag | EndSwitchTag |
-    EndTemplateTag
 
 // Expanding on soy's hierarchical structure follows.
 
@@ -414,11 +410,13 @@ AttributeKeyValuePair ::= AttributeNameIdentifier EQUAL AnyStringLiteral {
 
 // Statements
 
+external endOfStatementBlock ::= parseEndOfStatementBlock
+
 // Should consume everything until the provided threshold rule or any end tag.
 // Should only expect statements.
 // Should (ideally) mark everything else as an error.
-meta StatementList ::= (Statement | !(EndTag | <<p>>) CatchallBraces)+ {
-  recoverWhile = "!(EndTag | <<p>>)"
+meta StatementList ::= (Statement | !(<<p>> | endOfStatementBlock) CatchallBraces)+ {
+  recoverWhile = "!(<<p>> | endOfStatementBlock)"
 }
 
 // ! It is very important to have the following structure
@@ -603,7 +601,7 @@ ParamListElement
     [ParamListElementBody | EndParamTag] {
   pin = 1
   // Ideally, should be useless and parsed by [ParamListElementBody]
-  recoverWhile = "!(EndTag | BeginParamTag)"
+  recoverWhile = "!(BeginParamTag | endOfStatementBlock)"
   implements = "com.google.bamboo.soy.elements.ParamListElementBase"
 }
 
