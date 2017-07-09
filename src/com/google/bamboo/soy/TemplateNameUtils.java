@@ -24,11 +24,13 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * A helper class for efficient template and namespace lookups.
@@ -129,7 +131,7 @@ public class TemplateNameUtils {
                             .isEmpty())
 
             // Project matches into denormalized key space.
-            .map((key) -> denormalizeIdentifier(aliases, key))
+            .flatMap((key) -> denormalizeIdentifier(aliases, key))
 
             // Ensure that once denormalized the template identifiers still match.
             .filter((key) -> key.startsWith(identifier))
@@ -153,14 +155,18 @@ public class TemplateNameUtils {
     return templateFragments;
   }
 
-  private static String denormalizeIdentifier(Map<String, String> aliases, String identifier) {
+  private static Stream<String> denormalizeIdentifier(
+      Map<String, String> aliases, String identifier) {
+    List<String> identifiers = new ArrayList<>();
+
+    identifiers.add(identifier);
     for (Map.Entry<String, String> entry : aliases.entrySet()) {
       if (identifier.startsWith(entry.getKey())) {
-        return identifier.replace(entry.getKey(), entry.getValue());
+        identifiers.add(identifier.replace(entry.getKey(), entry.getValue()));
       }
     }
 
-    return identifier;
+    return identifiers.stream();
   }
 
   private static String normalizeIdentifier(Map<String, String> aliases, String identifier) {
