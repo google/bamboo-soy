@@ -62,6 +62,7 @@ public class SoyParserUtil extends GeneratedParserUtilBase {
     for (IElementType token : closingTokenToBlock.keySet()) {
       if (consumeToken(builder, token)) {
         block = closingTokenToBlock.get(token);
+        break;
       }
     }
     if (block == null) {
