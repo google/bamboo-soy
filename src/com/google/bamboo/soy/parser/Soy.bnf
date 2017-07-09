@@ -675,10 +675,7 @@ private CaseAndDefaultClauses
     [<<UnexpectedStatements (BeginCaseClause | DefaultTag)>>]
     (CaseClause | DefaultClause)*
 
-CaseClause
-  ::=
-    BeginCaseClause
-    [<<StatementList (BeginCaseClause | DefaultTag)>>] {
+CaseClause ::= BeginCaseClause [<<StatementList (BeginCaseClause | DefaultTag)>>] {
   pin = 1
 }
 
@@ -689,7 +686,7 @@ private BeginCaseClauseTagBody ::= CASE CommaSeparatedExpressionList {
   recoverWhile = "recoverEndOfTag"
 }
 
-DefaultClause ::= DefaultTag [<<StatementList !()>>] {
+DefaultClause ::= DefaultTag [<<StatementList (BeginCaseClause | DefaultTag)>>] {
   pin = 1
 }
 

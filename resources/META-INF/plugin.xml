@@ -133,6 +133,9 @@
         language="ClosureTemplate"
         implementationClass="com.google.bamboo.soy.annotators.UnusedParameterAnnotator"/>
     <annotator
+      language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.annotators.CaseAndDefaultAnnotator"/>
+    <annotator
         language="ClosureTemplate"
         implementationClass="com.google.bamboo.soy.annotators.ClosingBraceSanityAnnotator"/>
     <annotator
