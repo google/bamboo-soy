@@ -16,6 +16,9 @@ package com.google.bamboo.soy.documentation;
 
 import com.google.bamboo.soy.parser.SoyAtInjectSingle;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
+import com.google.bamboo.soy.parser.SoyBeginLet;
+import com.google.bamboo.soy.parser.SoyLetCompoundStatement;
+import com.google.bamboo.soy.parser.SoyLetSingleStatement;
 import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.common.collect.ImmutableList;
@@ -129,7 +132,12 @@ public class SoyDocumentationProvider extends AbstractDocumentationProvider {
     Optional<PsiElement> optComment =
         lookupCommentRecursivelyBefore(
             firstParent(
-                element, SoyTemplateBlock.class, SoyAtParamSingle.class, SoyAtInjectSingle.class));
+                element,
+                SoyTemplateBlock.class,
+                SoyAtParamSingle.class,
+                SoyAtInjectSingle.class,
+                SoyLetSingleStatement.class,
+                SoyBeginLet.class));
     return optComment.map(PsiElement::getText).orElse(null);
   }
 
@@ -137,7 +145,11 @@ public class SoyDocumentationProvider extends AbstractDocumentationProvider {
   private static String getOptionalDocCommentAfter(PsiElement element) {
     Optional<PsiElement> optComment =
         lookupCommentRecursivelyAfter(
-            firstParent(element, SoyAtParamSingle.class, SoyAtInjectSingle.class));
+            firstParent(
+                element,
+                SoyAtParamSingle.class,
+                SoyAtInjectSingle.class,
+                SoyLetCompoundStatement.class));
     return optComment.map(PsiElement::getText).orElse(null);
   }
 
