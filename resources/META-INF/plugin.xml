@@ -140,6 +140,9 @@
         implementationClass="com.google.bamboo.soy.annotators.ClosingBraceSanityAnnotator"/>
     <annotator
         language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.annotators.DeltemplateIdentifierAnnotator"/>
+    <annotator
+        language="ClosureTemplate"
         implementationClass="com.google.bamboo.soy.annotators.UnexpectedStatementsAnnotator"/>
     <annotator
         language="ClosureTemplate"
