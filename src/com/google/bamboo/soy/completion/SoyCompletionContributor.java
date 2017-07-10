@@ -246,8 +246,8 @@ public class SoyCompletionContributor extends CompletionContributor {
                     instanceof SoyBeginDelCall;
 
             String prefix = identifier.replaceFirst("IntellijIdeaRulezzz", "");
-            Collection<String> completions =
-                TemplateNameUtils.getTemplateNameIdentifiersFragments(
+            Collection<TemplateNameUtils.Fragment> completions =
+                TemplateNameUtils.getPossibleNextIdentifierFragments(
                     completionParameters.getPosition().getProject(),
                     identifierElement,
                     prefix,
@@ -256,7 +256,13 @@ public class SoyCompletionContributor extends CompletionContributor {
             completionResultSet.addAllElements(
                 completions
                     .stream()
-                    .map(LookupElementBuilder::create)
+                    .map(
+                        (fragment) ->
+                            LookupElementBuilder.create(fragment.text)
+                                .withTypeText(
+                                    fragment.isFinalFragment
+                                        ? (isDelegate ? "Delegate template" : "Template")
+                                        : "Partial namespace"))
                     .collect(Collectors.toList()));
           }
         });
@@ -279,14 +285,18 @@ public class SoyCompletionContributor extends CompletionContributor {
             String identifier = identifierElement == null ? "" : identifierElement.getText();
 
             String prefix = identifier.replaceFirst("IntellijIdeaRulezzz", "");
-            Collection<String> completions =
+            Collection<TemplateNameUtils.Fragment> completions =
                 TemplateNameUtils.getTemplateNamespaceFragments(
                     completionParameters.getPosition().getProject(), prefix);
 
             completionResultSet.addAllElements(
                 completions
                     .stream()
-                    .map(LookupElementBuilder::create)
+                    .map(
+                        (fragment) ->
+                            LookupElementBuilder.create(fragment.text)
+                                .withTypeText(
+                                    fragment.isFinalFragment ? "Namespace" : "Partial namespace"))
                     .collect(Collectors.toList()));
           }
         });
