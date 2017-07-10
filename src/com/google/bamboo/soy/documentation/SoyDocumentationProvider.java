@@ -16,8 +16,6 @@ package com.google.bamboo.soy.documentation;
 
 import com.google.bamboo.soy.parser.SoyAtInjectSingle;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
-import com.google.bamboo.soy.parser.SoyBeginDelegateTemplate;
-import com.google.bamboo.soy.parser.SoyBeginTemplate;
 import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.common.collect.ImmutableList;
@@ -29,6 +27,7 @@ import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jetbrains.annotations.Contract;
@@ -95,56 +94,51 @@ public class SoyDocumentationProvider extends AbstractDocumentationProvider {
         && ((PsiComment) element).getTokenType().equals(SoyTypes.DOC_COMMENT_BLOCK);
   }
 
-  @Nullable
-  private static PsiComment lookupCommentRecursivelyAfter(PsiElement element) {
+  @NotNull
+  private static Optional<PsiElement> lookupCommentRecursivelyAfter(PsiElement element) {
     while (element != null) {
       PsiElement maybeComment = PsiTreeUtil.skipSiblingsForward(element, PsiWhiteSpace.class);
       if (maybeComment == null) {
         element = element.getParent();
-        continue;
-      }
-      if (isDocComment(maybeComment)) {
-        return (PsiComment) maybeComment;
+      } else if (isDocComment(maybeComment)) {
+        return Optional.of(maybeComment);
       } else {
-        return null;
+        break;
       }
     }
-    return null;
+    return Optional.empty();
   }
 
-  @Nullable
-  private static PsiComment lookupCommentRecursivelyBefore(PsiElement element) {
+  @NotNull
+  private static Optional<PsiElement> lookupCommentRecursivelyBefore(PsiElement element) {
     while (element != null) {
       PsiElement maybeComment = PsiTreeUtil.skipSiblingsBackward(element, PsiWhiteSpace.class);
       if (maybeComment == null) {
         element = element.getParent();
-        continue;
-      }
-      if (isDocComment(maybeComment)) {
-        return (PsiComment) maybeComment;
+      } else if (isDocComment(maybeComment)) {
+        return Optional.of(maybeComment);
       } else {
-        return null;
+        break;
       }
     }
-    return null;
+    return Optional.empty();
   }
 
   @Nullable
   private static String getOptionalDocCommentBefore(PsiElement element) {
-    PsiElement optCommentBefore =
+    Optional<PsiElement> optComment =
         lookupCommentRecursivelyBefore(
             firstParent(
-                firstParent(element, SoyBeginTemplate.class, SoyBeginDelegateTemplate.class),
-                SoyTemplateBlock.class));
-    return optCommentBefore != null ? optCommentBefore.getText() : null;
+                element, SoyTemplateBlock.class, SoyAtParamSingle.class, SoyAtInjectSingle.class));
+    return optComment.map(PsiElement::getText).orElse(null);
   }
 
   @Nullable
   private static String getOptionalDocCommentAfter(PsiElement element) {
-    PsiElement optCommentAfter =
+    Optional<PsiElement> optComment =
         lookupCommentRecursivelyAfter(
             firstParent(element, SoyAtParamSingle.class, SoyAtInjectSingle.class));
-    return optCommentAfter != null ? optCommentAfter.getText() : null;
+    return optComment.map(PsiElement::getText).orElse(null);
   }
 
   @Nullable
