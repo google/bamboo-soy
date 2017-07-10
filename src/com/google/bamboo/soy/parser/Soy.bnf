@@ -192,6 +192,9 @@ VariableDefinitionIdentifier ::= Identifier {
 }
 
 ParamDefinitionIdentifier ::= Identifier {
+  mixin="com.google.bamboo.soy.elements.VariableDefinitionMixin"
+  implements="com.google.bamboo.soy.elements.VariableDefinitionElement"
+  methods=[setName getName]
  }
 
 ParamSpecificationIdentifier ::= Identifier {

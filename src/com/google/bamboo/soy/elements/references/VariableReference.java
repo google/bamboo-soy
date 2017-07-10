@@ -50,6 +50,7 @@ public class VariableReference extends PsiReferenceBase<PsiElement> implements P
         results.add(new PsiElementResolveResult(definition.element));
       }
     }
+
     return results.toArray(new ResolveResult[results.size()]);
   }
 
@@ -57,6 +58,17 @@ public class VariableReference extends PsiReferenceBase<PsiElement> implements P
   public PsiElement resolve() {
     ResolveResult[] resolveResults = multiResolve();
     return resolveResults.length >= 1 ? resolveResults[0].getElement() : null;
+  }
+
+  @Override
+  public boolean isReferenceTo(PsiElement element) {
+    ResolveResult[] results = multiResolve();
+    for (ResolveResult result : results) {
+      if (this.getElement().getManager().areElementsEquivalent(result.getElement(), element)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override

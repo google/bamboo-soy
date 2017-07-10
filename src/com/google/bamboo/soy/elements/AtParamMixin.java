@@ -44,7 +44,7 @@ public abstract class AtParamMixin extends SoyStubBasedPsiElementBase<AtParamStu
       return getStub().getName();
     }
     if (getParamDefinitionIdentifier() != null) {
-      return getParamDefinitionIdentifier().getText();
+      return getParamDefinitionIdentifier().getName();
     }
     return null;
   }
@@ -77,6 +77,6 @@ public abstract class AtParamMixin extends SoyStubBasedPsiElementBase<AtParamStu
   @NotNull
   @Override
   public Variable toVariable() {
-    return new Variable(getName(), getType(), isOptional(), this);
+    return new Variable(getName(), getType(), isOptional(), this.getParamDefinitionIdentifier());
   }
 }

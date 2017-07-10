@@ -37,10 +37,10 @@ public class IdentifierMixin extends ASTWrapperPsiElement implements IdentifierE
   @Override
   public PsiReference getReference() {
     PsiElement element = getNode().getPsi();
-    String identifier = this.getText();
+    String identifier = element.getText();
 
     if (identifier.startsWith("$")) {
-      String fullIdentifier = element.getText().substring(1);
+      String fullIdentifier = identifier.substring(1);
       String[] fragments = fullIdentifier.split("\\.");
 
       return new VariableReference(
