@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -51,8 +52,8 @@ public class TemplateNameUtils {
     if (identifier.startsWith(".")) {
       identifier = ((SoyFile) element.getContainingFile()).getNamespace() + identifier;
     } else {
-      Map<String, String> aliases = getNamespaceAliases(element.getContainingFile());
-      identifier = normalizeIdentifier(aliases, identifier);
+      AliasMapper mapper = new AliasMapper(element.getContainingFile());
+      identifier = mapper.normalizeIdentifier(identifier);
     }
 
     Project project = element.getProject();
@@ -96,115 +97,41 @@ public class TemplateNameUtils {
    * */
   public static Collection<Fragment> getPossibleNextIdentifierFragments(
       Project project, PsiElement identifierElement, String identifier, boolean isDelegate) {
-    Map<String, String> aliases = getNamespaceAliases(identifierElement.getContainingFile());
-    String normalizedIdentifier = normalizeIdentifier(aliases, identifier);
+    AliasMapper mapper = new AliasMapper(identifierElement.getContainingFile());
+    GlobalSearchScope scope =
+        isDelegate
+            ? GlobalSearchScope.allScope(project)
+            : GlobalSearchScope.allScope(project)
+                .intersectWith(
+                    GlobalSearchScope.notScope(
+                        GlobalSearchScope.fileScope(
+                            identifierElement.getContainingFile().getOriginalFile())));
 
-    List<Fragment> templateFragments =
-        TemplateBlockIndex.INSTANCE
-            .getAllKeys(project)
-            .stream()
+    return TemplateBlockIndex.INSTANCE
+        .getAllKeys(project)
+        .stream()
 
-            // Project identifier into normalized key space and find matches.
-            .filter((key) -> key.startsWith(normalizedIdentifier))
+        // Filter out private templates, assuming those end with "_".
+        .filter((key) -> !key.endsWith("_"))
 
-            // Filter out private templates, assuming those end with "_".
-            .filter((key) -> !key.endsWith("_"))
+        // Filter out deltemplates or normal templates based on `isDelegate`.
+        // Also checks template's scope.
+        .filter(
+            (key) ->
+                TemplateBlockIndex.INSTANCE
+                    .get(key, project, scope)
+                    .stream()
+                    .anyMatch((block) -> block.isDelegate() == isDelegate))
 
-            // Filter out deltemplates or normal templates based on `isDelegate`.
-            .filter(
-                (key) -> {
-                  GlobalSearchScope scope = GlobalSearchScope.allScope(project);
+        // Project matches into denormalized key space.
+        .flatMap(mapper::denormalizeIdentifier)
 
-                  if (!isDelegate) {
-                    // Only look for templates declared outside of same file.
-                    scope =
-                        scope.intersectWith(
-                            GlobalSearchScope.notScope(
-                                GlobalSearchScope.fileScope(
-                                    identifierElement.getContainingFile().getOriginalFile())));
-                  }
+        // Find the denormalized keys that match the identifier.
+        .filter((key) -> key.startsWith(identifier))
 
-                  return TemplateBlockIndex.INSTANCE
-                      .get(key, project, scope)
-                      .stream()
-                      .anyMatch((block) -> block.isDelegate() == isDelegate);
-                })
-
-            // Project matches into denormalized key space.
-            .flatMap((key) -> denormalizeIdentifier(aliases, key))
-
-            // Ensure that once denormalized the template identifiers still match.
-            .filter((key) -> key.startsWith(identifier))
-
-            // Collect next fragments.
-            .map((key) -> getNextFragment(key, identifier))
-            .collect(Collectors.toList());
-
-    // Add the matching alias fragments.
-    List<Fragment> aliasesFragments =
-        aliases
-            .values()
-            .stream()
-            .map((alias) -> alias + "__end__")
-            .filter((key) -> key.startsWith(identifier))
-            .map((key) -> getNextFragment(key, identifier))
-            .filter((key) -> !key.text.contains("__end__"))
-            .collect(Collectors.toList());
-    templateFragments.addAll(aliasesFragments);
-
-    return templateFragments;
-  }
-
-  private static Stream<String> denormalizeIdentifier(
-      Map<String, String> aliases, String identifier) {
-    List<String> identifiers = new ArrayList<>();
-
-    identifiers.add(identifier);
-    for (Map.Entry<String, String> entry : aliases.entrySet()) {
-      if (identifier.startsWith(entry.getKey())) {
-        identifiers.add(identifier.replace(entry.getKey(), entry.getValue()));
-      }
-    }
-
-    return identifiers.stream();
-  }
-
-  private static String normalizeIdentifier(Map<String, String> aliases, String identifier) {
-    if (identifier.startsWith(".")) {
-      return identifier;
-    }
-
-    for (String aliasesNamespace : aliases.keySet()) {
-      String alias = aliases.get(aliasesNamespace);
-      if (identifier.startsWith(alias)) {
-        return identifier.replace(alias, aliasesNamespace);
-      }
-    }
-
-    return identifier;
-  }
-
-  private static Map<String, String> getNamespaceAliases(PsiFile file) {
-    Collection<SoyAliasBlock> aliasElements =
-        PsiTreeUtil.findChildrenOfType(file, SoyAliasBlock.class);
-    Map<String, String> aliases = new HashMap<>();
-    aliasElements.forEach(
-        alias -> {
-          if (alias.getNamespaceIdentifier() != null) {
-            String namespaceIdentifier = alias.getNamespaceIdentifier().getText();
-            String aliasIdentifier;
-            if (alias.getAliasIdentifier() != null) {
-              aliasIdentifier = alias.getAliasIdentifier().getText();
-            } else {
-              String[] namespaceFragments = namespaceIdentifier.split("\\.");
-              aliasIdentifier = namespaceFragments[namespaceFragments.length - 1];
-            }
-
-            // Adding dots to prevent in-token matching.
-            aliases.put(namespaceIdentifier + ".", aliasIdentifier + ".");
-          }
-        });
-    return aliases;
+        // Collect next fragments.
+        .map((key) -> getNextFragment(key, identifier))
+        .collect(Collectors.toList());
   }
 
   private static Fragment getNextFragment(final String name, final String beginning) {
@@ -219,6 +146,80 @@ public class TemplateNameUtils {
     Fragment(String text, boolean isFinalFragment) {
       this.text = text;
       this.isFinalFragment = isFinalFragment;
+    }
+  }
+
+  // A class that manages mapping of namespaces with respect to aliases.
+  private static class AliasMapper {
+    private final Map<String, String> namespaceToAlias;
+    private final Pattern namespaceMatcher;
+
+    public AliasMapper(PsiFile file) {
+      namespaceToAlias = getNamespaceAliases(file);
+      namespaceMatcher = getPrefixesRegex(namespaceToAlias.keySet());
+    }
+
+    private static Map<String, String> getNamespaceAliases(PsiFile file) {
+      Collection<SoyAliasBlock> aliasElements =
+          PsiTreeUtil.findChildrenOfType(file, SoyAliasBlock.class);
+      Map<String, String> aliases = new HashMap<>();
+      aliasElements.forEach(
+          alias -> {
+            if (alias.getNamespaceIdentifier() != null) {
+              String namespaceIdentifier = alias.getNamespaceIdentifier().getText();
+              String aliasIdentifier;
+              if (alias.getAliasIdentifier() != null) {
+                aliasIdentifier = alias.getAliasIdentifier().getText();
+              } else {
+                String[] namespaceFragments = namespaceIdentifier.split("\\.");
+                aliasIdentifier = namespaceFragments[namespaceFragments.length - 1];
+              }
+
+              // Adding dots to prevent in-token matching.
+              aliases.put(namespaceIdentifier + ".", aliasIdentifier + ".");
+            }
+          });
+      return aliases;
+    }
+
+    private static Pattern getPrefixesRegex(Collection<String> prefixes) {
+      return Pattern.compile(
+          "^("
+              + prefixes
+                  .stream()
+                  .map((prefix) -> prefix.replace(".", "\\."))
+                  .collect(Collectors.joining("|"))
+              + ")");
+    }
+
+    public String normalizeIdentifier(String identifier) {
+      if (identifier.startsWith(".")) {
+        return identifier;
+      }
+
+      for (String aliasesNamespace : namespaceToAlias.keySet()) {
+        String alias = namespaceToAlias.get(aliasesNamespace);
+        if (identifier.startsWith(alias)) {
+          return identifier.replace(alias, aliasesNamespace);
+        }
+      }
+
+      return identifier;
+    }
+
+    public Stream<String> denormalizeIdentifier(String identifier) {
+      if (!namespaceMatcher.asPredicate().test(identifier)) {
+        return Stream.of(identifier);
+      }
+
+      List<String> identifiers = new ArrayList<>();
+      identifiers.add(identifier);
+      for (Map.Entry<String, String> entry : namespaceToAlias.entrySet()) {
+        if (identifier.startsWith(entry.getKey())) {
+          identifiers.add(identifier.replace(entry.getKey(), entry.getValue()));
+        }
+      }
+      return identifiers.stream();
     }
   }
 }
