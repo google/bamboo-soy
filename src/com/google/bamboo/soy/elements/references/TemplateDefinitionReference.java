@@ -15,12 +15,14 @@
 package com.google.bamboo.soy.elements.references;
 
 import com.google.bamboo.soy.TemplateNameUtils;
+import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementResolveResult;
 import com.intellij.psi.PsiPolyVariantReference;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.ResolveResult;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 public class TemplateDefinitionReference extends PsiReferenceBase<PsiElement>
@@ -36,7 +38,10 @@ public class TemplateDefinitionReference extends PsiReferenceBase<PsiElement>
   @Override
   public ResolveResult[] multiResolve(boolean incompleteCode) {
     return PsiElementResolveResult.createResults(
-        TemplateNameUtils.findTemplateDeclarations(this.getElement(), templateName));
+        TemplateNameUtils.findTemplateDeclarations(this.getElement(), templateName)
+            .stream()
+            .map(SoyTemplateBlock::getDefinitionIdentifier)
+            .collect(Collectors.toList()));
   }
 
   @Override
