@@ -59,7 +59,7 @@ public class TemplateNameUtils {
         .collect(Collectors.toList());
   }
 
-  /* Finds all template names in the given file. */
+  /* Finds all local template names in the given file. */
   public static List<String> findLocalTemplateNames(PsiElement element) {
     PsiFile file = element.getContainingFile();
     return TemplateBlockIndex.INSTANCE
@@ -71,6 +71,7 @@ public class TemplateNameUtils {
                     .get(
                         key, file.getProject(), GlobalSearchScope.fileScope(file.getOriginalFile()))
                     .stream()
+                    .filter((block) -> !block.isDelegate())
                     .map(SoyTemplateBlock::getName))
         .collect(Collectors.toList());
   }
@@ -90,7 +91,7 @@ public class TemplateNameUtils {
    * aliases and template visibility.
    * */
   public static Collection<String> getTemplateNameIdentifiersFragments(
-      Project project, PsiElement identifierElement, String identifier) {
+      Project project, PsiElement identifierElement, String identifier, boolean isDelegate) {
     Map<String, String> aliases = getNamespaceAliases(identifierElement.getContainingFile());
     return denormalizeTemplateNames(
             aliases,
@@ -98,7 +99,13 @@ public class TemplateNameUtils {
                 .getAllKeys(project)
                 .stream()
                 // Assuming that private templates are those whose name ends with _
-                .filter((key) -> !key.endsWith("_")))
+                .filter((key) -> !key.endsWith("_"))
+                .filter(
+                    (key) ->
+                        TemplateBlockIndex.INSTANCE
+                            .get(key, project, GlobalSearchScope.allScope(project))
+                            .stream()
+                            .anyMatch((block) -> block.isDelegate() == isDelegate)))
         .filter((key) -> key.startsWith(identifier))
         .map((name) -> getNextFragment(name, identifier))
         .collect(Collectors.toList());

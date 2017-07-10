@@ -204,13 +204,10 @@ public class SoyCompletionContributor extends CompletionContributor {
    * template call site.
    */
   private void extendWithTemplateCallIdentifiers() {
-    // Complete local template identifiers.
+    // Complete local template identifiers (only for {call})
     extend(
         CompletionType.BASIC,
-        psiElement()
-            .andOr(
-                psiElement().inside(SoyBeginCall.class),
-                psiElement().inside(SoyBeginDelCall.class)),
+        psiElement().inside(SoyBeginCall.class),
         new CompletionProvider<CompletionParameters>() {
           @Override
           protected void addCompletions(
@@ -225,7 +222,7 @@ public class SoyCompletionContributor extends CompletionContributor {
           }
         });
 
-    // Complete fully qualified template identifiers fragments.
+    // Complete fully qualified template identifiers fragments for {call} and {delcall}.
     extend(
         CompletionType.BASIC,
         psiElement()
@@ -243,10 +240,18 @@ public class SoyCompletionContributor extends CompletionContributor {
                     completionParameters.getPosition(), SoyIdentifier.class);
             String identifier = identifierElement == null ? "" : identifierElement.getText();
 
+            boolean isDelegate =
+                PsiTreeUtil.getParentOfType(
+                        identifierElement, SoyBeginCall.class, SoyBeginDelCall.class)
+                    instanceof SoyBeginDelCall;
+
             String prefix = identifier.replaceFirst("IntellijIdeaRulezzz", "");
             Collection<String> completions =
                 TemplateNameUtils.getTemplateNameIdentifiersFragments(
-                    completionParameters.getPosition().getProject(), identifierElement, prefix);
+                    completionParameters.getPosition().getProject(),
+                    identifierElement,
+                    prefix,
+                    isDelegate);
 
             completionResultSet.addAllElements(
                 completions
