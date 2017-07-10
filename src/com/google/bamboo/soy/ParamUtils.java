@@ -16,7 +16,10 @@ package com.google.bamboo.soy;
 
 import com.google.bamboo.soy.elements.CallStatementBase;
 import com.google.bamboo.soy.parser.SoyAtInjectSingle;
+import com.google.bamboo.soy.parser.SoyIdentifier;
+import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyTemplateBlock;
+import com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -59,14 +62,13 @@ public class ParamUtils {
     PsiElement templateBlock = getParentTemplateBlock(element);
     return PsiTreeUtil.findChildrenOfType(templateBlock, SoyAtInjectSingle.class)
         .stream()
-        .map(id -> new Variable(id.getName(), "", false, id))
+        .map(id -> new Variable(id.getName(), "", false, id.getParamDefinitionIdentifier()))
         .collect(Collectors.toList());
   }
 
   public static Collection<Variable> getLetDefinitions(PsiElement element) {
     PsiElement templateBlock = getParentTemplateBlock(element);
-    return PsiTreeUtil.findChildrenOfType(
-            templateBlock, com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier.class)
+    return PsiTreeUtil.findChildrenOfType(templateBlock, SoyVariableDefinitionIdentifier.class)
         .stream()
         .map(id -> new Variable(id.getName(), "", false, id))
         .collect(Collectors.toList());
@@ -96,6 +98,9 @@ public class ParamUtils {
     public final PsiNamedElement element;
 
     public Variable(String name, String type, boolean isOptional, PsiNamedElement element) {
+      assert element instanceof SoyParamDefinitionIdentifier
+          || element instanceof SoyVariableDefinitionIdentifier;
+
       this.name = name;
       this.type = type;
       this.isOptional = isOptional;

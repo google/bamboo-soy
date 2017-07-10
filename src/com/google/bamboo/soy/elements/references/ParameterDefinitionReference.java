@@ -18,6 +18,7 @@ import com.google.bamboo.soy.ParamUtils;
 import com.google.bamboo.soy.elements.CallStatementBase;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.SoyIdentifier;
+import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
@@ -49,7 +50,7 @@ public class ParameterDefinitionReference extends PsiReferenceBase<PsiElement>
           .stream()
           .filter((var) -> var.name.equals(parameterName))
           .findAny()
-          .map((var) -> ((SoyAtParamSingle)var.element).getParamDefinitionIdentifier())
+          .map((var) -> var.element)
           .orElse(null);
     }
 

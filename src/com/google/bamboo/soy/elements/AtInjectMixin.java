@@ -28,7 +28,7 @@ public abstract class AtInjectMixin extends ASTWrapperPsiElement implements AtIn
   @Override
   public String getName() {
     if (getParamDefinitionIdentifier() != null) {
-      return getParamDefinitionIdentifier().getText();
+      return getParamDefinitionIdentifier().getName();
     }
     return null;
   }
