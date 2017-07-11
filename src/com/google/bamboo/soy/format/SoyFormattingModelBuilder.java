@@ -35,8 +35,10 @@ import com.intellij.formatting.templateLanguages.TemplateLanguageBlockFactory;
 import com.intellij.formatting.templateLanguages.TemplateLanguageFormattingModelBuilder;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.formatter.DocumentBasedFormattingModel;
 import com.intellij.psi.formatter.FormattingDocumentModelImpl;
@@ -55,7 +57,19 @@ public class SoyFormattingModelBuilder extends TemplateLanguageFormattingModelBu
         || element instanceof SoyAtParamSingle
         || element instanceof SoyAtInjectSingle
         || element instanceof SoyDefaultClause
-        || element instanceof SoyCaseClause;
+        || element instanceof SoyCaseClause
+        || isAtParamOrInjectDoc(element);
+  }
+
+  private static boolean isAtParamOrInjectDoc(PsiElement element) {
+    if (!(element instanceof PsiComment)) {
+      return false;
+    }
+    PsiElement sibling = element.getNextSibling();
+    while (sibling instanceof PsiWhiteSpace) {
+      sibling = sibling.getNextSibling();
+    }
+    return sibling instanceof SoyAtParamSingle || sibling instanceof SoyAtInjectSingle;
   }
 
   @Override
@@ -240,8 +254,7 @@ public class SoyFormattingModelBuilder extends TemplateLanguageFormattingModelBu
     public ChildAttributes getChildAttributes(int newChildIndex) {
       if (isNewChildIndented()) {
         return new ChildAttributes(Indent.getNormalIndent(), null);
-      }
-      else {
+      } else {
         return new ChildAttributes(Indent.getNoneIndent(), null);
       }
     }
