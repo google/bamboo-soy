@@ -189,13 +189,18 @@ public class TemplateNameUtils {
     }
 
     private static Pattern getPrefixesRegex(Collection<String> prefixes) {
-      return Pattern.compile(
-          "^("
-              + prefixes
-                  .stream()
-                  .map((prefix) -> prefix.replace(".", "\\."))
-                  .collect(Collectors.joining("|"))
-              + ")");
+      if (prefixes.isEmpty()) {
+        // Regex that matches nothing and fails early.
+        return Pattern.compile("a^");
+      } else {
+        return Pattern.compile(
+            "^("
+                + prefixes
+                    .stream()
+                    .map((prefix) -> prefix.replace(".", "\\."))
+                    .collect(Collectors.joining("|"))
+                + ")");
+      }
     }
 
     public String normalizeIdentifier(String identifier) {
