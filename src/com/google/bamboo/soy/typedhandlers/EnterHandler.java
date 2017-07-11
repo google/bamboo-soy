@@ -143,6 +143,15 @@ public class EnterHandler extends EnterHandlerDelegateAdapter {
           .putAll(SoyTypes.END_TEMPLATE_TAG, SoyTypes.BEGIN_TEMPLATE)
           .build();
 
+  /**
+   * Method deciding whether the following transformation is applicable:
+   * from
+   * {left}<caret>{right}
+   * to
+   * {left}
+   *   <caret>
+   * {right}
+   */
   private static boolean isBetweenBlockDefiningTags(PsiFile psiFile, int caretOffset) {
     PsiElement nextElement = psiFile.findElementAt(caretOffset);
     if (nextElement == null
