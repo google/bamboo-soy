@@ -19,7 +19,6 @@ import com.google.bamboo.soy.parser.SoyAliasBlock;
 import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.google.bamboo.soy.stubs.index.NamespaceDeclarationIndex;
 import com.google.bamboo.soy.stubs.index.TemplateBlockIndex;
-import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
