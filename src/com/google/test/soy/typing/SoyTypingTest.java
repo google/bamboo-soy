@@ -52,6 +52,14 @@ public class SoyTypingTest extends SoyCodeInsightFixtureTestCase {
     doTest('\n');
   }
 
+  public void testBeforeDocComment() throws Throwable {
+    doTest('\n');
+  }
+
+  public void testEndDocComment() throws Throwable {
+    doTest('\n');
+  }
+
   public void testTemplateBeginTag() throws Throwable {
     doTest('\n');
   }
