@@ -46,6 +46,8 @@ public class VariableReference extends PsiReferenceBase<PsiElement> implements P
 
     List<ResolveResult> results = new ArrayList<>();
     for (ParamUtils.Variable definition : definitions) {
+      System.out.println(definition.name + " == " + this.identifier);
+
       if (definition.name.equals(this.identifier)) {
         results.add(new PsiElementResolveResult(definition.element));
       }
@@ -65,6 +67,7 @@ public class VariableReference extends PsiReferenceBase<PsiElement> implements P
     ResolveResult[] results = multiResolve();
     for (ResolveResult result : results) {
       if (this.getElement().getManager().areElementsEquivalent(result.getElement(), element)) {
+        System.out.println("Reference to " + element.getText());
         return true;
       }
     }
