@@ -48,7 +48,15 @@ public class SoyTypingTest extends SoyCodeInsightFixtureTestCase {
     myFixture.checkResult(textAfter);
   }
 
-  public void testDocComment() throws Throwable {
+  public void testInDocComment() throws Throwable {
+    doTest('\n');
+  }
+
+  public void testBeforeDocComment() throws Throwable {
+    doTest('\n');
+  }
+
+  public void testEndDocComment() throws Throwable {
     doTest('\n');
   }
 

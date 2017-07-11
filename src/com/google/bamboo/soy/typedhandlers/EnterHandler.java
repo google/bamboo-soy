@@ -68,12 +68,12 @@ public class EnterHandler extends EnterHandlerDelegateAdapter {
     Document document = editor.getDocument();
 
     int lineNumber = document.getLineNumber(caretOffset) - 1;
-    int lineOffset = document.getLineStartOffset(lineNumber);
-    String line = document.getText(new TextRange(lineOffset, caretOffset));
+    int lineStartOffset = document.getLineStartOffset(lineNumber);
+    String lineTextBeforeCaret = document.getText(new TextRange(lineStartOffset, caretOffset));
 
-    if (element instanceof PsiComment) {
+    if (element instanceof PsiComment && element.getTextOffset() < caretOffset) {
       handleEnterInComment(element, file, editor);
-    } else if (line.startsWith("/*")) {
+    } else if (lineTextBeforeCaret.startsWith("/*")) {
       insertText(file, editor, " * \n ", 3);
     }
 
@@ -83,12 +83,20 @@ public class EnterHandler extends EnterHandlerDelegateAdapter {
   private static void handleEnterInComment(
       PsiElement element, @NotNull PsiFile file, @NotNull Editor editor) {
     if (element.getText().startsWith("/*")) {
-      int offset = editor.getCaretModel().getOffset();
-      int lineNumber = editor.getDocument().getLineNumber(offset);
-      int lineStartOffset = editor.getDocument().getLineStartOffset(lineNumber);
+      Document document = editor.getDocument();
+
+      int caretOffset = editor.getCaretModel().getOffset();
+      int lineNumber = document.getLineNumber(caretOffset);
 
       String lineTextBeforeCaret =
-          editor.getDocument().getText(new TextRange(lineStartOffset, offset));
+          document.getText(new TextRange(document.getLineStartOffset(lineNumber), caretOffset));
+      String lineTextAfterCaret =
+          document.getText(new TextRange(caretOffset, document.getLineEndOffset(lineNumber)));
+
+      if (lineTextAfterCaret.equals("*/")) {
+        return;
+      }
+
       String toInsert = lineTextBeforeCaret.equals("") ? " * " : "* ";
       insertText(file, editor, toInsert, toInsert.length());
     }
@@ -144,13 +152,19 @@ public class EnterHandler extends EnterHandlerDelegateAdapter {
           .build();
 
   /**
-   * Method deciding whether the following transformation is applicable:
-   * from
-   * {left}<caret>{right}
+   * Method deciding whether the following transformation is applicable: from
+   *
+   * <pre><code>
+   *   {left}<caret>{right}
+   * </code></pre>
+   *
    * to
-   * {left}
-   *   <caret>
-   * {right}
+   *
+   * <pre<code>
+   *   {left}
+   *     <caret>
+   *   {right}
+   * </code></pre>
    */
   private static boolean isBetweenBlockDefiningTags(PsiFile psiFile, int caretOffset) {
     PsiElement nextElement = psiFile.findElementAt(caretOffset);
