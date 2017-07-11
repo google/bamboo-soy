@@ -19,6 +19,7 @@ import com.google.bamboo.soy.parser.SoyAliasBlock;
 import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.google.bamboo.soy.stubs.index.NamespaceDeclarationIndex;
 import com.google.bamboo.soy.stubs.index.TemplateBlockIndex;
+import com.google.common.collect.HashBiMap;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -29,6 +30,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -152,11 +154,15 @@ public class TemplateNameUtils {
   // A class that manages mapping of namespaces with respect to aliases.
   private static class AliasMapper {
     private final Map<String, String> namespaceToAlias;
+    private final Map<String, String> aliasToNamespace;
     private final Pattern namespaceMatcher;
+    private final Pattern aliasMatcher;
 
     public AliasMapper(PsiFile file) {
       namespaceToAlias = getNamespaceAliases(file);
+      aliasToNamespace = HashBiMap.create(namespaceToAlias).inverse();
       namespaceMatcher = getPrefixesRegex(namespaceToAlias.keySet());
+      aliasMatcher = getPrefixesRegex(aliasToNamespace.keySet());
     }
 
     private static Map<String, String> getNamespaceAliases(PsiFile file) {
@@ -197,11 +203,10 @@ public class TemplateNameUtils {
         return identifier;
       }
 
-      for (String aliasesNamespace : namespaceToAlias.keySet()) {
-        String alias = namespaceToAlias.get(aliasesNamespace);
-        if (identifier.startsWith(alias)) {
-          return identifier.replace(alias, aliasesNamespace);
-        }
+      Matcher matcher = aliasMatcher.matcher(identifier);
+      if (matcher.find()) {
+        String alias = matcher.group();
+        return identifier.replace(alias, aliasToNamespace.get(alias));
       }
 
       return identifier;
