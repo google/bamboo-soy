@@ -15,7 +15,7 @@
 package com.google.bamboo.soy.parser;
 
 import com.google.bamboo.soy.file.SoyFile;
-import com.google.bamboo.soy.lexer.SoyMergingLexer;
+import com.google.bamboo.soy.lexer.SoyLexer;
 import com.google.bamboo.soy.stubs.FileStub;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ParserDefinition;
@@ -42,7 +42,7 @@ public class SoyParserDefinition implements ParserDefinition {
   @NotNull
   @Override
   public Lexer createLexer(Project project) {
-    return new SoyMergingLexer();
+    return new SoyLexer();
   }
 
   @NotNull

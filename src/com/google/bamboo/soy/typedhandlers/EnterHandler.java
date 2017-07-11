@@ -14,24 +14,11 @@
 
 package com.google.bamboo.soy.typedhandlers;
 
-import static com.intellij.patterns.PlatformPatterns.psiElement;
-
-import com.google.bamboo.soy.SoyLanguage;
+import com.google.bamboo.soy.file.SoyFile;
 import com.google.bamboo.soy.file.SoyFileType;
-import com.google.bamboo.soy.parser.SoyBeginCall;
-import com.google.bamboo.soy.parser.SoyBeginCaseClause;
-import com.google.bamboo.soy.parser.SoyBeginDelCall;
-import com.google.bamboo.soy.parser.SoyBeginDelegateTemplate;
-import com.google.bamboo.soy.parser.SoyBeginElseIf;
-import com.google.bamboo.soy.parser.SoyBeginFor;
-import com.google.bamboo.soy.parser.SoyBeginForeach;
-import com.google.bamboo.soy.parser.SoyBeginIf;
-import com.google.bamboo.soy.parser.SoyBeginLet;
-import com.google.bamboo.soy.parser.SoyBeginMsg;
-import com.google.bamboo.soy.parser.SoyBeginParamTag;
-import com.google.bamboo.soy.parser.SoyBeginSwitch;
-import com.google.bamboo.soy.parser.SoyBeginTemplate;
-import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate;
+import com.google.bamboo.soy.parser.SoyTypes;
+import com.google.common.collect.ImmutableMultimap;
+import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegateAdapter;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -39,15 +26,11 @@ import com.intellij.openapi.editor.EditorModificationUtil;
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler;
 import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.patterns.PsiElementPattern;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiWhiteSpace;
-import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
-import java.util.Collection;
-import java.util.Collections;
+import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,15 +42,19 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>If pressed right after an opening tag this handler will indent the cursor on the next line.
  */
-public class EnterHandler implements EnterHandlerDelegate {
+public class EnterHandler extends EnterHandlerDelegateAdapter {
   @Override
   public Result preprocessEnter(
       @NotNull PsiFile psiFile,
       @NotNull Editor editor,
-      @NotNull Ref<Integer> ref,
-      @NotNull Ref<Integer> ref1,
+      @NotNull Ref<Integer> caretOffset,
+      @NotNull Ref<Integer> caretOffsetChange,
       @NotNull DataContext dataContext,
-      @Nullable EditorActionHandler editorActionHandler) {
+      @Nullable EditorActionHandler originalHandler) {
+    if (psiFile instanceof SoyFile && isBetweenBlockDefiningTags(psiFile, caretOffset.get())) {
+      originalHandler.execute(editor, dataContext);
+      return Result.Default;
+    }
     return Result.Continue;
   }
 
@@ -87,45 +74,13 @@ public class EnterHandler implements EnterHandlerDelegate {
     if (element instanceof PsiComment) {
       handleEnterInComment(element, file, editor);
     } else if (line.startsWith("/*")) {
-      insertText(file, editor, " * \n */", 3);
-    } else if (element != null) {
-      // Add indentation if pressed enter after an open tag.
-      PsiElement previousElement = getPreviousElement(element);
-
-      while (previousElement instanceof PsiWhiteSpace) {
-        previousElement = getPreviousElement(previousElement);
-      }
-
-      if (previousElement == null) return Result.Continue;
-
-      int caretLineNumber = editor.getDocument().getLineNumber(caretOffset);
-
-      // PsiElement.getTextOffset() returns -1 if the caret is at the start of the document so we
-      // need to handle to special case it here.
-      int tagLineNumber =
-          previousElement.getTextOffset() > 0
-              ? editor.getDocument().getLineNumber(previousElement.getTextOffset())
-              : 0;
-      boolean isAfterOpenTag =
-          openTagMatcher.accepts(previousElement) && (caretLineNumber - tagLineNumber <= 1);
-
-      if (isAfterOpenTag) {
-        CommonCodeStyleSettings defaultSettings = new CommonCodeStyleSettings(SoyLanguage.INSTANCE);
-        CommonCodeStyleSettings.IndentOptions indentOptions = defaultSettings.initIndentOptions();
-
-        String indentChar = indentOptions.USE_TAB_CHARACTER ? "\t" : " ";
-        int indentSize = 2; // TODO(thso): Get this from settings.
-        int numChar = indentSize / (indentOptions.USE_TAB_CHARACTER ? 2 : 1);
-        Collection<String> spaces = Collections.nCopies(numChar, indentChar);
-
-        insertText(file, editor, String.join("", spaces), numChar);
-      }
+      insertText(file, editor, " * \n ", 3);
     }
 
     return Result.Continue;
   }
 
-  private void handleEnterInComment(
+  private static void handleEnterInComment(
       PsiElement element, @NotNull PsiFile file, @NotNull Editor editor) {
     if (element.getText().startsWith("/*")) {
       int offset = editor.getCaretModel().getOffset();
@@ -139,34 +94,77 @@ public class EnterHandler implements EnterHandlerDelegate {
     }
   }
 
-  private void insertText(PsiFile file, Editor editor, String text, int numChar) {
+  private static void insertText(PsiFile file, Editor editor, String text, int numChar) {
     EditorModificationUtil.insertStringAtCaret(editor, text, false, numChar);
     PsiDocumentManager.getInstance(file.getProject()).commitDocument(editor.getDocument());
   }
 
-  private PsiElement getPreviousElement(PsiElement element) {
-    while (element.getPrevSibling() == null) {
-      element = element.getParent();
-      if (element == null) return null;
+  private static final ImmutableMultimap<IElementType, IElementType> rightTagToLeftTag =
+      ImmutableMultimap.<IElementType, IElementType>builder()
+          .put(SoyTypes.END_CALL_TAG, SoyTypes.BEGIN_CALL)
+          .put(SoyTypes.END_DEL_CALL_TAG, SoyTypes.BEGIN_DEL_CALL)
+          .put(SoyTypes.END_DEL_TEMPLATE_TAG, SoyTypes.BEGIN_DELEGATE_TEMPLATE)
+          .put(SoyTypes.END_FOR_TAG, SoyTypes.BEGIN_FOR)
+          .putAll(SoyTypes.END_FOREACH_TAG, SoyTypes.BEGIN_FOREACH, SoyTypes.IF_EMPTY_TAG)
+          .putAll(SoyTypes.IF_EMPTY_TAG, SoyTypes.BEGIN_FOREACH)
+          .putAll(SoyTypes.END_IF_TAG, SoyTypes.BEGIN_IF, SoyTypes.BEGIN_ELSE_IF, SoyTypes.ELSE_TAG)
+          .putAll(SoyTypes.ELSE_TAG, SoyTypes.BEGIN_IF, SoyTypes.BEGIN_ELSE_IF)
+          .putAll(SoyTypes.BEGIN_ELSE_IF, SoyTypes.BEGIN_IF)
+          .putAll(SoyTypes.END_LET_TAG, SoyTypes.BEGIN_LET)
+          .putAll(SoyTypes.END_MSG_TAG, SoyTypes.BEGIN_MSG)
+          .putAll(SoyTypes.END_PARAM_TAG, SoyTypes.BEGIN_PARAM_TAG)
+          .putAll(
+              SoyTypes.END_PLURAL_TAG,
+              SoyTypes.BEGIN_PLURAL,
+              SoyTypes.CASE_CLAUSE,
+              SoyTypes.DEFAULT_CLAUSE)
+          .putAll(
+              SoyTypes.END_SELECT_TAG,
+              SoyTypes.BEGIN_SELECT_STATEMENT,
+              SoyTypes.CASE_CLAUSE,
+              SoyTypes.DEFAULT_CLAUSE)
+          .putAll(
+              SoyTypes.END_SWITCH_TAG,
+              SoyTypes.BEGIN_SWITCH,
+              SoyTypes.CASE_CLAUSE,
+              SoyTypes.DEFAULT_CLAUSE)
+          .putAll(
+              SoyTypes.DEFAULT_CLAUSE,
+              SoyTypes.BEGIN_PLURAL,
+              SoyTypes.BEGIN_SWITCH,
+              SoyTypes.BEGIN_SELECT_STATEMENT,
+              SoyTypes.CASE_CLAUSE)
+          .putAll(
+              SoyTypes.CASE_CLAUSE,
+              SoyTypes.BEGIN_PLURAL,
+              SoyTypes.BEGIN_SWITCH,
+              SoyTypes.BEGIN_SELECT_STATEMENT,
+              SoyTypes.CASE_CLAUSE)
+          .putAll(SoyTypes.END_TEMPLATE_TAG, SoyTypes.BEGIN_TEMPLATE)
+          .build();
+
+  /**
+   * Method deciding whether the following transformation is applicable:
+   * from
+   * {left}<caret>{right}
+   * to
+   * {left}
+   *   <caret>
+   * {right}
+   */
+  private static boolean isBetweenBlockDefiningTags(PsiFile psiFile, int caretOffset) {
+    PsiElement nextElement = psiFile.findElementAt(caretOffset);
+    if (nextElement == null
+        || !nextElement.getText().equals("{") && !nextElement.getText().equals("{{")) {
+      return false;
     }
-
-    return element.getPrevSibling();
+    PsiElement nextTag = nextElement.getParent();
+    PsiElement prevTag = nextTag.getPrevSibling();
+    return nextTag != null
+        && prevTag != null
+        && rightTagToLeftTag.containsKey(nextTag.getNode().getElementType())
+        && rightTagToLeftTag
+            .get(nextTag.getNode().getElementType())
+            .contains(prevTag.getNode().getElementType());
   }
-
-  private final PsiElementPattern.Capture<PsiElement> openTagMatcher =
-      psiElement()
-          .andOr(
-              psiElement(SoyBeginTemplate.class),
-              psiElement(SoyBeginCall.class),
-              psiElement(SoyBeginDelCall.class),
-              psiElement(SoyBeginDelegateTemplate.class),
-              psiElement(SoyBeginIf.class),
-              psiElement(SoyBeginElseIf.class),
-              psiElement(SoyBeginFor.class),
-              psiElement(SoyBeginForeach.class),
-              psiElement(SoyBeginCaseClause.class),
-              psiElement(SoyBeginLet.class),
-              psiElement(SoyBeginMsg.class),
-              psiElement(SoyBeginSwitch.class),
-              psiElement(SoyBeginParamTag.class));
 }

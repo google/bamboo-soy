@@ -21,6 +21,7 @@ import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.SoyCaseClause;
 import com.google.bamboo.soy.parser.SoyDefaultClause;
 import com.google.bamboo.soy.parser.SoyStatementList;
+import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.intellij.formatting.Alignment;
 import com.intellij.formatting.ChildAttributes;
@@ -237,7 +238,12 @@ public class SoyFormattingModelBuilder extends TemplateLanguageFormattingModelBu
     @NotNull
     @Override
     public ChildAttributes getChildAttributes(int newChildIndex) {
-      return new ChildAttributes(Indent.getNoneIndent(), null);
+      if (isNewChildIndented()) {
+        return new ChildAttributes(Indent.getNormalIndent(), null);
+      }
+      else {
+        return new ChildAttributes(Indent.getNoneIndent(), null);
+      }
     }
 
     private boolean hasIndentingForeignBlockParent() {
@@ -264,6 +270,15 @@ public class SoyFormattingModelBuilder extends TemplateLanguageFormattingModelBu
         parent = parent.getParent();
       }
       return false;
+    }
+
+    private boolean isNewChildIndented() {
+      PsiElement element = myNode.getPsi();
+      return element instanceof StatementBase
+          || element instanceof SoyTemplateBlock
+          || element instanceof ParamListElementBase
+          || element instanceof SoyCaseClause
+          || element instanceof SoyDefaultClause;
     }
 
     private boolean isStatementOrStatementContainer() {

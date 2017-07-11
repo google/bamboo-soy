@@ -62,7 +62,7 @@ public class SoyTypingTest extends SoyCodeInsightFixtureTestCase {
       doTypingTest(
           '\n',
           "{" + tag + " .foo}<caret>{/" + tag + "}",
-          "{" + tag + " .foo}\n  <caret>{/" + tag + "}");
+          "{" + tag + " .foo}\n    <caret>\n{/" + tag + "}");
     }
 
     List<String> nestedTags = Arrays.asList("call", "delcall", "switch", "if", "let");
@@ -70,13 +70,13 @@ public class SoyTypingTest extends SoyCodeInsightFixtureTestCase {
       doTypingTest(
           '\n',
           "{template .bar}{" + tag + " .foo}<caret>{/" + tag + "}{/template}",
-          "{template .bar}{" + tag + " .foo}\n  <caret>{/" + tag + "}{/template}");
+          "{template .bar}{" + tag + " .foo}\n    <caret>\n{/" + tag + "}{/template}");
     }
 
     doTypingTest(
         '\n',
         "{template .bar}{msg description='Hello'}<caret>{/msg}{/template}",
-        "{template .bar}{msg description='Hello'}\n  <caret>{/msg}{/template}");
+        "{template .bar}{msg description='Hello'}\n    <caret>\n{/msg}{/template}");
   }
 
   public void testClosingTags() throws Throwable {
@@ -95,9 +95,7 @@ public class SoyTypingTest extends SoyCodeInsightFixtureTestCase {
 
     // closing compound let
     doTypingTest(
-        '/',
-        "{template .bar}{let $var}{<caret>",
-        "{template .bar}{let $var}{/let}<caret>");
+        '/', "{template .bar}{let $var}{<caret>", "{template .bar}{let $var}{/let}<caret>");
 
     // ignoring single let
     doTypingTest(
