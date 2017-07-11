@@ -536,7 +536,7 @@ private BeginIfTagBody ::= IF ExpressionList {
   recoverWhile = "recoverEndOfTag"
 }
 
-ElseIfClauseList
+private ElseIfClauseList
   ::=
     BeginElseIf
       [<<StatementList (ElseTag | BeginElseIf)>>]

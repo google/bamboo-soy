@@ -14,10 +14,38 @@
 
 package com.google.bamboo.soy.lexer;
 
-import com.intellij.lexer.FlexAdapter;
+import com.google.bamboo.soy.parser.SoyTypes;
+import com.intellij.lexer.Lexer;
+import com.intellij.lexer.MergeFunction;
+import com.intellij.lexer.MergingLexerAdapterBase;
+import com.intellij.psi.TokenType;
+import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.tree.TokenSet;
 
-public class SoyLexer extends FlexAdapter {
+public class SoyLexer extends MergingLexerAdapterBase {
+  private static final TokenSet WHITE_SPACES =
+      TokenSet.create(TokenType.WHITE_SPACE, SoyTypes.HORIZONTAL_SPACE, SoyTypes.LINE_TERMINATOR);
+
   public SoyLexer() {
-    super(new SoyFlexLexer(null));
+    super(new SoyRawLexer());
+  }
+
+  @Override
+  public MergeFunction getMergeFunction() {
+    return ((final IElementType type, final Lexer originalLexer) -> {
+      if (type == SoyTypes.OTHER || WHITE_SPACES.contains(type)) {
+        IElementType returnType = TokenType.WHITE_SPACE;
+        while (originalLexer.getTokenType() == SoyTypes.OTHER
+            || WHITE_SPACES.contains(originalLexer.getTokenType())) {
+          if (originalLexer.getTokenType() == SoyTypes.OTHER) {
+            returnType = SoyTypes.OTHER;
+          }
+          originalLexer.advance();
+        }
+        return returnType;
+      }
+
+      return type;
+    });
   }
 }
