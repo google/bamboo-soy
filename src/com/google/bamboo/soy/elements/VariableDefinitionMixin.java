@@ -16,6 +16,7 @@ package com.google.bamboo.soy.elements;
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
@@ -28,11 +29,7 @@ public class VariableDefinitionMixin extends ASTWrapperPsiElement
 
   @Override
   public String getName() {
-    String text = getText();
-    if (text.startsWith("$")) {
-      return text.substring(1);
-    }
-    return text;
+    return getText();
   }
 
   @Override

@@ -101,7 +101,7 @@ public class ParamUtils {
       assert element instanceof SoyParamDefinitionIdentifier
           || element instanceof SoyVariableDefinitionIdentifier;
 
-      this.name = name;
+      this.name = name.replaceFirst("^\\$", "");
       this.type = type;
       this.isOptional = isOptional;
       this.element = element;
