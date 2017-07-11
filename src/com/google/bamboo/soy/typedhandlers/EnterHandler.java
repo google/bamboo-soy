@@ -93,8 +93,6 @@ public class EnterHandler extends EnterHandlerDelegateAdapter {
       String lineTextAfterCaret =
           document.getText(new TextRange(caretOffset, document.getLineEndOffset(lineNumber)));
 
-      System.out.println("Before text: " + lineTextBeforeCaret);
-
       if (lineTextAfterCaret.equals("*/")) {
         return;
       }
@@ -154,8 +152,19 @@ public class EnterHandler extends EnterHandlerDelegateAdapter {
           .build();
 
   /**
-   * Method deciding whether the following transformation is applicable: from {left}<caret>{right}
-   * to {left} <caret> {right}
+   * Method deciding whether the following transformation is applicable: from
+   *
+   * <pre><code>
+   *   {left}<caret>{right}
+   * </code></pre>
+   *
+   * to
+   *
+   * <pre<code>
+   *   {left}
+   *     <caret>
+   *   {right}
+   * </code></pre>
    */
   private static boolean isBetweenBlockDefiningTags(PsiFile psiFile, int caretOffset) {
     PsiElement nextElement = psiFile.findElementAt(caretOffset);
