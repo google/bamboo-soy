@@ -14,8 +14,8 @@
 
 package com.google.bamboo.soy.elements;
 
-import com.google.bamboo.soy.ParamUtils.Variable;
 import com.google.bamboo.soy.parser.SoyTypes;
+import com.google.bamboo.soy.scope.Variable;
 import com.google.bamboo.soy.stubs.AtParamStub;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;

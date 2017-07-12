@@ -14,7 +14,7 @@
 
 package com.google.bamboo.soy.stubs;
 
-import com.google.bamboo.soy.ParamUtils.Variable;
+import com.google.bamboo.soy.scope.Variable;
 import com.google.bamboo.soy.SoyLanguage;
 import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.google.bamboo.soy.parser.impl.SoyTemplateBlockImpl;

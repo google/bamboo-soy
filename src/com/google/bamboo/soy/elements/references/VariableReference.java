@@ -15,6 +15,8 @@
 package com.google.bamboo.soy.elements.references;
 
 import com.google.bamboo.soy.ParamUtils;
+import com.google.bamboo.soy.scope.Scope;
+import com.google.bamboo.soy.scope.Variable;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
@@ -41,11 +43,11 @@ public class VariableReference extends PsiReferenceBase<PsiElement> implements P
 
   @NotNull
   private ResolveResult[] multiResolve() {
-    final Collection<ParamUtils.Variable> definitions =
-        ParamUtils.getIdentifiersInScope(this.getElement());
+    final Collection<Variable> definitions =
+        Scope.getScopeOrEmpty(this.getElement()).getVariables();
 
     List<ResolveResult> results = new ArrayList<>();
-    for (ParamUtils.Variable definition : definitions) {
+    for (Variable definition : definitions) {
       if (definition.name.equals(this.identifier)) {
         results.add(new PsiElementResolveResult(definition.element));
       }

@@ -17,6 +17,7 @@ package com.google.bamboo.soy.annotators;
 import com.google.bamboo.soy.ParamUtils;
 import com.google.bamboo.soy.elements.IdentifierElement;
 import com.google.bamboo.soy.parser.SoyTemplateBlock;
+import com.google.bamboo.soy.scope.Variable;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
@@ -36,7 +37,7 @@ public class UnusedParameterAnnotator implements Annotator {
       // of added documentation even when not technically used directly in the template body.
       if (element.getText().contains("data=")) return;
 
-      Collection<ParamUtils.Variable> parameters = ParamUtils.getParamDefinitions(element);
+      Collection<Variable> parameters = ParamUtils.getParamDefinitions(element);
 
       Collection<String> usedVariableIdentifiers =
           PsiTreeUtil.findChildrenOfType(element, IdentifierElement.class)
@@ -48,7 +49,7 @@ public class UnusedParameterAnnotator implements Annotator {
               .map(id -> id.substring(1))
               .collect(Collectors.toList());
 
-      for (ParamUtils.Variable parameter : parameters) {
+      for (Variable parameter : parameters) {
         boolean isMatched = false;
         for (String usedIdentifier : usedVariableIdentifiers) {
           if (usedIdentifier.startsWith(parameter.name)) {

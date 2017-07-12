@@ -34,6 +34,8 @@ import com.google.bamboo.soy.parser.SoyMapType;
 import com.google.bamboo.soy.parser.SoyParamSpecificationIdentifier;
 import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier;
+import com.google.bamboo.soy.scope.Scope;
+import com.google.bamboo.soy.scope.Variable;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
@@ -187,8 +189,9 @@ public class SoyCompletionContributor extends CompletionContributor {
               @NotNull CompletionParameters completionParameters,
               ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
-            Collection<ParamUtils.Variable> params =
-                ParamUtils.getIdentifiersInScope(completionParameters.getPosition());
+
+            Collection<Variable> params =
+                Scope.getScopeOrEmpty(completionParameters.getPosition()).getVariables();
             completionResultSet.addAllElements(
                 params
                     .stream()
@@ -334,7 +337,7 @@ public class SoyCompletionContributor extends CompletionContributor {
             }
 
             Collection<String> givenParameters = ParamUtils.getGivenParameters(callStatement);
-            List<ParamUtils.Variable> parameters =
+            List<Variable> parameters =
                 ParamUtils.getParametersForInvocation(position, identifier.getText())
                     .stream()
                     .filter(v -> !givenParameters.contains(v.name))
