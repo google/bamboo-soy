@@ -101,6 +101,14 @@
       <option name="CLOSURE_TEMPLATE_TEMPLATE_BLOCK" value="true"/>
     </context>
   </template>
+  <template name="{msg" value="{msg desc=&quot;$DESC$&quot;}&#10;  $CONTENT$&#10;{/msg}"
+    description="Message" toReformat="false" toShortenFQNames="true">
+    <variable name="DESC" expression="" defaultValue="" alwaysStopAt="true"/>
+    <variable name="CONTENT" expression="" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="CLOSURE_TEMPLATE_TEMPLATE_BLOCK" value="true"/>
+    </context>
+  </template>
   <template name="{foreach" value="{foreach $OPERAND$ in $OPERANDS$}&#10;  $END$&#10;{/foreach}"
       description="Foreach loop" toReformat="false" toShortenFQNames="true">
     <variable name="OPERAND" expression="" defaultValue="" alwaysStopAt="true"/>
