@@ -46,7 +46,7 @@ public abstract class AtParamMixin extends SoyStubBasedPsiElementBase<AtParamStu
     if (getParamDefinitionIdentifier() != null) {
       return getParamDefinitionIdentifier().getName();
     }
-    return null;
+    return "";
   }
 
   @Override
