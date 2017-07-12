@@ -7,9 +7,7 @@ Closure Template File
         PsiErrorElement:<identifier> or SoyTokenType./} expected, got '}'
           <empty list>
         PsiElement(SoyTokenType.})('}')
-      PsiWhiteSpace('\n')
-      PsiWhiteSpace(' ')
-      PsiWhiteSpace(' ')
+      PsiWhiteSpace('\n  ')
       SoyStatementListImpl(STATEMENT_LIST)
         SoyMsgStatementImpl(MSG_STATEMENT)
           SoyBeginMsgImpl(BEGIN_MSG)
@@ -18,11 +16,7 @@ Closure Template File
             PsiErrorElement:<identifier> or SoyTokenType./} expected, got '}'
               <empty list>
             PsiElement(SoyTokenType.})('}')
-          PsiWhiteSpace('\n')
-          PsiWhiteSpace(' ')
-          PsiWhiteSpace(' ')
-          PsiWhiteSpace(' ')
-          PsiWhiteSpace(' ')
+          PsiWhiteSpace('\n    ')
           SoyStatementListImpl(STATEMENT_LIST)
             SoyIfStatementImpl(IF_STATEMENT)
               SoyBeginIfImpl(BEGIN_IF)
@@ -31,9 +25,7 @@ Closure Template File
                 PsiErrorElement:<expression list> or SoyTokenType./} expected, got '}'
                   <empty list>
                 PsiElement(SoyTokenType.})('}')
-          PsiWhiteSpace('\n')
-          PsiWhiteSpace(' ')
-          PsiWhiteSpace(' ')
+          PsiWhiteSpace('\n  ')
           SoyEndMsgTagImpl(END_MSG_TAG)
             PsiElement(SoyTokenType.{)('{')
             PsiElement(SoyTokenType./msg)('/msg')
@@ -43,8 +35,7 @@ Closure Template File
         PsiElement(SoyTokenType.{)('{')
         PsiElement(SoyTokenType./template)('/template')
         PsiElement(SoyTokenType.})('}')
-    PsiWhiteSpace('\n')
-    PsiWhiteSpace('\n')
+    PsiWhiteSpace('\n\n')
     SoyTemplateBlockImpl(TEMPLATE_BLOCK)
       SoyBeginTemplateImpl(BEGIN_TEMPLATE)
         PsiElement(SoyTokenType.{)('{')
@@ -52,9 +43,7 @@ Closure Template File
         PsiErrorElement:<identifier> or SoyTokenType./} expected, got '}'
           <empty list>
         PsiElement(SoyTokenType.})('}')
-      PsiWhiteSpace('\n')
-      PsiWhiteSpace(' ')
-      PsiWhiteSpace(' ')
+      PsiWhiteSpace('\n  ')
       SoyStatementListImpl(STATEMENT_LIST)
         SoyMsgStatementImpl(MSG_STATEMENT)
           SoyBeginMsgImpl(BEGIN_MSG)
@@ -63,20 +52,14 @@ Closure Template File
             PsiErrorElement:<identifier> or SoyTokenType./} expected, got '}'
               <empty list>
             PsiElement(SoyTokenType.})('}')
-          PsiWhiteSpace('\n')
-          PsiWhiteSpace(' ')
-          PsiWhiteSpace(' ')
-          PsiWhiteSpace(' ')
-          PsiWhiteSpace(' ')
+          PsiWhiteSpace('\n    ')
           SoyStatementListImpl(STATEMENT_LIST)
             SoyCatchallBracesImpl(CATCHALL_BRACES)
               PsiElement(SoyTokenType.{)('{')
               PsiErrorElement:SoyTokenType./} expected, got '/if'
                 PsiElement(SoyTokenType./if)('/if')
               PsiElement(SoyTokenType.})('}')
-          PsiWhiteSpace('\n')
-          PsiWhiteSpace(' ')
-          PsiWhiteSpace(' ')
+          PsiWhiteSpace('\n  ')
           SoyEndMsgTagImpl(END_MSG_TAG)
             PsiElement(SoyTokenType.{)('{')
             PsiElement(SoyTokenType./msg)('/msg')

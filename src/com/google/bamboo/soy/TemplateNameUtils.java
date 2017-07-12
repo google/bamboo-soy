@@ -41,14 +41,14 @@ import java.util.stream.Stream;
  * <p>Performed operations are based on the stub trees.
  */
 public class TemplateNameUtils {
-  /* Finds the only SoyTemplateBlock by its exact name. */
+  /** Finds the only SoyTemplateBlock by its exact name. */
   public static SoyTemplateBlock findTemplateDeclaration(
       PsiElement element, String templateIdentifier) {
     List<SoyTemplateBlock> declarations = findTemplateDeclarations(element, templateIdentifier);
     return declarations.size() >= 1 ? declarations.get(0) : null;
   }
 
-  /* Finds the matching SoyTemplateBlock by their exact name. */
+  /** Finds the matching SoyTemplateBlock by their exact name. */
   public static List<SoyTemplateBlock> findTemplateDeclarations(
       PsiElement element, String identifier) {
     if (identifier.startsWith(".")) {
@@ -66,7 +66,7 @@ public class TemplateNameUtils {
         .collect(Collectors.toList());
   }
 
-  /* Finds all local template names in the given file. */
+  /** Finds all local template names in the given file. */
   public static List<String> findLocalTemplateNames(PsiElement element) {
     PsiFile file = element.getContainingFile();
     return TemplateBlockIndex.INSTANCE
@@ -83,7 +83,7 @@ public class TemplateNameUtils {
         .collect(Collectors.toList());
   }
 
-  /* Finds all namespace names starting with the given prefix */
+  /** Finds all namespace names starting with the given prefix */
   public static List<Fragment> getTemplateNamespaceFragments(Project project, String prefix) {
     return NamespaceDeclarationIndex.INSTANCE
         .getAllKeys(project)
@@ -93,10 +93,10 @@ public class TemplateNameUtils {
         .collect(Collectors.toList());
   }
 
-  /*
-   * Finds all fully qualified template names starting with a given prefix with respect to
-   * aliases and template visibility.
-   * */
+  /**
+   * Finds all fully qualified template names starting with a given prefix with respect to aliases
+   * and template visibility.
+   */
   public static Collection<Fragment> getPossibleNextIdentifierFragments(
       Project project, PsiElement identifierElement, String identifier, boolean isDelegate) {
     AliasMapper mapper = new AliasMapper(identifierElement.getContainingFile());
@@ -151,7 +151,7 @@ public class TemplateNameUtils {
     }
   }
 
-  // A class that manages mapping of namespaces with respect to aliases.
+  /** A class that manages mapping of namespaces with respect to aliases. */
   private static class AliasMapper {
     private final Map<String, String> namespaceToAlias;
     private final Map<String, String> aliasToNamespace;

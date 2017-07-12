@@ -142,6 +142,7 @@
 
     OTHER = "regexp:."
 
+    // Won't be yielded by lexer.
     HORIZONTAL_SPACE
     LINE_TERMINATOR
   ]
@@ -149,7 +150,10 @@
 
 // Root rule
 
-FileInput ::= BlockList | (HORIZONTAL_SPACE | LINE_TERMINATOR)*
+FileInput ::= BlockList
+
+// Necessary for token type generation.
+private WhitespaceTokens ::= HORIZONTAL_SPACE |  LINE_TERMINATOR
 
 // Identifiers
 
@@ -331,7 +335,7 @@ AtParamSingle ::= <<BracedTag AtParamBody>> {
   elementTypeFactory = "com.google.bamboo.soy.stubs.StubFactory.getType"
 }
 
-DocComment ::= (HORIZONTAL_SPACE | LINE_TERMINATOR)* DOC_COMMENT_BLOCK
+DocComment ::= DOC_COMMENT_BLOCK
 
 private AtParamBody ::= (AT_PARAM | AT_PARAM_OPT) ParamDefinitionIdentifier COLON TypeExpression {
   pin = 1
