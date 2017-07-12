@@ -31,8 +31,7 @@ import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
 
 public class SoyParserDefinition implements ParserDefinition {
-  public static final TokenSet WHITE_SPACES =
-      TokenSet.create(TokenType.WHITE_SPACE, SoyTypes.HORIZONTAL_SPACE, SoyTypes.LINE_TERMINATOR);
+  public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
 
   private static final TokenSet COMMENTS =
       TokenSet.create(SoyTypes.COMMENT_BLOCK, SoyTypes.DOC_COMMENT_BLOCK);
