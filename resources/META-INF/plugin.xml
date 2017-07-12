@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.google.bamboo.id</id>
   <name>Bamboo Soy</name>
-  <version>1.0-alpha.5</version>
+  <version>1.0</version>
   <vendor>Google</vendor>
 
   <description><![CDATA[
@@ -10,60 +10,90 @@
   </description>
 
   <change-notes><![CDATA[
-     <p><b>Release notes for alpha-5.</b>
+     <p>
+        <b>Release notes for 1.0</b>
 
-      <ul>
-        <li>Added completion for visibility="private" in template open tags.</li>
-        <li>Recognize usage of variables inside string literals, like {msg desc="$variable"}.</li>
-        <li>Fix referencing of variables declared in let statements.</li>
-        <li>Disallow referencing @inject declarations from template call sites.</li>
-        <li>Fix checking for slash before closing brace on single-tag call statements.</li>
-        <li>Parser accepts index access of parenthesized expressions, like ($foo)[0]</li>
-        <li>Parser accepts `for` statements with empty body.</li>
-      </ul>
-
-      <p><b>Release notes for alpha-4.</b>
-
-      <ul>
-        <li>Fix issue where identifiers suggestions from let statements would begin with an invalid double-$,</li>
-        <li>Properly recognize map/list access as an expression (it would previously show as a parsing error in certain cases),</li>
-        <li>Remove auto-adding of single quote, it's annoying when typing vanilla text.</li>
-      </ul>
-
-      <p><b>Release notes for alpha-3.</b>
-
-      <ul>
-        <li>Improved alias support:
+        <ul>
+          <li>HTML highlighting and completion</li>
+          <li>Autoformatting</li>
+          <li>Structure view</li>
+          <li>Autoclosing of soy tags when typing "{/"</li>
+          <li>Doc comment support for @param, @inject and let statements</li>
+          <li>
+            Completion improvements
             <ul>
-              <li>Suggest aliased namespaces in autocompletion results for templates in a {call},</li>
-              <li>Provide autocompletion after using a namespace alias as identifier</li>
+              <li>Kind keyword and supported literals in string literal</li>
+              <li>Show type in parameter identifier suggestions</li>
+              <li>Only deltemplates are suggested for delcalls and vice verso for normal templates</li>
             </ul>
-        </li>
-        <li>Adds support for union and record types in parameter definitions,</li>
-        <li>Autocompletion for `kind` of parameters {text, html, uri, attributes, ...},</li>
-        <li>Live template for {param} adds `kind="text"` as default based on usage stats.</li>
-        <li>Improvements to live templates:
-           <ul>
-              <li>Automatically open completion suggestions for {param} and {alias} live templates,</li>
-              <li>Renamed the single line {call} and {param} triggers to scall and sparam to avoid
-                  colliding with most probable case which is to have open-close tags.</li>
-           </ul>
-        </li>
-      </ul>
+          </li>
+          <li>Indexing of files is now persisted accross restarts</li>
+          <li>Stability and bug fixes</li>
+        </ul>
+     </p>
 
-      <p><b>Release notes for alpha-2.</b>
+     <p>
+        <b>Release notes for 1.0-alpha.5</b>
 
-      <ul>
-        <li>Adds documentation tooltips for references (
-            Ctrl-hover to show or Ctrl-Q to trigger quick documentation),</li>
-        <li>Adds support for union and record types in parameter definitions,</li>
-        <li>Adds support for alias declaration that omit the alias identifier {alias my.namespace},</li>
-        <li>Adds support for identifiers that are part of identifier expressions. For example in
-            {print($foo.bar.baz)}, the identifier $foo is correctly recognized and will be a reference
-            to the site where it’s declared,</li>
-        <li>Fixes parsing issues where `uri` was not allowed as parameter name,</li>
-        <li>Fixes NPE when desugaring aliases.</li>
-      </ul>
+        <ul>
+          <li>Added completion for visibility="private" in template open tags.</li>
+          <li>Recognize usage of variables inside string literals, like {msg desc="$variable"}.</li>
+          <li>Fix referencing of variables declared in let statements.</li>
+          <li>Disallow referencing @inject declarations from template call sites.</li>
+          <li>Fix checking for slash before closing brace on single-tag call statements.</li>
+          <li>Parser accepts index access of parenthesized expressions, like ($foo)[0]</li>
+          <li>Parser accepts `for` statements with empty body.</li>
+        </ul>
+     </p>
+
+     <p>
+       <b>Release notes for 1.0-alpha.4</b>
+
+       <ul>
+         <li>Fix issue where identifiers suggestions from let statements would begin with an invalid double-$,</li>
+         <li>Properly recognize map/list access as an expression (it would previously show as a parsing error in certain cases),</li>
+         <li>Remove auto-adding of single quote, it's annoying when typing vanilla text.</li>
+       </ul>
+     </p>
+
+     <p>
+       <b>Release notes for 1.0-alpha.3</b>
+
+        <ul>
+          <li>Improved alias support:
+              <ul>
+                <li>Suggest aliased namespaces in autocompletion results for templates in a {call},</li>
+                <li>Provide autocompletion after using a namespace alias as identifier</li>
+              </ul>
+          </li>
+          <li>Adds support for union and record types in parameter definitions,</li>
+          <li>Autocompletion for `kind` of parameters {text, html, uri, attributes, ...},</li>
+          <li>Live template for {param} adds `kind="text"` as default based on usage stats.</li>
+          <li>Improvements to live templates:
+             <ul>
+                <li>Automatically open completion suggestions for {param} and {alias} live templates,</li>
+                <li>Renamed the single line {call} and {param} triggers to scall and sparam to avoid
+                    colliding with most probable case which is to have open-close tags.</li>
+             </ul>
+          </li>
+        </ul>
+      </p>
+
+      <p>
+        <b>Release notes for 1.0-alpha.2</b>
+
+        <ul>
+          <li>Adds documentation tooltips for references (
+              Ctrl-hover to show or Ctrl-Q to trigger quick documentation),</li>
+          <li>Adds support for union and record types in parameter definitions,</li>
+          <li>Adds support for alias declaration that omit the alias identifier {alias my.namespace},</li>
+          <li>Adds support for identifiers that are part of identifier expressions. For example in
+              {print($foo.bar.baz)}, the identifier $foo is correctly recognized and will be a reference
+              to the site where it’s declared,</li>
+          <li>Fixes parsing issues where `uri` was not allowed as parameter name,</li>
+          <li>Fixes NPE when desugaring aliases.</li>
+        </ul>
+      </p>
     ]]>
   </change-notes>
 
@@ -83,73 +113,79 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <fileTypeFactory
-        implementation="com.google.bamboo.soy.file.SoyFileTypeFactory"/>
+      implementation="com.google.bamboo.soy.file.SoyFileTypeFactory"/>
     <lang.psiStructureViewFactory language="ClosureTemplate"
-        implementationClass="com.google.bamboo.soy.insight.structure.SoyStructureViewFactory"/>
-    <lang.fileViewProviderFactory language="ClosureTemplate" implementationClass="com.google.bamboo.soy.file.SoyFileViewProviderFactory"/>
-    <html.scriptContentProvider language="ClosureTemplate" implementationClass="com.intellij.lang.HtmlScriptContentProvider.Empty"/>
-    <lang.formatter language="ClosureTemplate" implementationClass="com.google.bamboo.soy.format.SoyFormattingModelBuilder"/>
+      implementationClass="com.google.bamboo.soy.insight.structure.SoyStructureViewFactory"/>
+    <lang.fileViewProviderFactory language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.file.SoyFileViewProviderFactory"/>
+    <html.scriptContentProvider language="ClosureTemplate"
+      implementationClass="com.intellij.lang.HtmlScriptContentProvider.Empty"/>
+    <lang.formatter language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.format.SoyFormattingModelBuilder"/>
     <lang.syntaxHighlighterFactory
-        language="ClosureTemplate"
-        implementationClass="com.google.bamboo.soy.insight.highlight.SoySyntaxHighlighterFactory"/>
+      language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.insight.highlight.SoySyntaxHighlighterFactory"/>
     <colorSettingsPage
-        implementation="com.google.bamboo.soy.SoyColorSettingsPage"/>
+      implementation="com.google.bamboo.soy.SoyColorSettingsPage"/>
     <lang.parserDefinition
-        language="ClosureTemplate"
-        implementationClass="com.google.bamboo.soy.parser.SoyParserDefinition"/>
+      language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.parser.SoyParserDefinition"/>
     <stubElementTypeHolder class="com.google.bamboo.soy.parser.SoyTypes"/>
     <lang.commenter
-        language="ClosureTemplate"
-        implementationClass="com.google.bamboo.soy.SoyCommenter"/>
+      language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.SoyCommenter"/>
     <lang.findUsagesProvider
-        language="ClosureTemplate"
-        implementationClass="com.google.bamboo.soy.SoyFindUsagesProvider"/>
+      language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.SoyFindUsagesProvider"/>
     <completion.contributor
-        language="ClosureTemplate"
-        implementationClass="com.google.bamboo.soy.insight.completion.SoyCompletionContributor"/>
-    <enterHandlerDelegate implementation="com.google.bamboo.soy.insight.typedhandlers.EnterHandler"/>
+      language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.insight.completion.SoyCompletionContributor"/>
+    <enterHandlerDelegate
+      implementation="com.google.bamboo.soy.insight.typedhandlers.EnterHandler"/>
     <editorTypedHandler
-        implementationClass="com.google.bamboo.soy.insight.typedhandlers.ClosingTagHandler"/>
-    <editorTypedHandler implementationClass="com.google.bamboo.soy.insight.typedhandlers.QuoteHandler"/>
+      implementationClass="com.google.bamboo.soy.insight.typedhandlers.ClosingTagHandler"/>
+    <editorTypedHandler
+      implementationClass="com.google.bamboo.soy.insight.typedhandlers.QuoteHandler"/>
     <liveTemplateContext implementation="com.google.bamboo.soy.templates.TopLevelContext"/>
     <liveTemplateContext implementation="com.google.bamboo.soy.templates.CallBlockContext"/>
     <liveTemplateContext implementation="com.google.bamboo.soy.templates.TemplateBlockContext"/>
     <defaultLiveTemplatesProvider
-        implementation="com.google.bamboo.soy.templates.SoyTemplateProvider"/>
+      implementation="com.google.bamboo.soy.templates.SoyTemplateProvider"/>
 
     <lang.documentationProvider language="ClosureTemplate"
-        implementationClass="com.google.bamboo.soy.insight.documentation.SoyDocumentationProvider"/>
+      implementationClass="com.google.bamboo.soy.insight.documentation.SoyDocumentationProvider"/>
 
-    <fileIndentOptionsProvider implementation="com.google.bamboo.soy.format.SoyFileIndentOptionsProvider"/>
+    <fileIndentOptionsProvider
+      implementation="com.google.bamboo.soy.format.SoyFileIndentOptionsProvider"/>
 
     <stubIndex implementation="com.google.bamboo.soy.stubs.index.NamespaceDeclarationIndex"/>
     <stubIndex implementation="com.google.bamboo.soy.stubs.index.TemplateBlockIndex"/>
 
     <!-- Annotators -->
     <annotator
-        language="ClosureTemplate"
-        implementationClass="com.google.bamboo.soy.insight.annotators.MissingParametersAnnotator"/>
+      language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.insight.annotators.MissingParametersAnnotator"/>
     <annotator
-        language="ClosureTemplate"
-        implementationClass="com.google.bamboo.soy.insight.annotators.UnusedParameterAnnotator"/>
+      language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.insight.annotators.UnusedParameterAnnotator"/>
     <annotator
       language="ClosureTemplate"
       implementationClass="com.google.bamboo.soy.insight.annotators.CaseAndDefaultAnnotator"/>
     <annotator
-        language="ClosureTemplate"
-        implementationClass="com.google.bamboo.soy.insight.annotators.ClosingBraceSanityAnnotator"/>
+      language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.insight.annotators.ClosingBraceSanityAnnotator"/>
     <annotator
-        language="ClosureTemplate"
-        implementationClass="com.google.bamboo.soy.insight.annotators.DeltemplateIdentifierAnnotator"/>
+      language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.insight.annotators.DeltemplateIdentifierAnnotator"/>
     <annotator
-        language="ClosureTemplate"
-        implementationClass="com.google.bamboo.soy.insight.annotators.UnexpectedStatementsAnnotator"/>
+      language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.insight.annotators.UnexpectedStatementsAnnotator"/>
     <annotator
-        language="ClosureTemplate"
-        implementationClass="com.google.bamboo.soy.insight.annotators.IdentifierSanityAnnotator"/>
+      language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.insight.annotators.IdentifierSanityAnnotator"/>
     <annotator
-        language="ClosureTemplate"
-        implementationClass="com.google.bamboo.soy.insight.annotators.DoubleQuotedStringAnnotator"/>
+      language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.insight.annotators.DoubleQuotedStringAnnotator"/>
   </extensions>
 
   <actions>

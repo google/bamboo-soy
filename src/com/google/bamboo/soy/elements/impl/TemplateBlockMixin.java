@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.bamboo.soy.elements;
+package com.google.bamboo.soy.elements.impl;
 
 import com.google.bamboo.soy.parser.SoyAtInjectSingle;
+import com.google.bamboo.soy.elements.TemplateBlockElement;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
 import com.google.bamboo.soy.lang.Parameter;

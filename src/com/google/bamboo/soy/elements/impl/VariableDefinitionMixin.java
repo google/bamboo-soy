@@ -12,34 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.bamboo.soy.elements;
+package com.google.bamboo.soy.elements.impl;
 
-import com.google.bamboo.soy.stubs.TemplateDefinitionStub;
+import com.google.bamboo.soy.elements.VariableDefinitionElement;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.stubs.IStubElementType;
-import com.intellij.psi.tree.IElementType;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 
-public class TemplateDefinitionMixin extends SoyStubBasedPsiElementBase<TemplateDefinitionStub>
-    implements TemplateDefinitionElement {
-  public TemplateDefinitionMixin(TemplateDefinitionStub stub, IStubElementType type) {
-    super(stub, type);
-  }
-
-  public TemplateDefinitionMixin(ASTNode node) {
+public class VariableDefinitionMixin extends ASTWrapperPsiElement
+    implements VariableDefinitionElement {
+  public VariableDefinitionMixin(@NotNull ASTNode node) {
     super(node);
   }
 
-  public TemplateDefinitionMixin(TemplateDefinitionStub stub, IElementType type, ASTNode node) {
-    super(stub, type, node);
-  }
-
-  @NotNull
   @Override
   public String getName() {
-    return getStub() != null ? getStub().getName() : getText();
+    return getText();
   }
 
   @Override

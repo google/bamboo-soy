@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.bamboo.soy.elements;
+package com.google.bamboo.soy.elements.impl;
 
+import com.google.bamboo.soy.elements.NamespaceDeclarationElement;
 import com.google.bamboo.soy.stubs.NamespaceDeclarationStub;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
