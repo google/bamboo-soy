@@ -42,7 +42,8 @@ public class TemplateDefinitionStub extends NamedStubBase<SoyTemplateDefinitionI
   // May only be called when the stub tree is fully constructed.
   String getNamespace() {
     FileStub fileStub = StubUtils.getContainingStubFile(this);
-    return fileStub == null ? "" : fileStub.getNamespace();
+    assert fileStub != null;
+    return fileStub.getNamespace();
   }
 
   @Override
