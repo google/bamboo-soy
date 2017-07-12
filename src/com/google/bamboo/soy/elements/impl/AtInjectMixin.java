@@ -12,37 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.bamboo.soy.elements;
+package com.google.bamboo.soy.elements.impl;
 
-import com.google.bamboo.soy.stubs.NamespaceDeclarationStub;
+import com.google.bamboo.soy.elements.AtInjectElement;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.stubs.IStubElementType;
-import com.intellij.psi.tree.IElementType;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 
-public class NamespaceDeclarationMixin extends SoyStubBasedPsiElementBase<NamespaceDeclarationStub>
-    implements NamespaceDeclarationElement {
-  public NamespaceDeclarationMixin(NamespaceDeclarationStub stub, IStubElementType type) {
-    super(stub, type);
-  }
-
-  public NamespaceDeclarationMixin(ASTNode node) {
+public abstract class AtInjectMixin extends ASTWrapperPsiElement implements AtInjectElement {
+  public AtInjectMixin(@NotNull ASTNode node) {
     super(node);
-  }
-
-  public NamespaceDeclarationMixin(NamespaceDeclarationStub stub, IElementType type, ASTNode node) {
-    super(stub, type, node);
   }
 
   @Override
   public String getName() {
-    return getStub() != null ? getStub().getName() : getText();
+    if (getParamDefinitionIdentifier() != null) {
+      return getParamDefinitionIdentifier().getName();
+    }
+    return "";
   }
 
   @Override
   public PsiElement setName(@NotNull String s) throws IncorrectOperationException {
     return null;
+  }
+
+  @NotNull
+  @Override
+  public String getType() {
+    if (getTypeExpression() != null) {
+      return getTypeExpression().getText();
+    }
+    return "";
   }
 }

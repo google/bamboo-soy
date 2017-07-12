@@ -167,44 +167,44 @@ private CssEnabledIdentifier ::= FullyQualifiedIdentifier | CSS_PERCENT_IDENTIFI
 Identifier ::= CssEnabledIdentifier
 
 TemplateDefinitionIdentifier ::= Identifier {
-  mixin="com.google.bamboo.soy.elements.TemplateDefinitionMixin"
+  mixin="com.google.bamboo.soy.elements.impl.TemplateDefinitionMixin"
   implements="com.google.bamboo.soy.elements.TemplateDefinitionElement"
   stubClass = "com.google.bamboo.soy.stubs.TemplateDefinitionStub"
   elementTypeFactory = "com.google.bamboo.soy.stubs.StubFactory.getType"
 }
 
 TemplateReferenceIdentifier ::= Identifier {
-  mixin="com.google.bamboo.soy.elements.IdentifierMixin"
+  mixin="com.google.bamboo.soy.elements.impl.IdentifierMixin"
   implements="com.google.bamboo.soy.elements.IdentifierElement"
   methods=[getReference]
 }
 
 VariableReferenceIdentifier ::= Identifier {
-  mixin="com.google.bamboo.soy.elements.IdentifierMixin"
+  mixin="com.google.bamboo.soy.elements.impl.IdentifierMixin"
   implements="com.google.bamboo.soy.elements.IdentifierElement"
   methods=[getReference]
 }
 
 VariableDefinitionIdentifier ::= Identifier {
-  mixin="com.google.bamboo.soy.elements.VariableDefinitionMixin"
+  mixin="com.google.bamboo.soy.elements.impl.VariableDefinitionMixin"
   implements="com.google.bamboo.soy.elements.VariableDefinitionElement"
   methods=[setName getName]
 }
 
 ParamDefinitionIdentifier ::= Identifier {
-  mixin="com.google.bamboo.soy.elements.VariableDefinitionMixin"
+  mixin="com.google.bamboo.soy.elements.impl.VariableDefinitionMixin"
   implements="com.google.bamboo.soy.elements.VariableDefinitionElement"
   methods=[setName getName]
  }
 
 ParamSpecificationIdentifier ::= Identifier {
-  mixin="com.google.bamboo.soy.elements.ParamIdentifierMixin"
+  mixin="com.google.bamboo.soy.elements.impl.ParamIdentifierMixin"
   implements="com.google.bamboo.soy.elements.ParamIdentifierElement"
   methods=[getReference]
 }
 
 NamespaceDeclarationIdentifier ::= Identifier {
-  mixin="com.google.bamboo.soy.elements.NamespaceDeclarationMixin"
+  mixin="com.google.bamboo.soy.elements.impl.NamespaceDeclarationMixin"
   implements="com.google.bamboo.soy.elements.NamespaceDeclarationElement"
   stubClass = "com.google.bamboo.soy.stubs.NamespaceDeclarationStub"
   elementTypeFactory = "com.google.bamboo.soy.stubs.StubFactory.getType"
@@ -231,7 +231,7 @@ ValueLiteral ::= NumberLiteral | AnyStringLiteral | BOOL_LITERAL
 NumberLiteral ::= INTEGER_LITERAL | FLOAT_LITERAL | DOT FLOAT_LITERAL
 
 AnyStringLiteral ::= STRING_LITERAL | MULTI_LINE_STRING_LITERAL {
-  mixin="com.google.bamboo.soy.elements.IdentifierMixin"
+  mixin="com.google.bamboo.soy.elements.impl.IdentifierMixin"
   implements="com.google.bamboo.soy.elements.IdentifierElement"
   methods=[getReferences]
 }
@@ -301,7 +301,7 @@ private AliasBody ::= ALIAS NamespaceIdentifier [AS AliasIdentifier] {
 // Template block
 
 TemplateBlock ::= LocalTemplateBlock | DelegateTemplateBlock {
-  mixin="com.google.bamboo.soy.elements.TemplateBlockMixin"
+  mixin="com.google.bamboo.soy.elements.impl.TemplateBlockMixin"
   implements="com.google.bamboo.soy.elements.TemplateBlockElement"
   stubClass = "com.google.bamboo.soy.stubs.TemplateBlockStub"
   elementTypeFactory = "com.google.bamboo.soy.stubs.StubFactory.getType"
@@ -326,7 +326,7 @@ private AtParamList ::= (AtParamSingle [DocComment]| AtInjectSingle [DocComment]
 
 AtParamSingle ::= <<BracedTag AtParamBody>> {
   implements = "com.google.bamboo.soy.elements.AtParamElement"
-  mixin = "com.google.bamboo.soy.elements.AtParamMixin"
+  mixin = "com.google.bamboo.soy.elements.impl.AtParamMixin"
   stubClass = "com.google.bamboo.soy.stubs.AtParamStub"
   elementTypeFactory = "com.google.bamboo.soy.stubs.StubFactory.getType"
 }
@@ -340,7 +340,7 @@ private AtParamBody ::= (AT_PARAM | AT_PARAM_OPT) ParamDefinitionIdentifier COLO
 
 AtInjectSingle ::= <<BracedTag AtInjectBody>> {
   implements = "com.google.bamboo.soy.elements.AtInjectElement"
-  mixin = "com.google.bamboo.soy.elements.AtInjectMixin"
+  mixin = "com.google.bamboo.soy.elements.impl.AtInjectMixin"
 }
 
 private AtInjectBody ::= (AT_INJECT | AT_INJECT_OPT) ParamDefinitionIdentifier COLON TypeExpression {

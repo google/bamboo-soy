@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.bamboo.soy.elements;
+package com.google.bamboo.soy.elements.impl;
 
+import com.google.bamboo.soy.elements.IdentifierElement;
 import com.google.bamboo.soy.elements.references.TemplateDefinitionReference;
 import com.google.bamboo.soy.elements.references.VariableReference;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;

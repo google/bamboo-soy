@@ -12,21 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.bamboo.soy.elements;
+package com.google.bamboo.soy.elements.impl;
 
-import com.google.bamboo.soy.elements.references.ParameterDefinitionReference;
+import com.google.bamboo.soy.elements.VariableDefinitionElement;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiReference;
+import com.intellij.openapi.util.TextRange;
+import com.intellij.psi.PsiElement;
+import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 
-public class ParamIdentifierMixin extends ASTWrapperPsiElement implements ParamIdentifierElement {
-  public ParamIdentifierMixin(@NotNull ASTNode node) {
+public class VariableDefinitionMixin extends ASTWrapperPsiElement
+    implements VariableDefinitionElement {
+  public VariableDefinitionMixin(@NotNull ASTNode node) {
     super(node);
   }
 
   @Override
-  public PsiReference getReference() {
-    return new ParameterDefinitionReference(getNode().getPsi(), getNode().getTextRange());
+  public String getName() {
+    return getText();
+  }
+
+  @Override
+  public PsiElement setName(@NotNull String s) throws IncorrectOperationException {
+    return null;
   }
 }
