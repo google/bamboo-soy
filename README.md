@@ -37,7 +37,7 @@ unbalanced tags (things don’t break when you type).
 
 ## Release notes
 
-For the complete history, see the [release notes page](https://github.com/google/bamboo-soy/blob/master/releasenotes.md).
+For the complete history, see the [release notes page](releasenotes.md).
 
 ### Release notes for alpha-5.
 
@@ -54,5 +54,4 @@ For the complete history, see the [release notes page](https://github.com/google
 Small and large contributions welcome! For new features or substantial changes, please open an issue
 beforehand so that it can be discussed.
 
-For all the details, see the
-[contributing page](https://github.com/google/bamboo-soy/blob/master/CONTRIBUTING.md).
+For all the details, see the [contributing page](CONTRIBUTING.md).
