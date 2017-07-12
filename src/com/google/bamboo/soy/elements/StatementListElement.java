@@ -2,7 +2,7 @@ package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.parser.SoyLetCompoundStatement;
 import com.google.bamboo.soy.parser.SoyLetSingleStatement;
-import com.google.bamboo.soy.scope.Scope;
+import com.google.bamboo.soy.lang.Scope;
 import com.intellij.psi.PsiElement;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;

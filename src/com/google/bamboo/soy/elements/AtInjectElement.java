@@ -14,7 +14,7 @@
 
 package com.google.bamboo.soy.elements;
 
-import com.google.bamboo.soy.scope.Variable;
+import com.google.bamboo.soy.lang.Variable;
 import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyTypeExpression;
 import com.intellij.psi.PsiNamedElement;

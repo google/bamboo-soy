@@ -15,8 +15,8 @@
 package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.parser.SoyLetSingleStatement;
-import com.google.bamboo.soy.scope.Scope;
-import com.google.bamboo.soy.scope.Variable;
+import com.google.bamboo.soy.lang.Scope;
+import com.google.bamboo.soy.lang.Variable;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import java.util.List;

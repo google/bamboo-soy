@@ -16,8 +16,8 @@ package com.google.bamboo.soy.completion;
 
 import static com.intellij.patterns.PlatformPatterns.psiElement;
 
-import com.google.bamboo.soy.ParamUtils;
-import com.google.bamboo.soy.TemplateNameUtils;
+import com.google.bamboo.soy.lang.ParamUtils;
+import com.google.bamboo.soy.lang.TemplateNameUtils;
 import com.google.bamboo.soy.elements.CallStatementBase;
 import com.google.bamboo.soy.parser.SoyAliasBlock;
 import com.google.bamboo.soy.parser.SoyAtInjectSingle;
@@ -34,8 +34,8 @@ import com.google.bamboo.soy.parser.SoyMapType;
 import com.google.bamboo.soy.parser.SoyParamSpecificationIdentifier;
 import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier;
-import com.google.bamboo.soy.scope.Scope;
-import com.google.bamboo.soy.scope.Variable;
+import com.google.bamboo.soy.lang.Scope;
+import com.google.bamboo.soy.lang.Variable;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
@@ -178,7 +178,7 @@ public class SoyCompletionContributor extends CompletionContributor {
         });
   }
 
-  /** Complete variable names that are in scope when in an expression. */
+  /** Complete variable names that are in lang when in an expression. */
   private void extendWithVariableNamesInScope() {
     extend(
         CompletionType.BASIC,

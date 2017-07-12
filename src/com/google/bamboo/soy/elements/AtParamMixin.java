@@ -15,7 +15,7 @@
 package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.parser.SoyTypes;
-import com.google.bamboo.soy.scope.Variable;
+import com.google.bamboo.soy.lang.Parameter;
 import com.google.bamboo.soy.stubs.AtParamStub;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
@@ -76,7 +76,7 @@ public abstract class AtParamMixin extends SoyStubBasedPsiElementBase<AtParamStu
 
   @NotNull
   @Override
-  public Variable toVariable() {
-    return new Variable(getName(), getType(), isOptional(), this.getParamDefinitionIdentifier());
+  public Parameter toParameter() {
+    return new Parameter(getName(), getType(), isOptional(), this.getParamDefinitionIdentifier());
   }
 }

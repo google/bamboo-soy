@@ -14,7 +14,7 @@
 
 package com.google.bamboo.soy.elements;
 
-import com.google.bamboo.soy.scope.Variable;
+import com.google.bamboo.soy.lang.Variable;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
@@ -51,6 +51,6 @@ public abstract class AtInjectMixin extends ASTWrapperPsiElement implements AtIn
   @NotNull
   @Override
   public Variable toVariable() {
-    return new Variable(getName(), getType(), false, this.getParamDefinitionIdentifier());
+    return new Variable(getName(), getType(), this.getParamDefinitionIdentifier());
   }
 }

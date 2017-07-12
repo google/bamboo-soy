@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.bamboo.soy;
+package com.google.bamboo.soy.lang;
 
 import com.google.bamboo.soy.file.SoyFile;
 import com.google.bamboo.soy.parser.SoyAliasBlock;
@@ -117,7 +117,7 @@ public class TemplateNameUtils {
         .filter((key) -> !key.endsWith("_"))
 
         // Filter out deltemplates or normal templates based on `isDelegate`.
-        // Also checks template's scope.
+        // Also checks template's lang.
         .filter(
             (key) ->
                 TemplateBlockIndex.INSTANCE

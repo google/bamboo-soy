@@ -14,9 +14,8 @@
 
 package com.google.bamboo.soy.elements.references;
 
-import com.google.bamboo.soy.ParamUtils;
-import com.google.bamboo.soy.scope.Scope;
-import com.google.bamboo.soy.scope.Variable;
+import com.google.bamboo.soy.lang.Scope;
+import com.google.bamboo.soy.lang.Variable;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
@@ -76,7 +75,7 @@ public class VariableReference extends PsiReferenceBase<PsiElement> implements P
   @Override
   @NotNull
   public Object[] getVariants() {
-    return ParamUtils.getParamDefinitions(this.getElement())
+    return Scope.getScopeOrEmpty(this.getElement()).getVariables()
         .stream()
         .map(v -> v.name)
         .map(LookupElementBuilder::create)

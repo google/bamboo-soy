@@ -17,8 +17,9 @@ package com.google.bamboo.soy.elements;
 import com.google.bamboo.soy.parser.SoyAtInjectSingle;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
-import com.google.bamboo.soy.scope.Scope;
-import com.google.bamboo.soy.scope.Variable;
+import com.google.bamboo.soy.lang.Parameter;
+import com.google.bamboo.soy.lang.Scope;
+import com.google.bamboo.soy.lang.Variable;
 import com.google.bamboo.soy.stubs.TemplateBlockStub;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
@@ -73,13 +74,13 @@ public abstract class TemplateBlockMixin extends SoyStubBasedPsiElementBase<Temp
 
   @NotNull
   @Override
-  public List<Variable> getParameters() {
+  public List<Parameter> getParameters() {
     if (getStub() != null) {
       return getStub().getParameters();
     }
     return getAtParamSingleList()
         .stream()
-        .map(SoyAtParamSingle::toVariable)
+        .map(SoyAtParamSingle::toParameter)
         .collect(Collectors.toList());
   }
 

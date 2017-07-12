@@ -14,7 +14,7 @@
 
 package com.google.bamboo.soy.elements.references;
 
-import com.google.bamboo.soy.TemplateNameUtils;
+import com.google.bamboo.soy.lang.TemplateNameUtils;
 import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
