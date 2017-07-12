@@ -2,6 +2,8 @@
 
 The smartest Intellij plugin for the [Soy templating language](https://github.com/google/closure-templates). 
 
+![output](https://user-images.githubusercontent.com/16721021/28110334-f51cae42-66e9-11e7-9ae2-211d3acf12fd.gif)
+
 Adds syntax highlighting, autocompletion and static analysis for your closure template files.
 
 ## Features
