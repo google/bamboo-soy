@@ -12,26 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.bamboo.soy.annotators;
+package com.google.bamboo.soy.insight.annotators;
 
-import com.google.bamboo.soy.elements.CallStatementBase;
-import com.google.bamboo.soy.elements.ChoiceStatementBaseElement;
-import com.google.bamboo.soy.parser.SoyUnexpectedStatements;
+import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
-public class UnexpectedStatementsAnnotator implements Annotator {
+public class DeltemplateIdentifierAnnotator implements Annotator {
   @Override
   public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
-    if (psiElement instanceof SoyUnexpectedStatements) {
-      PsiElement parent = psiElement.getParent();
-      if (parent instanceof CallStatementBase) {
-        annotationHolder.createErrorAnnotation(psiElement, "Expected a {param ...} tag.");
-      } else if (parent instanceof ChoiceStatementBaseElement) {
+    if (psiElement instanceof SoyTemplateBlock) {
+      SoyTemplateBlock block = (SoyTemplateBlock) psiElement;
+      if (block.isDelegate() && block.getName() != null && block.getName().startsWith(".")) {
         annotationHolder.createErrorAnnotation(
-            psiElement, "Expected a {case ...} or {default ...} tag.");
+            // cannot be null since getName is not null
+            block.getDefinitionIdentifier(), "Delegate template names cannot start with '.'.");
       }
     }
   }

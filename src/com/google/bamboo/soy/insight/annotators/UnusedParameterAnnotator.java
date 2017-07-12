@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.bamboo.soy.annotators;
+package com.google.bamboo.soy.insight.annotators;
 
 import com.google.bamboo.soy.lang.ParamUtils;
 import com.google.bamboo.soy.elements.IdentifierElement;
