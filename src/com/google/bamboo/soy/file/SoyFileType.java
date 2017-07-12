@@ -63,6 +63,7 @@ public class SoyFileType extends LanguageFileType implements TemplateLanguageFil
   @Nullable
   @Override
   public Icon getIcon() {
-    return SoyIcons.FILE;
+    return null;
+    //    return SoyIcons.FILE;
   }
 }
