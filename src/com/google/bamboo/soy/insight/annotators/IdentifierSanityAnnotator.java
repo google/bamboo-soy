@@ -40,35 +40,36 @@ public class IdentifierSanityAnnotator implements Annotator {
 
   private static final List<Class> identifiersWithNoDollar =
       ImmutableList.copyOf(
-          new Class[]{
-              SoyTemplateDefinitionIdentifier.class,
-              SoyTemplateReferenceIdentifier.class,
-              SoyParamDefinitionIdentifier.class,
-              SoyParamSpecificationIdentifier.class,
-              SoyNamespaceIdentifier.class,
-              SoyAliasIdentifier.class,
-              SoyPackageIdentifier.class,
-              SoyFieldIdentifier.class,
-              SoyAttributeNameIdentifier.class,
-              SoyFunctionIdentifier.class
+          new Class[] {
+            SoyTemplateDefinitionIdentifier.class,
+            SoyTemplateReferenceIdentifier.class,
+            SoyParamDefinitionIdentifier.class,
+            SoyParamSpecificationIdentifier.class,
+            SoyNamespaceIdentifier.class,
+            SoyAliasIdentifier.class,
+            SoyPackageIdentifier.class,
+            SoyFieldIdentifier.class,
+            SoyAttributeNameIdentifier.class,
+            SoyFunctionIdentifier.class
           });
 
   private static final List<Class> identifiersWithDollar =
       ImmutableList.of(SoyVariableDefinitionIdentifier.class);
 
   private static final List<Class> nonCompoundIdentifiers =
-      ImmutableList.copyOf(new Class[]{
-          SoyTemplateDefinitionIdentifier.class,
-          SoyTemplateReferenceIdentifier.class,
-          SoyParamDefinitionIdentifier.class,
-          SoyParamSpecificationIdentifier.class,
-          SoyNamespaceIdentifier.class,
-          SoyAliasIdentifier.class,
-          SoyPackageIdentifier.class,
-          SoyFieldIdentifier.class,
-          SoyAttributeNameIdentifier.class,
-          SoyFunctionIdentifier.class
-      });
+      ImmutableList.copyOf(
+          new Class[] {
+            SoyTemplateDefinitionIdentifier.class,
+            SoyTemplateReferenceIdentifier.class,
+            SoyParamDefinitionIdentifier.class,
+            SoyParamSpecificationIdentifier.class,
+            SoyNamespaceIdentifier.class,
+            SoyAliasIdentifier.class,
+            SoyPackageIdentifier.class,
+            SoyFieldIdentifier.class,
+            SoyAttributeNameIdentifier.class,
+            SoyFunctionIdentifier.class
+          });
 
   private boolean inClassList(PsiElement element, List<Class> classes) {
     for (Class clazz : classes) {
@@ -88,17 +89,17 @@ public class IdentifierSanityAnnotator implements Annotator {
   private void sanitizePercentageSign(PsiElement element, AnnotationHolder holder) {
     PsiElement parent = element.getParent();
     if (element.getText().startsWith("%") && !(parent instanceof SoyCssStatement)) {
-      holder.createErrorAnnotation(element,
-          "Percentage-prefixed identifiers are only allowed in css statements");
+      holder.createErrorAnnotation(
+          element, "Percentage-prefixed identifiers are only allowed in css statements");
     }
   }
 
   private void sanitizeCompoundStatements(PsiElement element, AnnotationHolder holder) {
     PsiElement parent = element.getParent();
-    if (element.getText().contains("-") && !(parent instanceof SoyCssStatement
-        || parent instanceof SoyXidStatement)) {
-      holder.createErrorAnnotation(element,
-          "Identifiers with dashes are only allowed in css and xid statements");
+    if (element.getText().contains("-")
+        && !(parent instanceof SoyCssStatement || parent instanceof SoyXidStatement)) {
+      holder.createErrorAnnotation(
+          element, "Identifiers with dashes are only allowed in css and xid statements");
     }
   }
 
@@ -143,11 +144,13 @@ public class IdentifierSanityAnnotator implements Annotator {
     PsiElement parent = element.getParent();
     if (element.getText().startsWith("$") || parent instanceof SoyParamDefinitionIdentifier) {
       PsiElement dollarSign = element.getFirstChild();
-      holder.createInfoAnnotation(dollarSign, "")
+      holder
+          .createInfoAnnotation(dollarSign, "")
           .setTextAttributes(SoySyntaxHighlighter.VARIABLE_REFERENCE);
       PsiElement identifierWord = dollarSign.getNextSibling();
       if (identifierWord != null) {
-        holder.createInfoAnnotation(identifierWord, "")
+        holder
+            .createInfoAnnotation(identifierWord, "")
             .setTextAttributes(SoySyntaxHighlighter.VARIABLE_REFERENCE);
       }
     }
