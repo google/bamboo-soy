@@ -30,6 +30,7 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
 public class SoySyntaxHighlighter extends SyntaxHighlighterBase {
+
   public static final TextAttributesKey COMMENT =
       createTextAttributesKey("COMMENT_BLOCK", DefaultLanguageHighlighterColors.BLOCK_COMMENT);
   public static final TextAttributesKey KEYWORD =
@@ -55,91 +56,91 @@ public class SoySyntaxHighlighter extends SyntaxHighlighterBase {
     attributesToTokenMap.put(
         KEYWORD,
         ImmutableSet.copyOf(
-            new IElementType[] {
+            new IElementType[]{
               /* Tag openers & single-word tag contents */
-              SoyTypes.AT_PARAM,
-              SoyTypes.AT_PARAM_OPT,
-              SoyTypes.AT_INJECT,
-              SoyTypes.AT_INJECT_OPT,
-              SoyTypes.ALIAS,
-              SoyTypes.CALL,
-              SoyTypes.CASE,
-              SoyTypes.CSS,
-              SoyTypes.DEFAULT,
-              SoyTypes.DELCALL,
-              SoyTypes.DELPACKAGE,
-              SoyTypes.DELTEMPLATE,
-              SoyTypes.ELSE,
-              SoyTypes.ELSEIF,
-              SoyTypes.FALLBACKMSG,
-              SoyTypes.FOR,
-              SoyTypes.FOREACH,
-              SoyTypes.IF,
-              SoyTypes.IFEMPTY,
-              SoyTypes.LB,
-              SoyTypes.LET,
-              SoyTypes.LITERAL,
-              SoyTypes.LITERAL_DOUBLE,
-              SoyTypes.MSG,
-              SoyTypes.NAMESPACE,
-              SoyTypes.NIL,
-              SoyTypes.PARAM,
-              SoyTypes.PLURAL,
-              SoyTypes.PRINT,
-              SoyTypes.RB,
-              SoyTypes.SELECT,
-              SoyTypes.SP,
-              SoyTypes.SWITCH,
-              SoyTypes.TEMPLATE,
-              SoyTypes.XID,
-              SoyTypes.MSG,
-              SoyTypes.CARRIAGE_RETURN,
-              SoyTypes.NEWLINE_LITERAL,
-              SoyTypes.TAB,
+                SoyTypes.AT_PARAM,
+                SoyTypes.AT_PARAM_OPT,
+                SoyTypes.AT_INJECT,
+                SoyTypes.AT_INJECT_OPT,
+                SoyTypes.ALIAS,
+                SoyTypes.CALL,
+                SoyTypes.CASE,
+                SoyTypes.CSS,
+                SoyTypes.DEFAULT,
+                SoyTypes.DELCALL,
+                SoyTypes.DELPACKAGE,
+                SoyTypes.DELTEMPLATE,
+                SoyTypes.ELSE,
+                SoyTypes.ELSEIF,
+                SoyTypes.FALLBACKMSG,
+                SoyTypes.FOR,
+                SoyTypes.FOREACH,
+                SoyTypes.IF,
+                SoyTypes.IFEMPTY,
+                SoyTypes.LB,
+                SoyTypes.LET,
+                SoyTypes.LITERAL,
+                SoyTypes.LITERAL_DOUBLE,
+                SoyTypes.MSG,
+                SoyTypes.NAMESPACE,
+                SoyTypes.NIL,
+                SoyTypes.PARAM,
+                SoyTypes.PLURAL,
+                SoyTypes.PRINT,
+                SoyTypes.RB,
+                SoyTypes.SELECT,
+                SoyTypes.SP,
+                SoyTypes.SWITCH,
+                SoyTypes.TEMPLATE,
+                SoyTypes.XID,
+                SoyTypes.MSG,
+                SoyTypes.CARRIAGE_RETURN,
+                SoyTypes.NEWLINE_LITERAL,
+                SoyTypes.TAB,
 
               /* Tag closing keywords */
-              SoyTypes.END_CALL,
-              SoyTypes.END_DELCALL,
-              SoyTypes.END_DELTEMPLATE,
-              SoyTypes.END_FOREACH,
-              SoyTypes.END_FOR,
-              SoyTypes.END_IF,
-              SoyTypes.END_LET,
-              SoyTypes.END_LITERAL,
-              SoyTypes.END_LITERAL_DOUBLE,
-              SoyTypes.END_MSG,
-              SoyTypes.END_PARAM,
-              SoyTypes.END_PLURAL,
-              SoyTypes.END_SELECT,
-              SoyTypes.END_SWITCH,
-              SoyTypes.END_TEMPLATE,
+                SoyTypes.END_CALL,
+                SoyTypes.END_DELCALL,
+                SoyTypes.END_DELTEMPLATE,
+                SoyTypes.END_FOREACH,
+                SoyTypes.END_FOR,
+                SoyTypes.END_IF,
+                SoyTypes.END_LET,
+                SoyTypes.END_LITERAL,
+                SoyTypes.END_LITERAL_DOUBLE,
+                SoyTypes.END_MSG,
+                SoyTypes.END_PARAM,
+                SoyTypes.END_PLURAL,
+                SoyTypes.END_SELECT,
+                SoyTypes.END_SWITCH,
+                SoyTypes.END_TEMPLATE,
 
               /* Other verbal tokens */
-              SoyTypes.AS,
+                SoyTypes.AS,
             }));
 
     attributesToTokenMap.put(
         OPERATOR_LITERAL,
-        ImmutableSet.copyOf(new IElementType[] {SoyTypes.AND, SoyTypes.OR, SoyTypes.NOT}));
+        ImmutableSet.copyOf(new IElementType[]{SoyTypes.AND, SoyTypes.OR, SoyTypes.NOT}));
 
     attributesToTokenMap.put(
         BUILTIN_TYPE,
         ImmutableSet.copyOf(
-            new IElementType[] {
-              SoyTypes.ANY,
-              SoyTypes.ATTRIBUTES,
-              SoyTypes.BOOL,
-              SoyTypes.CSS,
-              SoyTypes.FLOAT,
-              SoyTypes.HTML,
-              SoyTypes.INT,
-              SoyTypes.JS,
-              SoyTypes.LIST,
-              SoyTypes.MAP,
-              SoyTypes.NULL,
-              SoyTypes.NUMBER,
-              SoyTypes.STRING,
-              SoyTypes.URI,
+            new IElementType[]{
+                SoyTypes.ANY,
+                SoyTypes.ATTRIBUTES,
+                SoyTypes.BOOL,
+                SoyTypes.CSS,
+                SoyTypes.FLOAT,
+                SoyTypes.HTML,
+                SoyTypes.INT,
+                SoyTypes.JS,
+                SoyTypes.LIST,
+                SoyTypes.MAP,
+                SoyTypes.NULL,
+                SoyTypes.NUMBER,
+                SoyTypes.STRING,
+                SoyTypes.URI,
             }));
 
     attributesToTokenMap.put(
@@ -151,12 +152,6 @@ public class SoySyntaxHighlighter extends SyntaxHighlighterBase {
 
     attributesToTokenMap.put(
         COMMENT, ImmutableSet.of(SoyTypes.COMMENT_BLOCK, SoyTypes.DOC_COMMENT_BLOCK));
-
-    attributesToTokenMap.put(
-        VARIABLE_REFERENCE,
-        ImmutableSet.of(
-            SoyTypes.DOLLAR_SINGLE_IDENTIFIER_LITERAL,
-            SoyTypes.CSS_DOLLAR_MULTI_IDENTIFIER_LITERAL));
 
     tokenToAttributesMap = ImmutableMap.copyOf(createTokenToAttributesMap(attributesToTokenMap));
   }
@@ -171,7 +166,7 @@ public class SoySyntaxHighlighter extends SyntaxHighlighterBase {
           tokens.forEach(
               (IElementType token) -> {
                 if (!attributesKeyArrayCache.containsKey(attributes)) {
-                  TextAttributesKey[] attributesArray = new TextAttributesKey[] {attributes};
+                  TextAttributesKey[] attributesArray = new TextAttributesKey[]{attributes};
                   attributesKeyArrayCache.put(attributes, attributesArray);
                 }
                 tokenToAttributesMap.put(token, attributesKeyArrayCache.get(attributes));
