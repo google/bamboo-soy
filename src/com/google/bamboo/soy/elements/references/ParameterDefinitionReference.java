@@ -14,11 +14,9 @@
 
 package com.google.bamboo.soy.elements.references;
 
-import com.google.bamboo.soy.ParamUtils;
+import com.google.bamboo.soy.lang.ParamUtils;
 import com.google.bamboo.soy.elements.CallStatementBase;
-import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.SoyIdentifier;
-import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;

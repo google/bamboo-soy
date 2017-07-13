@@ -14,6 +14,7 @@
 
 package com.google.bamboo.soy.elements.impl;
 
+import com.google.bamboo.soy.lang.Variable;
 import com.google.bamboo.soy.elements.AtInjectElement;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
@@ -46,5 +47,11 @@ public abstract class AtInjectMixin extends ASTWrapperPsiElement implements AtIn
       return getTypeExpression().getText();
     }
     return "";
+  }
+
+  @NotNull
+  @Override
+  public Variable toVariable() {
+    return new Variable(getName(), getType(), this.getParamDefinitionIdentifier());
   }
 }

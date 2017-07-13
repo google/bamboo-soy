@@ -14,34 +14,33 @@
 
 package com.google.bamboo.soy.elements.impl;
 
-import com.google.bamboo.soy.elements.VariableDefinitionElement;
+import com.google.bamboo.soy.elements.ForeachStatementElement;
+import com.google.bamboo.soy.lang.Scope;
 import com.google.bamboo.soy.lang.Variable;
+import com.google.common.collect.ImmutableList;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
-import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiElement;
-import com.intellij.util.IncorrectOperationException;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class VariableDefinitionMixin extends ASTWrapperPsiElement
-    implements VariableDefinitionElement {
-  public VariableDefinitionMixin(@NotNull ASTNode node) {
+public abstract class ForeachStatementMixin extends ASTWrapperPsiElement
+    implements ForeachStatementElement {
+  public ForeachStatementMixin(@NotNull ASTNode node) {
     super(node);
   }
 
+  @Nullable
   @Override
-  public String getName() {
-    return getText();
+  public Scope getParentScope() {
+    return Scope.getScope(this);
   }
 
-  @Override
-  public PsiElement setName(@NotNull String s) throws IncorrectOperationException {
-    return null;
-  }
-
-  @Override
   @NotNull
-  public Variable toVariable() {
-    return new Variable(getName(), "", this);
+  @Override
+  public List<Variable> getLocalVariables() {
+    return getBeginForeach().getVariableDefinitionIdentifier() != null
+        ? ImmutableList.of(getBeginForeach().getVariableDefinitionIdentifier().toVariable())
+        : ImmutableList.of();
   }
 }

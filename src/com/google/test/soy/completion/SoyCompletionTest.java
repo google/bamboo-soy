@@ -87,7 +87,13 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
 
   public void testVariablesInScope() throws Throwable {
     doTest(
-        "{template .foo}{@param dimension: number}{@inject force: number}{let $multiplier: 10}{<caret>",
-        ImmutableSet.of("$dimension", "$force", "$multiplier"));
+        "{template .foo}"
+            + "{@param dimension: number}"
+            + "{@inject force: number}"
+            + "{let $multiplier: 10}"
+            + "{foreach $ignored in $dimension}{/foreach}"
+            + "{for $loop in range(1, 2)}"
+            + "  {<caret>",
+        ImmutableSet.of("$dimension", "$force", "$multiplier", "$loop"));
   }
 }

@@ -14,7 +14,7 @@
 
 package com.google.bamboo.soy;
 
-import com.google.bamboo.soy.highlight.SoySyntaxHighlighter;
+import com.google.bamboo.soy.insight.highlight.SoySyntaxHighlighter;
 import com.google.bamboo.soy.icons.SoyIcons;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;

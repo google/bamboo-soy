@@ -14,10 +14,13 @@
 
 package com.google.bamboo.soy.elements.impl;
 
-import com.google.bamboo.soy.ParamUtils.Variable;
+import com.google.bamboo.soy.parser.SoyAtInjectSingle;
 import com.google.bamboo.soy.elements.TemplateBlockElement;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
+import com.google.bamboo.soy.lang.Parameter;
+import com.google.bamboo.soy.lang.Scope;
+import com.google.bamboo.soy.lang.Variable;
 import com.google.bamboo.soy.stubs.TemplateBlockStub;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
@@ -25,6 +28,7 @@ import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
@@ -71,13 +75,35 @@ public abstract class TemplateBlockMixin extends SoyStubBasedPsiElementBase<Temp
 
   @NotNull
   @Override
-  public List<Variable> getParameters() {
+  public List<Parameter> getParameters() {
     if (getStub() != null) {
       return getStub().getParameters();
     }
-    return PsiTreeUtil.findChildrenOfType(this, SoyAtParamSingle.class)
+    return getAtParamSingleList()
         .stream()
-        .map(SoyAtParamSingle::toVariable)
+        .map(SoyAtParamSingle::toParameter)
+        .collect(Collectors.toList());
+  }
+
+  @Nullable
+  @Override
+  public Scope getParentScope() {
+    return null;
+  }
+
+  @NotNull
+  @Override
+  public List<Variable> getLocalVariables() {
+    List<Variable> variables = new ArrayList<>();
+    variables.addAll(getParameters());
+    variables.addAll(getInjectedVariables());
+    return variables;
+  }
+
+  private List<Variable> getInjectedVariables() {
+    return getAtInjectSingleList()
+        .stream()
+        .map(SoyAtInjectSingle::toVariable)
         .collect(Collectors.toList());
   }
 }

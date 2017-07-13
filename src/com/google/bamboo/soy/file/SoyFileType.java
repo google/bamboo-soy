@@ -15,7 +15,7 @@
 package com.google.bamboo.soy.file;
 
 import com.google.bamboo.soy.SoyLanguage;
-import com.google.bamboo.soy.highlight.SoyLayeredHighlighter;
+import com.google.bamboo.soy.insight.highlight.SoyLayeredHighlighter;
 import com.google.bamboo.soy.icons.SoyIcons;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.openapi.fileTypes.FileType;
