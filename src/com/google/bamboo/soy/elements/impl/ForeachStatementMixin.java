@@ -12,22 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.bamboo.soy.elements;
+package com.google.bamboo.soy.elements.impl;
 
-import com.google.bamboo.soy.parser.SoyLetSingleStatement;
+import com.google.bamboo.soy.elements.ForeachStatementElement;
 import com.google.bamboo.soy.lang.Scope;
 import com.google.bamboo.soy.lang.Variable;
+import com.google.common.collect.ImmutableList;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class StatementListMixin extends ASTWrapperPsiElement
-    implements StatementListElement {
-  public StatementListMixin(@NotNull ASTNode node) {
+public abstract class ForeachStatementMixin extends ASTWrapperPsiElement
+    implements ForeachStatementElement {
+  public ForeachStatementMixin(@NotNull ASTNode node) {
     super(node);
   }
 
@@ -40,14 +39,8 @@ public abstract class StatementListMixin extends ASTWrapperPsiElement
   @NotNull
   @Override
   public List<Variable> getLocalVariables() {
-    return Stream.concat(
-            getLetSingleStatementList()
-                .stream()
-                .map(SoyLetSingleStatement::getVariableDefinitionIdentifier),
-            getLetCompoundStatementList()
-                .stream()
-                .map((let) -> let.getBeginLet().getVariableDefinitionIdentifier()))
-        .map(id -> new Variable(id.getName(), "", false, id))
-        .collect(Collectors.toList());
+    return getBeginForeach().getVariableDefinitionIdentifier() != null
+        ? ImmutableList.of(getBeginForeach().getVariableDefinitionIdentifier().toVariable())
+        : ImmutableList.of();
   }
 }

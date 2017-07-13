@@ -425,7 +425,7 @@ external endOfStatementBlock ::= parseEndOfStatementBlock
 meta StatementList ::= (Statement | !(<<p>> | endOfStatementBlock) CatchallBraces)+ {
   recoverWhile = "!(<<p>> | endOfStatementBlock)"
   implements = "com.google.bamboo.soy.elements.StatementListElement"
-  mixin = "com.google.bamboo.soy.elements.StatementListMixin"
+  mixin = "com.google.bamboo.soy.elements.impl.StatementListMixin"
 }
 
 // ! It is very important to have the following structure
@@ -493,6 +493,8 @@ ForStatement
     [<<StatementList !()>>]
     EndForTag {
   pin = 1
+  implements = "com.google.bamboo.soy.elements.ForStatementElement"
+  mixin = "com.google.bamboo.soy.elements.impl.ForStatementMixin"
 }
 
 BeginFor ::= <<BracedTag BeginForTagBody>>
@@ -512,6 +514,8 @@ ForeachStatement
       [<<StatementList !()>>]]
     EndForeachTag {
   pin = 1
+  implements = "com.google.bamboo.soy.elements.ForeachStatementElement"
+  mixin = "com.google.bamboo.soy.elements.impl.ForeachStatementMixin"
 }
 
 IfEmptyTag ::= <<BracedTag IFEMPTY>>

@@ -14,6 +14,11 @@
 
 package com.google.bamboo.soy.elements;
 
+import com.google.bamboo.soy.lang.Variable;
 import com.intellij.psi.PsiNamedElement;
+import org.jetbrains.annotations.NotNull;
 
-public interface VariableDefinitionElement extends PsiNamedElement {}
+public interface VariableDefinitionElement extends PsiNamedElement {
+  @NotNull
+  Variable toVariable();
+}

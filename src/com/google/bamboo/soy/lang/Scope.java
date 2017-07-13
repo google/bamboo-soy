@@ -1,5 +1,7 @@
 package com.google.bamboo.soy.lang;
 
+import com.google.bamboo.soy.parser.SoyStatementList;
+import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.util.ArrayList;
@@ -31,8 +33,14 @@ public interface Scope {
   /** The most concrete scope containing the given [element] or null if none found. */
   @Nullable
   static Scope getScope(PsiElement element) {
-    return (Scope)
+    PsiElement scope =
         PsiTreeUtil.findFirstParent(element, true, psiElement -> psiElement instanceof Scope);
+    // If the first scope is not a StatementList or a TemplateBlock, we must be in
+    // a statement opening tag.
+    if (!(scope instanceof SoyStatementList) && !(scope instanceof SoyTemplateBlock)) {
+      scope = PsiTreeUtil.findFirstParent(element, true, psiElement -> psiElement instanceof Scope);
+    }
+    return (Scope) scope;
   }
 
   /** The most concrete scope containing the given [element] or Scope.EMPTY if none found. */
