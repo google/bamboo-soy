@@ -124,8 +124,9 @@ public class ClosingTagHandler implements TypedActionHandler {
    *
    * <p>1. Normal statements that always need a closing tag, i.e., {if}, {for}, compound {let} etc.
    *
-   * <p>2. Maybe-self-closed statements that would contain the [caretElement] _only_if_ they aren't
-   * already closed, i.e. {call} and {delcall}.
+   * <p>2. Maybe-self-closed statements that would contain the [caretElement] _only_if_ they have
+   * non-trivial body, i.e. {call} and {delcall} (as they don't consume statements, unless they have
+   * {param} tags inside).
    *
    * <p>3. Maybe-self-closed statements that would _always_ contain following statements (and thus,
    * the [caretElement]), i.e. {param}.
