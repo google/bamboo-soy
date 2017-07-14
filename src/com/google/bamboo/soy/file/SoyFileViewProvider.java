@@ -20,6 +20,7 @@ import com.google.bamboo.soy.SoyLanguage;
 import com.intellij.lang.Language;
 import com.intellij.lang.LanguageParserDefinitions;
 import com.intellij.lang.ParserDefinition;
+import com.intellij.lang.html.HTMLLanguage;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.LanguageSubstitutors;
 import com.intellij.psi.MultiplePsiFilesPerDocumentFileViewProvider;
@@ -36,55 +37,23 @@ import org.jetbrains.annotations.NotNull;
 
 public class SoyFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProvider
     implements ConfigurableTemplateLanguageFileViewProvider {
-  // Base language, like HTML
-  private final Language baseLanguage;
+  // Base language, a template language like Soy
+  private static final Language baseLanguage = SoyLanguage.INSTANCE;
 
-  // Template language, like Soy
-  private final Language templateLanguage;
+  // Template data language, like HTML
+  private static final Language templateDataLanguage = HTMLLanguage.INSTANCE;
 
-  // Element type for template file
-  private final TemplateDataElementType templateLanguageType;
+  // Element type for template data language
+  private static TemplateDataElementType templateDataLanguageType =
+      new TemplateDataElementType("CLOSURE_TEMPLATE_DATA", templateDataLanguage, OTHER, OTHER);
 
-  public SoyFileViewProvider(
-      PsiManager manager, VirtualFile file, boolean physical, Language baseLanguage) {
-    this(manager, file, physical, baseLanguage, getTemplateDataLanguage(manager, file));
-  }
-
-  public SoyFileViewProvider(
-      PsiManager manager,
-      VirtualFile file,
-      boolean physical,
-      Language baseLanguage,
-      Language templateLanguage) {
+  SoyFileViewProvider(PsiManager manager, VirtualFile file, boolean physical) {
     super(manager, file, physical);
-    this.baseLanguage = baseLanguage;
-    this.templateLanguage = templateLanguage;
-    this.templateLanguageType =
-        new TemplateDataElementType("CLOSURE_TEMPLATE_DATA", templateLanguage, OTHER, OTHER);
   }
 
   @Override
   public boolean supportsIncrementalReparse(@NotNull Language rootLanguage) {
     return false;
-  }
-
-  @NotNull
-  private static Language getTemplateDataLanguage(PsiManager manager, VirtualFile file) {
-    Language dataLang =
-        TemplateDataLanguageMappings.getInstance(manager.getProject()).getMapping(file);
-    if (dataLang == null) {
-      dataLang = SoyLanguage.getDefaultTemplateLang().getLanguage();
-    }
-
-    Language substituteLang =
-        LanguageSubstitutors.INSTANCE.substituteLanguage(dataLang, file, manager.getProject());
-
-    // only use a substituted language if it's templateable
-    if (TemplateDataLanguageMappings.getTemplateableLanguages().contains(substituteLang)) {
-      dataLang = substituteLang;
-    }
-
-    return dataLang;
   }
 
   @NotNull
@@ -96,19 +65,18 @@ public class SoyFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProv
   @NotNull
   @Override
   public Language getTemplateDataLanguage() {
-    return templateLanguage;
+    return templateDataLanguage;
   }
 
   @NotNull
   @Override
   public Set<Language> getLanguages() {
-    return new HashSet<>(Arrays.asList(new Language[] {baseLanguage, templateLanguage}));
+    return new HashSet<>(Arrays.asList(new Language[] {baseLanguage, templateDataLanguage}));
   }
 
   @Override
   protected MultiplePsiFilesPerDocumentFileViewProvider cloneInner(VirtualFile virtualFile) {
-    return new SoyFileViewProvider(
-        getManager(), virtualFile, false, baseLanguage, templateLanguage);
+    return new SoyFileViewProvider(getManager(), virtualFile, false);
   }
 
   @Override
@@ -118,9 +86,9 @@ public class SoyFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProv
       return null;
     }
 
-    if (lang.is(templateLanguage)) {
+    if (lang.is(templateDataLanguage)) {
       PsiFileImpl file = (PsiFileImpl) parserDefinition.createFile(this);
-      file.setContentElementType(this.templateLanguageType);
+      file.setContentElementType(templateDataLanguageType);
       return file;
     } else if (lang.isKindOf(baseLanguage)) {
       return parserDefinition.createFile(this);

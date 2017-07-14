@@ -31,6 +31,6 @@ public class SoyFileViewProviderFactory implements FileViewProviderFactory {
       @NotNull PsiManager psiManager,
       boolean eventSystemEnabled) {
     assert language.isKindOf(SoyLanguage.INSTANCE);
-    return new SoyFileViewProvider(psiManager, virtualFile, eventSystemEnabled, language);
+    return new SoyFileViewProvider(psiManager, virtualFile, eventSystemEnabled);
   }
 }
