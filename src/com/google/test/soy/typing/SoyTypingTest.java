@@ -113,31 +113,31 @@ public class SoyTypingTest extends SoyCodeInsightFixtureTestCase {
 
     List<String> callTags = Arrays.asList("call", "delcall");
     for (String tag : callTags) {
-      // Inlined {call} should be ignored.
+      // Assuming that {call} not followed by a {param} is inlined.
       doTypingTest(
           '/',
           "{template .bar}{" + tag + "/} test {<caret>",
           "{template .bar}{" + tag + "/} test {/template}<caret>");
-      // Non-inlined {call} should be closed.
+      // Assuming that {call} followed by a {param} is not inlined.
       doTypingTest(
           '/',
-          "{template .bar}{" + tag + "} {param} test {/param} {<caret>",
-          "{template .bar}{" + tag + "} {param} test {/param} {/" + tag + "}<caret>");
+          "{template .bar}{" + tag + "/} {param} test {/param} {<caret>",
+          "{template .bar}{" + tag + "/} {param} test {/param} {/" + tag + "}<caret>");
       // Assuming that a {param/} not followed by a statement is inlined.
       doTypingTest(
           '/',
-          "{template .bar}{" + tag + "} {param/} {<caret>",
-          "{template .bar}{" + tag + "} {param/} {/" + tag + "}<caret>");
+          "{template .bar}{" + tag + "/} {param/} {<caret>",
+          "{template .bar}{" + tag + "/} {param/} {/" + tag + "}<caret>");
       // Assuming that a {param/} followed by a statement is not inlined.
       doTypingTest(
           '/',
-          "{template .bar}{" + tag + "} {param/} test {<caret>",
-          "{template .bar}{" + tag + "} {param/} test {/param}<caret>");
+          "{template .bar}{" + tag + "/} {param/} test {<caret>",
+          "{template .bar}{" + tag + "/} {param/} test {/param}<caret>");
       // Assuming that a {param} followed by a statement is not inlined.
       doTypingTest(
           '/',
-          "{template .bar}{" + tag + "} {param} test {<caret>",
-          "{template .bar}{" + tag + "} {param} test {/param}<caret>");
+          "{template .bar}{" + tag + "/} {param} test {<caret>",
+          "{template .bar}{" + tag + "/} {param} test {/param}<caret>");
     }
   }
 }
