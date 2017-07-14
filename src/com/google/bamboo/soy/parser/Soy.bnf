@@ -556,13 +556,16 @@ private BeginElseIfTagBody ::= ELSEIF ExpressionList {
 ElseTag ::= <<BracedTag ELSE>>
 
 
+
 /*
  * CALL STATEMENTS
  */
 
+CallStatement ::= DirectCallStatement | DelCallStatement
+
 // Direct call
 
-DirectCallStatement ::=
+private DirectCallStatement ::=
     !<<ClosedBracedTag BeginCallTagBody>> DirectCallStatementBlock
   | BeginCall {
   implements="com.google.bamboo.soy.elements.CallStatementBase"
@@ -583,7 +586,7 @@ private BeginCallTagBody ::= CALL (TemplateReferenceIdentifier [AttributeList] |
 
 // DelCall
 
-DelCallStatement ::=
+private DelCallStatement ::=
     !<<ClosedBracedTag BeginDelCallTagBody>> DelCallStatementBlock
   | BeginDelCall {
   implements="com.google.bamboo.soy.elements.DelCallStatementBase"
