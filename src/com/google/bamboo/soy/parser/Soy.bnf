@@ -141,19 +141,12 @@
     FLOAT_LITERAL = "regexp:([0-9]+\.[0-9]+(e((\+|-)?[0-9]+))?)|([0-9]+(e((\+|-)?[0-9]+))?)"
 
     OTHER = "regexp:."
-
-    // Won't be yielded by lexer.
-    HORIZONTAL_SPACE
-    LINE_TERMINATOR
   ]
 }
 
 // Root rule
 
 FileInput ::= BlockList
-
-// Necessary for token type generation.
-private WhitespaceTokens ::= HORIZONTAL_SPACE |  LINE_TERMINATOR
 
 // Identifiers
 

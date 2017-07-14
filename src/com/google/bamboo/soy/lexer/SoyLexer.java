@@ -20,12 +20,8 @@ import com.intellij.lexer.MergeFunction;
 import com.intellij.lexer.MergingLexerAdapterBase;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.tree.TokenSet;
 
 public class SoyLexer extends MergingLexerAdapterBase {
-  private static final TokenSet WHITE_SPACES =
-      TokenSet.create(TokenType.WHITE_SPACE, SoyTypes.HORIZONTAL_SPACE, SoyTypes.LINE_TERMINATOR);
-
   public SoyLexer() {
     super(new SoyRawLexer());
   }
@@ -33,10 +29,10 @@ public class SoyLexer extends MergingLexerAdapterBase {
   @Override
   public MergeFunction getMergeFunction() {
     return ((final IElementType type, final Lexer originalLexer) -> {
-      if (type == SoyTypes.OTHER || WHITE_SPACES.contains(type)) {
-        IElementType returnType = TokenType.WHITE_SPACE;
+      if (type == SoyTypes.OTHER || type == TokenType.WHITE_SPACE) {
+        IElementType returnType =  type;
         while (originalLexer.getTokenType() == SoyTypes.OTHER
-            || WHITE_SPACES.contains(originalLexer.getTokenType())) {
+            || originalLexer.getTokenType() == TokenType.WHITE_SPACE) {
           if (originalLexer.getTokenType() == SoyTypes.OTHER) {
             returnType = SoyTypes.OTHER;
           }
