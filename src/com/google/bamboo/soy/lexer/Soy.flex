@@ -75,8 +75,7 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
 %%
 
 <YYINITIAL,SOY_TAG,LITERAL,DOUBLE_BRACE> {
-  {HorizontalSpace}  { return SoyTypes.HORIZONTAL_SPACE; }
-  {LineTerminator} { return SoyTypes.LINE_TERMINATOR; }
+  {WhiteSpace}  { return TokenType.WHITE_SPACE; }
 }
 
 <SOY_TAG> {
