@@ -42,6 +42,9 @@ public class SoyFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProv
   // Template language, like Soy
   private final Language templateLanguage;
 
+  // Element type for template file
+  private final TemplateDataElementType templateLanguageType;
+
   public SoyFileViewProvider(
       PsiManager manager, VirtualFile file, boolean physical, Language baseLanguage) {
     this(manager, file, physical, baseLanguage, getTemplateDataLanguage(manager, file));
@@ -56,6 +59,8 @@ public class SoyFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProv
     super(manager, file, physical);
     this.baseLanguage = baseLanguage;
     this.templateLanguage = templateLanguage;
+    this.templateLanguageType =
+        new TemplateDataElementType("CLOSURE_TEMPLATE_DATA", templateLanguage, OTHER, OTHER);
   }
 
   @Override
@@ -115,8 +120,7 @@ public class SoyFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProv
 
     if (lang.is(templateLanguage)) {
       PsiFileImpl file = (PsiFileImpl) parserDefinition.createFile(this);
-      file.setContentElementType(
-          new TemplateDataElementType("CLOSURE_TEMPLATE_DATA", lang, OTHER, OTHER));
+      file.setContentElementType(this.templateLanguageType);
       return file;
     } else if (lang.isKindOf(baseLanguage)) {
       return parserDefinition.createFile(this);
