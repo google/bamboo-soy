@@ -564,9 +564,13 @@ ElseTag ::= <<BracedTag ELSE>>
 // Direct call
 
 DirectCallStatement ::=
-    !<<ClosedBracedTag BeginCallTagBody>> BeginCall [<<CallStatementBody (EndCallTag)>> | EndCallTag]
+    !<<ClosedBracedTag BeginCallTagBody>> DirectCallStatementBlock
   | BeginCall {
   implements="com.google.bamboo.soy.elements.CallStatementBase"
+}
+
+private DirectCallStatementBlock ::= BeginCall ParamList EndCallTag {
+  pin = 1
 }
 
 BeginCall ::= <<BracedTag BeginCallTagBody>> {
@@ -581,9 +585,13 @@ private BeginCallTagBody ::= CALL (TemplateReferenceIdentifier [AttributeList] |
 // DelCall
 
 DelCallStatement ::=
-    !<<ClosedBracedTag BeginDelCallTagBody>> BeginDelCall [<<CallStatementBody (EndDelCallTag)>> | EndDelCallTag]
+    !<<ClosedBracedTag BeginDelCallTagBody>> DelCallStatementBlock
   | BeginDelCall {
   implements="com.google.bamboo.soy.elements.DelCallStatementBase"
+}
+
+private DelCallStatementBlock ::= BeginDelCall ParamList EndDelCallTag {
+  pin = 1
 }
 
 BeginDelCall ::= <<BracedTag BeginDelCallTagBody>> {
@@ -596,14 +604,7 @@ private BeginDelCallTagBody ::= DELCALL TemplateReferenceIdentifier [AttributeLi
 }
 
 // ParamList
-
-private meta CallStatementBody ::= ParamList <<p>> {
-  pin = 1
-}
-
-private ParamList ::=
-  ([<<UnexpectedStatements (BeginParamTag)>>] ParamListElement)+
-  [<<UnexpectedStatements (BeginParamTag)>>]
+private ParamList ::= (ParamListElement | <<UnexpectedStatements (BeginParamTag)>>)*
 
 ParamListElement
   ::=
