@@ -30,7 +30,6 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
 public class SoySyntaxHighlighter extends SyntaxHighlighterBase {
-
   public static final TextAttributesKey COMMENT =
       createTextAttributesKey("COMMENT_BLOCK", DefaultLanguageHighlighterColors.BLOCK_COMMENT);
   public static final TextAttributesKey KEYWORD =
@@ -152,6 +151,12 @@ public class SoySyntaxHighlighter extends SyntaxHighlighterBase {
 
     attributesToTokenMap.put(
         COMMENT, ImmutableSet.of(SoyTypes.COMMENT_BLOCK, SoyTypes.DOC_COMMENT_BLOCK));
+
+    attributesToTokenMap.put(
+        VARIABLE_REFERENCE,
+        ImmutableSet.of(
+            SoyTypes.DOLLAR_SINGLE_IDENTIFIER_LITERAL,
+            SoyTypes.CSS_DOLLAR_MULTI_IDENTIFIER_LITERAL));
 
     tokenToAttributesMap = ImmutableMap.copyOf(createTokenToAttributesMap(attributesToTokenMap));
   }

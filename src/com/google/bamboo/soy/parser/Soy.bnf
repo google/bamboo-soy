@@ -35,7 +35,6 @@
     DELCALL = "delcall"
     DELPACKAGE = "delpackage"
     DELTEMPLATE = "deltemplate"
-    DOLLAR = "$"
     DOT = "."
     DOT_NULL_CHECK = "?."
     ELSE = "else"
@@ -127,7 +126,13 @@
     COMMENT_BLOCK = "regexp:(/\*([^*]|(\*+[^*/]))*(\*+/))"
     HTML_COMMENT ="regexp:<!--([^\r\n]|(\r|\n|\r\n))*-->"
 
-    IDENTIFIER_WORD = "regexp:[a-zA-Z_][a-zA-Z_0-9]*"
+    DASHED_IDENTIFIER_LITERAL = "regexp:\$?[a-zA-Z_]([a-zA-Z_0-9])*(-[a-zA-Z_]([a-zA-Z_0-9])*)+"
+    DOLLAR_SINGLE_IDENTIFIER_LITERAL = "regexp:\$[a-zA-Z_][a-zA-Z_0-9]*"
+    CSS_DOLLAR_MULTI_IDENTIFIER_LITERAL = "regexp:\$[a-zA-Z_][a-zA-Z_0-9]*((\.[a-zA-Z_][a-zA-Z_0-9]*)|(-[a-zA-Z_0-9]+))+"
+    CSS_PERCENT_IDENTIFIER_LITERAL = "regexp:%[a-zA-Z_][a-zA-Z_0-9]*(-[a-zA-Z_][a-zA-Z_0-9]*)*"
+    SINGLE_IDENTIFIER_LITERAL = "regexp:[a-zA-Z_][a-zA-Z_0-9]*"
+    LOCAL_IDENTIFIER_LITERAL = "regexp:\.[a-zA-Z_][a-zA-Z_0-9]*(\.[a-zA-Z_][a-zA-Z_0-9]*)*"
+    FULLY_QUALIFIED_IDENTIFIER_LITERAL = "regexp:[a-zA-Z_]([a-zA-Z_0-9])*(\.[a-zA-Z_]([a-zA-Z_0-9]*))*"
 
     STRING_LITERAL = "regexp:'([^\r\n'\\]|\\.)*'"
     MULTI_LINE_STRING_LITERAL = "regexp:'([^'\\]|\\([^]))*'"
@@ -149,19 +154,14 @@ private KeywordsAllowedInIdentifiers ::=
     ANY | AS | ATTRIBUTES | BOOL | CSS | FLOAT | HTML | INT | JS | LB | LIST |
     MAP | MSG | NIL | NUMBER | PLURAL | RB | SP | STRING | URI | XID
 
-private SingleIdentifier ::= IDENTIFIER_WORD | KeywordsAllowedInIdentifiers
+private SingleIdentifier ::= LOCAL_IDENTIFIER_LITERAL | SINGLE_IDENTIFIER_LITERAL | KeywordsAllowedInIdentifiers
 
-private CompoundIdentifier ::= SingleIdentifier (MINUS SingleIdentifier)*
+private FullyQualifiedIdentifier ::= SingleIdentifier | FULLY_QUALIFIED_IDENTIFIER_LITERAL
 
-private QualifiedIdentifier ::= CompoundIdentifier (DOT CompoundIdentifier)*
+private CssEnabledIdentifier ::= FullyQualifiedIdentifier | CSS_PERCENT_IDENTIFIER_LITERAL | DASHED_IDENTIFIER_LITERAL |
+    DOLLAR_SINGLE_IDENTIFIER_LITERAL | CSS_DOLLAR_MULTI_IDENTIFIER_LITERAL
 
-private LocalIdentifier ::= DOT QualifiedIdentifier
-
-private DollarIdentifier ::= DOLLAR QualifiedIdentifier
-
-private PercentIdentifier ::= PERCENT QualifiedIdentifier
-
-Identifier ::= QualifiedIdentifier | LocalIdentifier | PercentIdentifier | DollarIdentifier
+Identifier ::= CssEnabledIdentifier
 
 TemplateDefinitionIdentifier ::= Identifier {
   mixin="com.google.bamboo.soy.elements.impl.TemplateDefinitionMixin"
