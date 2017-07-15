@@ -6,7 +6,7 @@ buildscript {
         maven { url 'https://jitpack.io' }
     }
     dependencies {
-        classpath "com.github.hurricup:gradle-grammar-kit-plugin:354bb8c477"
+        classpath "com.github.hurricup:gradle-grammar-kit-plugin:2017.1"
     }
 }
 
@@ -27,6 +27,10 @@ dependencies {
 }
 
 apply plugin: 'org.jetbrains.intellij'
+intellij {
+    version 'IC-2017.1.5'
+}
+
 apply plugin: 'java'
 apply plugin: 'kotlin'
 
@@ -63,4 +67,33 @@ test {
         System.out.flush()
     }
     afterSuite { println() }
+}
+
+apply plugin: 'org.jetbrains.grammarkit'
+import org.jetbrains.grammarkit.tasks.*
+
+task generateSoyLexer(type: GenerateLexer) {
+    source 'src/main/grammars/Soy.flex'
+    skeleton 'src/main/grammars/flex.skeleton'
+    targetDir 'gen/com/google/bamboo/soy/lexer/'
+    targetClass 'SoyFlexLexer'
+    purgeOldFiles true
+}
+
+task generateSoyParser(type: GenerateParser) {
+    source 'src/main/grammars/Soy.bnf'
+    targetRoot 'gen'
+    pathToParser 'com/google/bamboo/soy/parser/SoyParser.java'
+    pathToPsiRoot 'com/google/bamboo/soy/parser/'
+    purgeOldFiles true
+}
+
+compileJava {
+    dependsOn generateSoyLexer
+    dependsOn generateSoyParser
+}
+
+compileKotlin {
+    dependsOn generateSoyLexer
+    dependsOn generateSoyParser
 }
