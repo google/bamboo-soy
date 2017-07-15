@@ -12,21 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.test.soy;
+package com.google.bamboo.soy;
 
-import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.util.PathUtil;
 import java.io.File;
 
 public final class SoyTestUtils {
-  public static String getTestDataFolder() {
-    final File f = new File("testdata");
-    if (f.isDirectory()) {
-      return FileUtil.toSystemIndependentName(f.getAbsolutePath());
-    }
 
-    return PathUtil.getParentPath(PathManager.getHomePath())
-        + "/plugins/bamboo/classes/com/google/test/soy/testdata";
+  public static String getTestDataFolder() {
+    final File f = new File("src/test/resources");
+    return FileUtil.toSystemIndependentName(f.getAbsolutePath());
   }
 }

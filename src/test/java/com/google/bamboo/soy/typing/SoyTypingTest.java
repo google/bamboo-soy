@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.test.soy.typing;
+package com.google.bamboo.soy.typing;
 
 import com.google.bamboo.soy.file.SoyFileType;
-import com.google.test.soy.SoyCodeInsightFixtureTestCase;
+import com.google.bamboo.soy.SoyCodeInsightFixtureTestCase;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import java.util.Arrays;
 import java.util.List;

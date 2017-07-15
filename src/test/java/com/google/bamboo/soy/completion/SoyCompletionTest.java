@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.test.soy.completion;
+package com.google.bamboo.soy.completion;
 
 import com.google.bamboo.soy.file.SoyFileType;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.test.soy.SoyCodeInsightFixtureTestCase;
+import com.google.bamboo.soy.SoyCodeInsightFixtureTestCase;
 import com.intellij.codeInsight.completion.CompletionType;
 import java.util.List;
 import java.util.Set;

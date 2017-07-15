@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.test.soy.parser;
+package com.google.bamboo.soy.parser;
 
-import com.google.bamboo.soy.parser.SoyParserDefinition;
-import com.google.test.soy.SoyTestUtils;
+import com.google.bamboo.soy.SoyTestUtils;
 import com.intellij.testFramework.ParsingTestCase;
 
 /** Unit tests for the closure template parser. */
@@ -64,5 +63,10 @@ public class SoyParserTest extends ParsingTestCase {
 
   public void testTypeExpression() throws Throwable {
     doTest(true);
+  }
+
+  @Override
+  protected boolean checkAllPsiRoots() {
+    return false;
   }
 }

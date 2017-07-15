@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.test.soy;
+package com.google.bamboo.soy;
 
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 
