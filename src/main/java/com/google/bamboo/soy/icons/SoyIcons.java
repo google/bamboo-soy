@@ -19,5 +19,5 @@ import javax.swing.Icon;
 
 public class SoyIcons {
 
-  public static final Icon FILE = IconLoader.getIcon("closure-template.png");
+  public static final Icon FILE = IconLoader.getIcon("/closure-template.png");
 }
