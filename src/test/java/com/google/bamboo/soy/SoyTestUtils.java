@@ -12,18 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.test.soy;
+package com.google.bamboo.soy;
 
-import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
+import com.intellij.openapi.util.io.FileUtil;
+import java.io.File;
 
-public abstract class SoyCodeInsightFixtureTestCase
-    extends LightPlatformCodeInsightFixtureTestCase {
-  protected void setUp() throws Exception {
-    super.setUp();
-  }
+public final class SoyTestUtils {
 
-  @Override
-  protected String getTestDataPath() {
-    return SoyTestUtils.getTestDataFolder() + getBasePath();
+  public static String getTestDataFolder() {
+    final File f = new File("src/test/resources");
+    return FileUtil.toSystemIndependentName(f.getAbsolutePath());
   }
 }

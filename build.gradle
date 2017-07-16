@@ -1,0 +1,99 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven { url 'https://dl.bintray.com/jetbrains/intellij-plugin-service' }
+        maven { url 'https://jitpack.io' }
+    }
+    dependencies {
+        classpath "com.github.hurricup:gradle-grammar-kit-plugin:2017.1"
+    }
+}
+
+plugins {
+    id 'org.jetbrains.intellij' version '0.2.14'
+    id 'org.jetbrains.kotlin.jvm' version '1.1.3-2'
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://dl.bintray.com/jetbrains/markdown' }
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    testCompile 'junit:junit:4.+'
+    testCompile 'org.assertj:assertj-core:3.2.0'
+}
+
+apply plugin: 'org.jetbrains.intellij'
+intellij {
+    version 'IC-2017.1.5'
+}
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+
+sourceSets {
+    main {
+        java.srcDirs += 'gen'
+        kotlin.srcDirs += 'gen'
+    }
+    test {
+        java.srcDir 'src/test/java'
+    }
+}
+
+test {
+    testLogging {
+        events 'started', 'passed', 'skipped', 'failed'
+        exceptionFormat = 'full'
+    }
+
+    beforeSuite { suite ->
+        if (suite.className != null) {
+            println()
+            println(suite.className)
+        }
+    }
+    afterTest { desc, result ->
+        def c = '.'
+        if (result.resultType == TestResult.ResultType.FAILURE) {
+            c = 'X'
+        } else if (result.resultType == TestResult.ResultType.SKIPPED) {
+            c = 'S'
+        }
+        print(c)
+        System.out.flush()
+    }
+    afterSuite { println() }
+}
+
+apply plugin: 'org.jetbrains.grammarkit'
+import org.jetbrains.grammarkit.tasks.*
+
+task generateSoyLexer(type: GenerateLexer) {
+    source 'src/main/grammars/Soy.flex'
+    skeleton 'src/main/grammars/flex.skeleton'
+    targetDir 'gen/com/google/bamboo/soy/lexer/'
+    targetClass 'SoyFlexLexer'
+    purgeOldFiles true
+}
+
+task generateSoyParser(type: GenerateParser) {
+    source 'src/main/grammars/Soy.bnf'
+    targetRoot 'gen'
+    pathToParser 'com/google/bamboo/soy/parser/SoyParser.java'
+    pathToPsiRoot 'com/google/bamboo/soy/parser/'
+    purgeOldFiles true
+}
+
+compileJava {
+    dependsOn generateSoyLexer
+    dependsOn generateSoyParser
+}
+
+compileKotlin {
+    dependsOn generateSoyLexer
+    dependsOn generateSoyParser
+}

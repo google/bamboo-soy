@@ -12,37 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.test.soy.format;
+package com.google.bamboo.soy.format;
 
+import com.google.bamboo.soy.SoyCodeInsightFixtureTestCase;
 import com.google.bamboo.soy.SoyLanguage;
-import com.google.bamboo.soy.file.SoyFileType;
-import com.google.test.soy.SoyCodeInsightFixtureTestCase;
-import com.google.test.soy.SoyTestUtils;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.command.CommandProcessor;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.EditorFactory;
-import com.intellij.openapi.editor.impl.DocumentImpl;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.codeStyle.CodeStyleManager;
-import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
 import com.intellij.psi.templateLanguages.TemplateDataLanguageMappings;
-import com.intellij.testFramework.PlatformTestCase;
-import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
-import com.intellij.util.IncorrectOperationException;
-import org.jetbrains.annotations.NonNls;
-
-import java.io.File;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class SoyFormatterTest extends SoyCodeInsightFixtureTestCase {
+
   @Override
   protected String getBasePath() {
     return "/format";
@@ -52,7 +36,8 @@ public abstract class SoyFormatterTest extends SoyCodeInsightFixtureTestCase {
     PsiFile baseFile = myFixture.configureByFile(getTestName(false) + ".soy");
     VirtualFile virtualFile = baseFile.getVirtualFile();
     assert virtualFile != null;
-    TemplateDataLanguageMappings.getInstance(getProject()).setMapping(virtualFile, SoyLanguage.INSTANCE);
+    TemplateDataLanguageMappings.getInstance(getProject())
+        .setMapping(virtualFile, SoyLanguage.INSTANCE);
 
     // fetch a fresh instance of the file -- the template data mapping creates a new instance,
     // which was causing problems in PsiFileImpl.isValid()
