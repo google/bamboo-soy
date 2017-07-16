@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.bamboo.soy.completion;
+package com.google.bamboo.soy.insight;
 
 import com.google.bamboo.soy.file.SoyFileType;
 import com.google.common.collect.ImmutableList;
@@ -25,7 +25,7 @@ import java.util.Set;
 public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
   @Override
   protected String getBasePath() {
-    return "/completion";
+    return "/insight";
   }
 
   protected void doTest(String inputText, Set<String> expectedCompletions) throws Throwable {
