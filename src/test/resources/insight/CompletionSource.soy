@@ -4,9 +4,10 @@
 {/template}
 
 {template .moon}
-  {@param planet kind="string"}
-  {@inject probe kind="string"}
+  {@param planet : string}
+  {@inject probe : string}
   {let $shape: 'sphere' /}
+
   {msg}
     Planet: {$planet}
     Probe: {$probe}
