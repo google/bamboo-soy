@@ -145,7 +145,7 @@
 
 FileInput ::= BlockList
 
-// Identifiers
+// Identifier
 
 private KeywordsAllowedInIdentifiers ::=
     ANY | AS | ATTRIBUTES | BOOL | CSS | FLOAT | HTML | INT | JS | LB | LIST |
@@ -157,9 +157,9 @@ private VariableIdentifier ::= DOLLAR_IDENTIFIER_WORD | IDENTIFIER_WORD
 
 private QualifiedIdentifier ::= (PlainIdentifier | IDENTIFIER_FIELD) IDENTIFIER_FIELD*
 
-private CssIdentifier ::= CSS_IDENTIFIER_LITERAL | PlainIdentifier
+CssIdentifier ::= CSS_IDENTIFIER_LITERAL | PlainIdentifier
 
-private XidIdentifier ::= (CssIdentifier | IDENTIFIER_FIELD)*
+XidIdentifier ::= (CSS_IDENTIFIER_LITERAL | PlainIdentifier | IDENTIFIER_FIELD)*
 
 TemplateDefinitionIdentifier ::= QualifiedIdentifier {
   mixin="com.google.bamboo.soy.elements.impl.TemplateDefinitionMixin"
@@ -813,43 +813,45 @@ WhitespaceStatement ::= <<BracedTag TAB>>|<<BracedTag NEWLINE_LITERAL>>|<<Braced
 
 private ExpressionList ::= Expression
 
-ParenthesizedExpression ::= PARENS_OPEN Expression PARENS_CLOSE
-
 private ObjectTypedExpression ::=
     // List definition.
-SQUARE_OPEN [CommaSeparatedExpressionList] SQUARE_CLOSE |
-  ParenthesizedExpression
-  | VariableReferenceIdentifier | FunctionCall
+    SQUARE_OPEN [CommaSeparatedExpressionList] SQUARE_CLOSE
+  |
+    PARENS_OPEN Expression PARENS_CLOSE
+  |
+    VariableReferenceIdentifier
+  |
+    FunctionCall
+
+private ObjectTypedOperators ::=
+    // List/Map access.
+    (SQUARE_OPEN | INDEX_NULL_CHECK) [CommaSeparatedExpressionList] SQUARE_CLOSE
+  |
+    // Dot operator
+    IDENTIFIER_FIELD
+  |
+    // ?. operator
+    DOT_NULL_CHECK IDENTIFIER_WORD
 
 private SimpleExpression ::=
- NumberLiteral
-   |
-     AnyStringLiteral
-   |
-     BOOL_LITERAL
-   |
-     PLUS Expression
-   |
-     MINUS Expression
-   |
-     NOT Expression
-   |
-     EXCLAMATION Expression
-
-Expression
-  ::= (
-    // List/Map access.
-    ObjectTypedExpression (SQUARE_OPEN [CommaSeparatedExpressionList] SQUARE_CLOSE)*
+    NumberLiteral
   |
-    SimpleExpression) (BinaryOperator Expression)*
-
-FunctionCall
-  ::=
-    FunctionIdentifier PARENS_OPEN PARENS_CLOSE
+    AnyStringLiteral
   |
-    FunctionIdentifier PARENS_OPEN FunctionParameterList PARENS_CLOSE
+    BOOL_LITERAL
+  |
+    PLUS Expression
+  |
+    MINUS Expression
+  |
+    NOT Expression
+  |
+    EXCLAMATION Expression
 
-private FunctionParameterList ::= ExpressionList (COMMA ExpressionList)*
+Expression ::=
+  (ObjectTypedExpression (ObjectTypedOperators)* | SimpleExpression) (BinaryOperator Expression)*
+
+FunctionCall ::= FunctionIdentifier PARENS_OPEN [CommaSeparatedExpressionList] PARENS_CLOSE
 
 private BinaryOperator ::=
     BooleanOperator
