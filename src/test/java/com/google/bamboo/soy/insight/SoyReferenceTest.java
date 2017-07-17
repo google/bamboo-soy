@@ -22,11 +22,11 @@ import com.google.bamboo.soy.parser.SoyParamListElement;
 import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyVariableReferenceIdentifier;
+import com.google.common.collect.Iterables;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.usageView.UsageInfo;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class SoyReferenceTest extends SoyCodeInsightFixtureTestCase {
 
@@ -72,10 +72,32 @@ public class SoyReferenceTest extends SoyCodeInsightFixtureTestCase {
         // @inject
         expectedClass = SoyParamDefinitionIdentifier.class;
       } else {
+        // {let}
         expectedClass = SoyVariableDefinitionIdentifier.class;
       }
       PsiElement id = var.getReference().resolve();
       assertInstanceOf(id, expectedClass);
     }
+  }
+
+  public void testFindVariableUsages() throws Throwable {
+    myFixture.configureByFile("CompletionSource.soy");
+    // 1 @param and 1 @inject
+    Collection<SoyParamDefinitionIdentifier> params = PsiTreeUtil
+        .findChildrenOfType(myFixture.getFile(), SoyParamDefinitionIdentifier.class);
+    for (SoyParamDefinitionIdentifier param : params) {
+      Collection<UsageInfo> usages = myFixture.findUsages(param);
+      assertSize(1, usages);
+      assertInstanceOf(Iterables.getOnlyElement(usages).getElement(),
+          SoyVariableReferenceIdentifier.class);
+    }
+
+    // {let}
+    SoyVariableDefinitionIdentifier var = PsiTreeUtil
+        .findChildOfType(myFixture.getFile(), SoyVariableDefinitionIdentifier.class);
+    Collection<UsageInfo> usages = myFixture.findUsages(var);
+    assertSize(1, usages);
+    assertInstanceOf(Iterables.getOnlyElement(usages).getElement(),
+        SoyVariableReferenceIdentifier.class);
   }
 }
