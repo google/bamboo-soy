@@ -29,6 +29,7 @@ dependencies {
 apply plugin: 'org.jetbrains.intellij'
 intellij {
     version 'IC-2017.1.5'
+    updateSinceUntilBuild false
 }
 
 apply plugin: 'java'
