@@ -161,8 +161,6 @@ private CssIdentifier ::= CSS_IDENTIFIER_LITERAL | PlainIdentifier
 
 private XidIdentifier ::= (CssIdentifier | IDENTIFIER_FIELD)*
 
-Identifier ::= CssEnabledIdentifier
-
 TemplateDefinitionIdentifier ::= QualifiedIdentifier {
   mixin="com.google.bamboo.soy.elements.impl.TemplateDefinitionMixin"
   implements="com.google.bamboo.soy.elements.TemplateDefinitionElement"

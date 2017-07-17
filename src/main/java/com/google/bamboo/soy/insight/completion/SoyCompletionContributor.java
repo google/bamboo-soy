@@ -16,9 +16,11 @@ package com.google.bamboo.soy.insight.completion;
 
 import static com.intellij.patterns.PlatformPatterns.psiElement;
 
-import com.google.bamboo.soy.lang.ParamUtils;
-import com.google.bamboo.soy.lang.TemplateNameUtils;
 import com.google.bamboo.soy.elements.CallStatementBase;
+import com.google.bamboo.soy.lang.ParamUtils;
+import com.google.bamboo.soy.lang.Scope;
+import com.google.bamboo.soy.lang.TemplateNameUtils;
+import com.google.bamboo.soy.lang.Variable;
 import com.google.bamboo.soy.parser.SoyAliasBlock;
 import com.google.bamboo.soy.parser.SoyAtInjectSingle;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
@@ -28,14 +30,13 @@ import com.google.bamboo.soy.parser.SoyBeginLet;
 import com.google.bamboo.soy.parser.SoyBeginParamTag;
 import com.google.bamboo.soy.parser.SoyBeginTemplate;
 import com.google.bamboo.soy.parser.SoyExpression;
-import com.google.bamboo.soy.parser.SoyIdentifier;
 import com.google.bamboo.soy.parser.SoyListType;
 import com.google.bamboo.soy.parser.SoyMapType;
+import com.google.bamboo.soy.parser.SoyNamespaceIdentifier;
 import com.google.bamboo.soy.parser.SoyParamSpecificationIdentifier;
 import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
+import com.google.bamboo.soy.parser.SoyTemplateReferenceIdentifier;
 import com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier;
-import com.google.bamboo.soy.lang.Scope;
-import com.google.bamboo.soy.lang.Variable;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
@@ -61,22 +62,22 @@ public class SoyCompletionContributor extends CompletionContributor {
       LookupElementBuilder.create("map").withInsertHandler(new PostfixInsertHandler("<", ",>"));
   private static List<LookupElement> soyTypeLiterals =
       Stream.concat(
-              Stream.of(
-                      "any",
-                      "null",
-                      "?",
-                      "string",
-                      "bool",
-                      "int",
-                      "float",
-                      "number",
-                      "html",
-                      "uri",
-                      "js",
-                      "css",
-                      "attributes")
-                  .map(LookupElementBuilder::create),
-              Stream.of(soyListTypeLiteral, soyMapTypeLiteral))
+          Stream.of(
+              "any",
+              "null",
+              "?",
+              "string",
+              "bool",
+              "int",
+              "float",
+              "number",
+              "html",
+              "uri",
+              "js",
+              "css",
+              "attributes")
+              .map(LookupElementBuilder::create),
+          Stream.of(soyListTypeLiteral, soyMapTypeLiteral))
           .collect(Collectors.toList());
   private static List<LookupElement> kindLiterals =
       Stream.of("text", "html", "attributes", "uri", "css", "js")
@@ -93,7 +94,9 @@ public class SoyCompletionContributor extends CompletionContributor {
     extendWithParameterTypes();
   }
 
-  /** Complete the "visibility" keyword in template definition open tags. */
+  /**
+   * Complete the "visibility" keyword in template definition open tags.
+   */
   private void extendWithVisibilityKeyword() {
     extend(
         CompletionType.BASIC,
@@ -178,7 +181,9 @@ public class SoyCompletionContributor extends CompletionContributor {
         });
   }
 
-  /** Complete variable names that are in lang when in an expression. */
+  /**
+   * Complete variable names that are in lang when in an expression.
+   */
   private void extendWithVariableNamesInScope() {
     extend(
         CompletionType.BASIC,
@@ -240,12 +245,12 @@ public class SoyCompletionContributor extends CompletionContributor {
               @NotNull CompletionResultSet completionResultSet) {
             PsiElement identifierElement =
                 PsiTreeUtil.getParentOfType(
-                    completionParameters.getPosition(), SoyIdentifier.class);
+                    completionParameters.getPosition(), SoyTemplateReferenceIdentifier.class);
             String identifier = identifierElement == null ? "" : identifierElement.getText();
 
             boolean isDelegate =
                 PsiTreeUtil.getParentOfType(
-                        identifierElement, SoyBeginCall.class, SoyBeginDelCall.class)
+                    identifierElement, SoyBeginCall.class, SoyBeginDelCall.class)
                     instanceof SoyBeginDelCall;
 
             String prefix = identifier.replaceFirst("IntellijIdeaRulezzz", "");
@@ -271,7 +276,9 @@ public class SoyCompletionContributor extends CompletionContributor {
         });
   }
 
-  /** Complete fully qualified namespace fragments for alias declaration. */
+  /**
+   * Complete fully qualified namespace fragments for alias declaration.
+   */
   private void extendWithIdentifierFragmentsForAlias() {
     extend(
         CompletionType.BASIC,
@@ -284,7 +291,7 @@ public class SoyCompletionContributor extends CompletionContributor {
               @NotNull CompletionResultSet completionResultSet) {
             PsiElement identifierElement =
                 PsiTreeUtil.getParentOfType(
-                    completionParameters.getPosition(), SoyIdentifier.class);
+                    completionParameters.getPosition(), SoyNamespaceIdentifier.class);
             String identifier = identifierElement == null ? "" : identifierElement.getText();
 
             String prefix = identifier.replaceFirst("IntellijIdeaRulezzz", "");
@@ -305,7 +312,9 @@ public class SoyCompletionContributor extends CompletionContributor {
         });
   }
 
-  /** Complete parameter names for {param .. /} in template function calls. */
+  /**
+   * Complete parameter names for {param .. /} in template function calls.
+   */
   private void extendWithParameterNames() {
     extend(
         CompletionType.BASIC,
@@ -330,7 +339,8 @@ public class SoyCompletionContributor extends CompletionContributor {
               return;
             }
 
-            PsiElement identifier = PsiTreeUtil.findChildOfType(callStatement, SoyIdentifier.class);
+            PsiElement identifier = PsiTreeUtil
+                .findChildOfType(callStatement, SoyTemplateReferenceIdentifier.class);
 
             if (identifier == null) {
               return;
@@ -354,7 +364,9 @@ public class SoyCompletionContributor extends CompletionContributor {
         });
   }
 
-  /** Complete types in {@param ...} . */
+  /**
+   * Complete types in {@param ...} .
+   */
   private void extendWithParameterTypes() {
     // Complete types in @param.
     extend(

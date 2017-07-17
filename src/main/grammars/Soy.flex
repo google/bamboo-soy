@@ -21,16 +21,12 @@ Alpha=[a-zA-Z]
 
 IdentifierChar={Alpha}|"_"
 Digit=[0-9]
+CssIdentifierChar={IdentifierChar}|"-"
 
 IdentifierWord={IdentifierChar}({IdentifierChar}|{Digit})*
-
-SingleIdentifierLiteral={IdentifierWord}
-LocalIdentifierLiteral="."{IdentifierWord}("."{IdentifierWord})*
-DashedIdentifierLiteral="$"?{IdentifierWord}("-"{IdentifierWord})+
-DollarSingleIdentifierLiteral="$"{IdentifierWord}?
-CssDollarMultiIdentifierLiteral="$"{IdentifierWord}(("."{IdentifierWord}|"-"{IdentifierWord}))+
-CssPercentIdentifierLiteral="%"{IdentifierWord}("-"{IdentifierWord})*
-FullyQualifiedIdentifierLiteral = {IdentifierWord}(\.{IdentifierWord})*
+DollarIdentifierWord="$"{IdentifierWord}
+IdentifierField="."{IdentifierWord}
+CssIdentifierLiteral="%"?{CssIdentifierChar}({CssIdentifierChar}|{Digit})*
 
 /* Line terminators, white space, and comments */
 LineTerminator=\r|\n|\r\n
@@ -204,13 +200,10 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   "<=" { return SoyTypes.LESS_EQUAL; }
   "!=" { return SoyTypes.NOT_EQUAL; }
 
-  {SingleIdentifierLiteral} {return SoyTypes.SINGLE_IDENTIFIER_LITERAL; }
-  {DashedIdentifierLiteral} { return SoyTypes.DASHED_IDENTIFIER_LITERAL; }
-  {DollarSingleIdentifierLiteral} { return SoyTypes.DOLLAR_SINGLE_IDENTIFIER_LITERAL; }
-  {CssDollarMultiIdentifierLiteral} { return SoyTypes.CSS_DOLLAR_MULTI_IDENTIFIER_LITERAL; }
-  {CssPercentIdentifierLiteral} { return SoyTypes.CSS_PERCENT_IDENTIFIER_LITERAL; }
-  {LocalIdentifierLiteral} {return SoyTypes.LOCAL_IDENTIFIER_LITERAL; }
-  {FullyQualifiedIdentifierLiteral} {return SoyTypes.FULLY_QUALIFIED_IDENTIFIER_LITERAL; }
+  {IdentifierWord} { return SoyTypes.IDENTIFIER_WORD; }
+  {IdentifierField} { return SoyTypes.IDENTIFIER_FIELD; }
+  {DollarIdentifierWord} { return SoyTypes.DOLLAR_IDENTIFIER_WORD; }
+  {CssIdentifierLiteral} { return SoyTypes.CSS_IDENTIFIER_LITERAL; }
 }
 
 <SOY_TAG,YYINITIAL> {
