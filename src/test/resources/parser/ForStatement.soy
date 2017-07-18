@@ -1,12 +1,12 @@
 {template forStatement}
-  {for foo in $bar}
+  {for $foo in $bar}
   {/for}
 
-  {for foo2 in $bar2}
+  {for $foo2 in $bar2}
     asd
   {/for}
 
-  {for foo3 in [1,2,3]}
+  {for $foo3 in [1,2,3]}
     {call someTemplate /}
     {print $foo3}
     {call someOtherTemplate}
