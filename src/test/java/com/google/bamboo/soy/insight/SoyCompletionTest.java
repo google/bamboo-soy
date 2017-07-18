@@ -93,7 +93,7 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
             + "{let $multiplier: 10}"
             + "{foreach $ignored in $dimension}{/foreach}"
             + "{for $loop in range(1, 2)}"
-            + "  {<caret>",
+            + "  {$<caret>",
         ImmutableSet.of("$dimension", "$force", "$multiplier", "$loop"));
   }
 }

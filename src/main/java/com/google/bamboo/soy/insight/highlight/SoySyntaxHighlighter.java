@@ -152,12 +152,6 @@ public class SoySyntaxHighlighter extends SyntaxHighlighterBase {
     attributesToTokenMap.put(
         COMMENT, ImmutableSet.of(SoyTypes.COMMENT_BLOCK, SoyTypes.DOC_COMMENT_BLOCK));
 
-    attributesToTokenMap.put(
-        VARIABLE_REFERENCE,
-        ImmutableSet.of(
-            SoyTypes.DOLLAR_SINGLE_IDENTIFIER_LITERAL,
-            SoyTypes.CSS_DOLLAR_MULTI_IDENTIFIER_LITERAL));
-
     tokenToAttributesMap = ImmutableMap.copyOf(createTokenToAttributesMap(attributesToTokenMap));
   }
 

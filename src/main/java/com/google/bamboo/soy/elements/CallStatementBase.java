@@ -30,7 +30,7 @@ public interface CallStatementBase extends PsiElement {
   @Nullable
   default String getTemplateName() {
     try {
-      return getBeginCall().getTemplateReferenceIdentifier().getIdentifier().getText();
+      return getBeginCall().getTemplateReferenceIdentifier().getText();
     } catch (NullPointerException e) {
       return null;
     }

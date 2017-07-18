@@ -126,13 +126,10 @@
     COMMENT_BLOCK = "regexp:(/\*([^*]|(\*+[^*/]))*(\*+/))"
     HTML_COMMENT ="regexp:<!--([^\r\n]|(\r|\n|\r\n))*-->"
 
-    DASHED_IDENTIFIER_LITERAL = "regexp:\$?[a-zA-Z_]([a-zA-Z_0-9])*(-[a-zA-Z_]([a-zA-Z_0-9])*)+"
-    DOLLAR_SINGLE_IDENTIFIER_LITERAL = "regexp:\$[a-zA-Z_][a-zA-Z_0-9]*"
-    CSS_DOLLAR_MULTI_IDENTIFIER_LITERAL = "regexp:\$[a-zA-Z_][a-zA-Z_0-9]*((\.[a-zA-Z_][a-zA-Z_0-9]*)|(-[a-zA-Z_0-9]+))+"
-    CSS_PERCENT_IDENTIFIER_LITERAL = "regexp:%[a-zA-Z_][a-zA-Z_0-9]*(-[a-zA-Z_][a-zA-Z_0-9]*)*"
-    SINGLE_IDENTIFIER_LITERAL = "regexp:[a-zA-Z_][a-zA-Z_0-9]*"
-    LOCAL_IDENTIFIER_LITERAL = "regexp:\.[a-zA-Z_][a-zA-Z_0-9]*(\.[a-zA-Z_][a-zA-Z_0-9]*)*"
-    FULLY_QUALIFIED_IDENTIFIER_LITERAL = "regexp:[a-zA-Z_]([a-zA-Z_0-9])*(\.[a-zA-Z_]([a-zA-Z_0-9]*))*"
+    IDENTIFIER_WORD = "regexp:[a-zA-Z_]([a-zA-Z_0-9])*"
+    DOLLAR_IDENTIFIER_WORD = "regexp:\$[a-zA-Z_]([a-zA-Z_0-9])*"
+    IDENTIFIER_FIELD = "regexp:\.[a-zA-Z_]([a-zA-Z_0-9])*"
+    CSS_IDENTIFIER_LITERAL = "regexp:%?[a-zA-Z_-]([a-zA-Z_0-9-])*"
 
     STRING_LITERAL = "regexp:'([^\r\n'\\]|\\.)*'"
     MULTI_LINE_STRING_LITERAL = "regexp:'([^'\\]|\\([^]))*'"
@@ -148,84 +145,91 @@
 
 FileInput ::= BlockList
 
-// Identifiers
+// Identifier
 
 private KeywordsAllowedInIdentifiers ::=
     ANY | AS | ATTRIBUTES | BOOL | CSS | FLOAT | HTML | INT | JS | LB | LIST |
     MAP | MSG | NIL | NUMBER | PLURAL | RB | SP | STRING | URI | XID
 
-private SingleIdentifier ::= LOCAL_IDENTIFIER_LITERAL | SINGLE_IDENTIFIER_LITERAL | KeywordsAllowedInIdentifiers
+// A single identifier token: foo, bar, any, int
+private PlainIdentifier ::= IDENTIFIER_WORD | KeywordsAllowedInIdentifiers
 
-private FullyQualifiedIdentifier ::= SingleIdentifier | FULLY_QUALIFIED_IDENTIFIER_LITERAL
+// A variable reference: $foo, $bar, $template
+private VariableIdentifier ::= DOLLAR_IDENTIFIER_WORD
 
-private CssEnabledIdentifier ::= FullyQualifiedIdentifier | CSS_PERCENT_IDENTIFIER_LITERAL | DASHED_IDENTIFIER_LITERAL |
-    DOLLAR_SINGLE_IDENTIFIER_LITERAL | CSS_DOLLAR_MULTI_IDENTIFIER_LITERAL
+// A sequence of tokens representing namespace, template or function id: my.name.space, .template
+private QualifiedIdentifier ::= (PlainIdentifier | IDENTIFIER_FIELD) IDENTIFIER_FIELD*
 
-Identifier ::= CssEnabledIdentifier
+// A valid css identifier: dashes are allowed, dots are not: -foo-bar, %foo-bar, foo
+CssIdentifier ::= CSS_IDENTIFIER_LITERAL | PlainIdentifier
 
-TemplateDefinitionIdentifier ::= Identifier {
+// A lax rule for xid identifier: dashes are allowed, dots are allowed: %-foo.bar, %foo-bar, foo
+// Should be caught by annotation.
+XidIdentifier ::= (CSS_IDENTIFIER_LITERAL | PlainIdentifier | IDENTIFIER_FIELD)*
+
+TemplateDefinitionIdentifier ::= QualifiedIdentifier {
   mixin="com.google.bamboo.soy.elements.impl.TemplateDefinitionMixin"
   implements="com.google.bamboo.soy.elements.TemplateDefinitionElement"
   stubClass = "com.google.bamboo.soy.stubs.TemplateDefinitionStub"
   elementTypeFactory = "com.google.bamboo.soy.stubs.StubFactory.getType"
 }
 
-TemplateReferenceIdentifier ::= Identifier {
+TemplateReferenceIdentifier ::= QualifiedIdentifier {
   mixin="com.google.bamboo.soy.elements.impl.IdentifierMixin"
   implements="com.google.bamboo.soy.elements.IdentifierElement"
   methods=[getReference]
 }
 
-VariableReferenceIdentifier ::= Identifier {
+VariableReferenceIdentifier ::= VariableIdentifier {
   mixin="com.google.bamboo.soy.elements.impl.IdentifierMixin"
   implements="com.google.bamboo.soy.elements.IdentifierElement"
   methods=[getReference]
 }
 
-VariableDefinitionIdentifier ::= Identifier {
+VariableDefinitionIdentifier ::= VariableIdentifier {
   mixin="com.google.bamboo.soy.elements.impl.VariableDefinitionMixin"
   implements="com.google.bamboo.soy.elements.VariableDefinitionElement"
   methods=[setName getName]
 }
 
-ParamDefinitionIdentifier ::= Identifier {
+ParamDefinitionIdentifier ::= PlainIdentifier {
   mixin="com.google.bamboo.soy.elements.impl.VariableDefinitionMixin"
   implements="com.google.bamboo.soy.elements.VariableDefinitionElement"
   methods=[setName getName]
  }
 
-ParamSpecificationIdentifier ::= Identifier {
+ParamSpecificationIdentifier ::= PlainIdentifier {
   mixin="com.google.bamboo.soy.elements.impl.ParamIdentifierMixin"
   implements="com.google.bamboo.soy.elements.ParamIdentifierElement"
   methods=[getReference]
 }
 
-NamespaceDeclarationIdentifier ::= Identifier {
+NamespaceDeclarationIdentifier ::= QualifiedIdentifier {
   mixin="com.google.bamboo.soy.elements.impl.NamespaceDeclarationMixin"
   implements="com.google.bamboo.soy.elements.NamespaceDeclarationElement"
   stubClass = "com.google.bamboo.soy.stubs.NamespaceDeclarationStub"
   elementTypeFactory = "com.google.bamboo.soy.stubs.StubFactory.getType"
 }
 
-NamespaceIdentifier ::= Identifier
+NamespaceIdentifier ::= QualifiedIdentifier
 
-AliasIdentifier ::= Identifier
+AliasIdentifier ::= PlainIdentifier
 
-TypeIdentifier ::= Identifier
+TypeIdentifier ::= QualifiedIdentifier
 
-PackageIdentifier ::= Identifier
+PackageIdentifier ::= QualifiedIdentifier
 
-FieldIdentifier ::= SingleIdentifier
+FieldIdentifier ::= PlainIdentifier
 
-AttributeNameIdentifier ::= Identifier
+AttributeNameIdentifier ::= PlainIdentifier
 
-FunctionIdentifier ::= Identifier
+FunctionIdentifier ::= QualifiedIdentifier
 
 // Literals
 
 ValueLiteral ::= NumberLiteral | AnyStringLiteral | BOOL_LITERAL
 
-NumberLiteral ::= INTEGER_LITERAL | FLOAT_LITERAL | DOT FLOAT_LITERAL
+private NumberLiteral ::= INTEGER_LITERAL | FLOAT_LITERAL | DOT FLOAT_LITERAL
 
 AnyStringLiteral ::= STRING_LITERAL | MULTI_LINE_STRING_LITERAL {
   mixin="com.google.bamboo.soy.elements.impl.IdentifierMixin"
@@ -711,7 +715,8 @@ DefaultTag ::= <<BracedTag DEFAULT>>
 
 CssStatement ::= <<BracedTag CssStatementTagBody>>
 
-private CssStatementTagBody ::= CSS Identifier {
+private CssStatementTagBody ::= CSS CssIdentifier  {
+  pin = 1
   recoverWhile = "recoverEndOfTag"
 }
 
@@ -719,7 +724,8 @@ private CssStatementTagBody ::= CSS Identifier {
 
 XidStatement ::= <<BracedTag XidStatementTagBody>>
 
-private XidStatementTagBody ::= XID Identifier {
+private XidStatementTagBody ::= XID XidIdentifier {
+  pin = 1
   recoverWhile = "recoverEndOfTag"
 }
 
@@ -799,9 +805,9 @@ private DirectiveList ::= Directive (PIPE Directive)*
 
 Directive
   ::=
-    Identifier
+    FunctionIdentifier
   |
-    Identifier COLON ValueLiteral (COMMA ValueLiteral)*
+    FunctionIdentifier COLON ValueLiteral (COMMA ValueLiteral)*
 
 CommaSeparatedExpressionList ::= ExpressionList (COMMA ExpressionList)* COMMA?
 
@@ -811,40 +817,34 @@ WhitespaceStatement ::= <<BracedTag TAB>>|<<BracedTag NEWLINE_LITERAL>>|<<Braced
 
 // Expressions
 
-ExpressionList
-  ::=
-    Expression BinaryOperator ExpressionList [ExpressionTail]
-  |
-    Expression [ExpressionTail]
+private ExpressionList ::= Expression
 
-
-private ExpressionTail
-  ::=
-    SQUARE_OPEN ExpressionList SQUARE_CLOSE [ExpressionTail]
-  |
-    INDEX_NULL_CHECK ExpressionList SQUARE_CLOSE [ExpressionTail]
-
-ParenthesizedExpression ::= PARENS_OPEN Expression PARENS_CLOSE
-
-Expression
-  ::=
+private ObjectTypedExpression ::=
     // List definition.
     SQUARE_OPEN [CommaSeparatedExpressionList] SQUARE_CLOSE
   |
-    // List/Map access.
-    [FunctionCall | VariableReferenceIdentifier | ParenthesizedExpression] SQUARE_OPEN [CommaSeparatedExpressionList] SQUARE_CLOSE
-  |
-    NumberLiteral
-  |
-    FunctionCall
+    PARENS_OPEN Expression PARENS_CLOSE
   |
     VariableReferenceIdentifier
+  |
+    FunctionCall
+
+private ObjectTypedOperators ::=
+    // List/Map access.
+    (SQUARE_OPEN | INDEX_NULL_CHECK) [CommaSeparatedExpressionList] SQUARE_CLOSE
+  |
+    // Dot operator
+    IDENTIFIER_FIELD
+  |
+    // ?. operator
+    DOT_NULL_CHECK IDENTIFIER_WORD
+
+private SimpleExpression ::=
+    NumberLiteral
   |
     AnyStringLiteral
   |
     BOOL_LITERAL
-  |
-    ParenthesizedExpression
   |
     PLUS Expression
   |
@@ -854,13 +854,10 @@ Expression
   |
     EXCLAMATION Expression
 
-FunctionCall
-  ::=
-    FunctionIdentifier PARENS_OPEN PARENS_CLOSE
-  |
-    FunctionIdentifier PARENS_OPEN FunctionParameterList PARENS_CLOSE
+Expression ::=
+  (ObjectTypedExpression (ObjectTypedOperators)* | SimpleExpression) (BinaryOperator Expression)*
 
-private FunctionParameterList ::= ExpressionList (COMMA ExpressionList)*
+FunctionCall ::= FunctionIdentifier PARENS_OPEN [CommaSeparatedExpressionList] PARENS_CLOSE
 
 private BinaryOperator ::=
     BooleanOperator

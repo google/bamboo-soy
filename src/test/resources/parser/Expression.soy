@@ -1,0 +1,8 @@
+{template expression}
+  {@param a: any}
+  {@param b: any}
+  {isNonnull($a)
+    ? $a.field?.['index']?[1]
+    : ([1, 2, 3][$b] ?: 4)
+  }
+{/template}
