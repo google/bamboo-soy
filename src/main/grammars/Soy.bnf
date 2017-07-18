@@ -151,14 +151,20 @@ private KeywordsAllowedInIdentifiers ::=
     ANY | AS | ATTRIBUTES | BOOL | CSS | FLOAT | HTML | INT | JS | LB | LIST |
     MAP | MSG | NIL | NUMBER | PLURAL | RB | SP | STRING | URI | XID
 
+// A single identifier token: foo, bar, any, int
 private PlainIdentifier ::= IDENTIFIER_WORD | KeywordsAllowedInIdentifiers
 
+// A variable reference: $foo, $bar, $template
 private VariableIdentifier ::= DOLLAR_IDENTIFIER_WORD
 
+// A sequence of tokens representing namespace, template or function id: my.name.space, .template
 private QualifiedIdentifier ::= (PlainIdentifier | IDENTIFIER_FIELD) IDENTIFIER_FIELD*
 
+// A valid css identifier: dashes are allowed, dots are not: -foo-bar, %foo-bar, foo
 CssIdentifier ::= CSS_IDENTIFIER_LITERAL | PlainIdentifier
 
+// A lax rule for xid identifier: dashes are allowed, dots are allowed: %-foo.bar, %foo-bar, foo
+// Should be caught by annotation.
 XidIdentifier ::= (CSS_IDENTIFIER_LITERAL | PlainIdentifier | IDENTIFIER_FIELD)*
 
 TemplateDefinitionIdentifier ::= QualifiedIdentifier {
