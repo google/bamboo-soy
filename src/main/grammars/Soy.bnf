@@ -15,8 +15,7 @@
 
   implements(".*Statement")="com.google.bamboo.soy.elements.StatementBase"
 
-  extends(".*Expr")=Expr
-  extends("VariableReferenceIdentifier|NumberLiteral|AnyStringLiteral")=Expr
+  extends(".*Expr|VariableReferenceIdentifier")=Expr
   consumeTokenMethod(".*Expr")="consumeTokenFast"
 
   tokens = [
@@ -841,16 +840,15 @@ Expr ::= NullCheckTernaryExpr
   | UnaryExpr
   | AtomExpr
 
-private AtomExpr ::= LiteralExpr
+private AtomExpr ::= VariableReferenceIdentifier
+  | LiteralExpr
   | FunctionCallExpr
   | FieldExpr
   | IndexExpr
   | ListExpr
   | ParenthesizedExpr
 
-LiteralExpr ::= VariableReferenceIdentifier
-  | NumberLiteral
-  | AnyStringLiteral
+LiteralExpr ::= NumberLiteral | AnyStringLiteral
 
 NullCheckTernaryExpr ::= Expr QUESTIONMARK Expr COLON Expr
 NullCheckBinExpr ::= Expr TERNARY_COALESCER Expr
