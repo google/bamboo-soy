@@ -65,7 +65,7 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
 %xstate TAG_KEYWORD
 %xstate LITERAL
 %xstate DOUBLE_BRACE
-%state TAG_NO_KEYWORD
+%xstate TAG_NO_KEYWORD
 
 %%
 
