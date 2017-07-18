@@ -27,8 +27,7 @@ public class UnfinishedIdentifiersAnnotator implements Annotator {
   public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
     if (psiElement instanceof SoyVariableReferenceIdentifier && psiElement.getText().equals("$")) {
       annotationHolder.createErrorAnnotation(psiElement, "Variable name expected.");
-    } else if (psiElement instanceof SoyFieldExpr && (psiElement.getText().endsWith(".")
-        || psiElement.getText().endsWith("?."))) {
+    } else if (psiElement instanceof SoyFieldExpr && psiElement.getText().endsWith(".")) {
       annotationHolder.createErrorAnnotation(psiElement, "Field name expected.");
     }
   }
