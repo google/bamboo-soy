@@ -14,21 +14,21 @@
 
 package com.google.bamboo.soy.insight.annotators;
 
-import com.google.bamboo.soy.parser.SoyAnyStringLiteral;
-import com.google.bamboo.soy.parser.SoyExpr;
+import com.google.bamboo.soy.parser.SoyFieldExpr;
+import com.google.bamboo.soy.parser.SoyVariableReferenceIdentifier;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
-public class DoubleQuotedStringAnnotator implements Annotator {
+public class UnfinishedIdentifiersAnnotator implements Annotator {
+
   @Override
   public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
-    if (psiElement instanceof SoyAnyStringLiteral
-        && psiElement.getParent() instanceof SoyExpr
-        && psiElement.getText().startsWith("\"")) {
-      annotationHolder.createErrorAnnotation(
-          psiElement, "Strings in expressions must use single quotes.");
+    if (psiElement instanceof SoyVariableReferenceIdentifier && psiElement.getText().equals("$")) {
+      annotationHolder.createErrorAnnotation(psiElement, "Variable name expected.");
+    } else if (psiElement instanceof SoyFieldExpr && psiElement.getText().endsWith(".")) {
+      annotationHolder.createErrorAnnotation(psiElement, "Field name expected.");
     }
   }
 }

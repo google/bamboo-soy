@@ -18,20 +18,25 @@ import com.google.bamboo.soy.elements.VariableDefinitionElement;
 import com.google.bamboo.soy.lang.Variable;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 
-public class VariableDefinitionMixin extends ASTWrapperPsiElement
+public abstract class VariableDefinitionMixin extends ASTWrapperPsiElement
     implements VariableDefinitionElement {
+
   public VariableDefinitionMixin(@NotNull ASTNode node) {
     super(node);
   }
 
   @Override
   public String getName() {
-    return getText();
+    return getIdentifierWord() == null ? "" : getIdentifierWord().getText();
+  }
+
+  @Override
+  public int getTextOffset() {
+    return 1;
   }
 
   @Override

@@ -31,11 +31,7 @@ public class SoyFindUsagesProvider implements FindUsagesProvider {
   public WordsScanner getWordsScanner() {
     return new DefaultWordsScanner(
         new SoyLexer(),
-        TokenSet.create(
-            SoyTypes.IDENTIFIER_WORD,
-            SoyTypes.DOLLAR_IDENTIFIER_WORD/*
-            SoyTypes.PARAM_SPECIFICATION_IDENTIFIER,
-            SoyTypes.VARIABLE_DEFINITION_IDENTIFIER*/),
+        TokenSet.create(SoyTypes.IDENTIFIER_WORD),
         TokenSet.create(SoyTypes.COMMENT_BLOCK),
         TokenSet.EMPTY);
   }

@@ -136,7 +136,7 @@ private class LetSingleTreeElement(val psiElement: SoyLetSingleStatement)
   override fun getPresentableText(): String? =
       getPresentableName(psiElement) + " ${psiElement.variableDefinitionIdentifier.name}"
 
-  override fun getLocationString(): String? = " : ${psiElement.expression?.text}"
+  override fun getLocationString(): String? = " : ${psiElement.expr?.text}"
 }
 
 /**
