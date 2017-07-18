@@ -15,10 +15,15 @@
 package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.lang.Variable;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface VariableDefinitionElement extends PsiNamedElement {
+  @Nullable
+  PsiElement getIdentifierWord();
+
   @NotNull
   Variable toVariable();
 }
