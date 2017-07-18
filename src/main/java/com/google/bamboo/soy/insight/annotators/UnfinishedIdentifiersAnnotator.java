@@ -14,22 +14,21 @@
 
 package com.google.bamboo.soy.insight.annotators;
 
-import com.google.bamboo.soy.elements.CallStatementBase;
-import com.google.bamboo.soy.elements.ChoiceStatementBaseElement;
-import com.google.bamboo.soy.parser.SoyUnexpectedStatements;
-import com.google.bamboo.soy.parser.SoyUnfinishedFieldAccess;
-import com.google.bamboo.soy.parser.SoyUnfinishedVariableIdentifier;
+import com.google.bamboo.soy.parser.SoyFieldExpr;
+import com.google.bamboo.soy.parser.SoyVariableReferenceIdentifier;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
 public class UnfinishedIdentifiersAnnotator implements Annotator {
+
   @Override
   public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
-    if (psiElement instanceof SoyUnfinishedVariableIdentifier) {
+    if (psiElement instanceof SoyVariableReferenceIdentifier && psiElement.getText().equals("$")) {
       annotationHolder.createErrorAnnotation(psiElement, "Variable name expected.");
-    } else if (psiElement instanceof SoyUnfinishedFieldAccess) {
+    } else if (psiElement instanceof SoyFieldExpr && (psiElement.getText().endsWith(".")
+        || psiElement.getText().endsWith("?."))) {
       annotationHolder.createErrorAnnotation(psiElement, "Field name expected.");
     }
   }

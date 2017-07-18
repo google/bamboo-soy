@@ -24,9 +24,6 @@ Digit=[0-9]
 CssIdentifierChar={IdentifierChar}|"-"
 
 IdentifierWord={IdentifierChar}({IdentifierChar}|{Digit})*
-DollarIdentifierWord="$"{IdentifierWord}
-IdentifierField="."{IdentifierWord}
-NullCheckIdentifierField="?."{IdentifierWord}
 CssIdentifierLiteral="%"?{CssIdentifierChar}({CssIdentifierChar}|{Digit})*
 
 /* Line terminators, white space, and comments */
@@ -65,33 +62,26 @@ MultiLineDoubleQuotedStringLiteral=\"([^\"\\]|\\([^]))*\"
 MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
 
 /* Exclusive lexer states */
-%xstate SOY_TAG
+%xstate TAG_KEYWORD
 %xstate LITERAL
 %xstate DOUBLE_BRACE
+%state TAG_NO_KEYWORD
 
 %%
 
-<YYINITIAL,SOY_TAG,LITERAL,DOUBLE_BRACE> {
+<YYINITIAL,TAG_KEYWORD,LITERAL,DOUBLE_BRACE> {
   {WhiteSpace}  { return TokenType.WHITE_SPACE; }
 }
 
-<SOY_TAG> {
-  /* Literals */
-  {DoubleQuotedStringLiteral} { return SoyTypes.STRING_LITERAL; }
-  {SingleQuotedStringLiteral} { return SoyTypes.STRING_LITERAL; }
-  {MultiLineDoubleQuotedStringLiteral} { return SoyTypes.MULTI_LINE_STRING_LITERAL; }
-  {MultiLineSingleQuotedStringLiteral} { return SoyTypes.MULTI_LINE_STRING_LITERAL; }
-  {IntegerLiteral} { return SoyTypes.INTEGER_LITERAL; }
-  {FloatingPointLiteral} { return SoyTypes.FLOAT_LITERAL; }
+<TAG_NO_KEYWORD> {
+  {WhiteSpace}  { yybegin(TAG_KEYWORD); return TokenType.WHITE_SPACE; }
+}
 
+<TAG_KEYWORD> {
   true { return SoyTypes.BOOL_LITERAL; }
   false { return SoyTypes.BOOL_LITERAL; }
 
   /* Tag names */
-  "@inject" { return SoyTypes.AT_INJECT; }
-  "@inject?" { return SoyTypes.AT_INJECT_OPT; }
-  "@param" { return SoyTypes.AT_PARAM; }
-  "@param?" { return SoyTypes.AT_PARAM_OPT; }
   "alias" { return SoyTypes.ALIAS; }
   "call" { return SoyTypes.CALL; }
   "case" { return SoyTypes.CASE; }
@@ -122,9 +112,6 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   "template" { return SoyTypes.TEMPLATE; }
   "xid" { return SoyTypes.XID; }
   "msg" { return SoyTypes.MSG; }
-  "\\r" { return SoyTypes.CARRIAGE_RETURN; }
-  "\\n" { return SoyTypes.NEWLINE_LITERAL; }
-  "\\t" { return SoyTypes.TAB; }
 
   /* Types */
   "any" { return SoyTypes.ANY; }
@@ -149,6 +136,30 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
 
   /* Other verbal tokens */
   "as" { return SoyTypes.AS; }
+}
+
+<TAG_KEYWORD,TAG_NO_KEYWORD> {
+  /* Cannot be followed by a tag name. */
+  "." { yybegin(TAG_NO_KEYWORD); return SoyTypes.DOT; }
+  "?." { yybegin(TAG_NO_KEYWORD); return SoyTypes.DOT_NULL_CHECK; }
+  "$" { yybegin(TAG_NO_KEYWORD); return SoyTypes.DOLLAR; }
+
+  /* Literals */
+  {DoubleQuotedStringLiteral} { return SoyTypes.STRING_LITERAL; }
+  {SingleQuotedStringLiteral} { return SoyTypes.STRING_LITERAL; }
+  {MultiLineDoubleQuotedStringLiteral} { return SoyTypes.MULTI_LINE_STRING_LITERAL; }
+  {MultiLineSingleQuotedStringLiteral} { return SoyTypes.MULTI_LINE_STRING_LITERAL; }
+  {IntegerLiteral} { return SoyTypes.INTEGER_LITERAL; }
+  {FloatingPointLiteral} { return SoyTypes.FLOAT_LITERAL; }
+
+  /* Tag names */
+  "@inject" { return SoyTypes.AT_INJECT; }
+  "@inject?" { return SoyTypes.AT_INJECT_OPT; }
+  "@param" { return SoyTypes.AT_PARAM; }
+  "@param?" { return SoyTypes.AT_PARAM_OPT; }
+  "\\r" { return SoyTypes.CARRIAGE_RETURN; }
+  "\\n" { return SoyTypes.NEWLINE_LITERAL; }
+  "\\t" { return SoyTypes.TAB; }
 
   /* Tag closing */
   "/}" { yybegin(YYINITIAL); return SoyTypes.SLASH_RBRACE; }
@@ -173,7 +184,7 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   ":" { return SoyTypes.COLON; }
   "?" { return SoyTypes.QUESTIONMARK; }
   "?:" { return SoyTypes.TERNARY_COALESCER; }
-  "?." { return SoyTypes.DOT_NULL_CHECK; }
+
   "?[" { return SoyTypes.INDEX_NULL_CHECK; }
   "|" { return SoyTypes.PIPE; }
 
@@ -191,7 +202,6 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   "%" { return SoyTypes.PERCENT; }
   "+" { return SoyTypes.PLUS; }
   "-" { return SoyTypes.MINUS; }
-  "." { return SoyTypes.DOT; }
   "!" { return SoyTypes.EXCLAMATION; }
 
   "<" { return SoyTypes.LESS; }
@@ -201,16 +211,11 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   "<=" { return SoyTypes.LESS_EQUAL; }
   "!=" { return SoyTypes.NOT_EQUAL; }
 
-  "$" { return SoyTypes.DOLLAR; }
-
   {IdentifierWord} { return SoyTypes.IDENTIFIER_WORD; }
-  {IdentifierField} { return SoyTypes.IDENTIFIER_FIELD; }
-  {NullCheckIdentifierField} { return SoyTypes.NULL_CHECK_IDENTIFIER_FIELD; }
-  {DollarIdentifierWord} { return SoyTypes.DOLLAR_IDENTIFIER_WORD; }
   {CssIdentifierLiteral} { return SoyTypes.CSS_IDENTIFIER_LITERAL; }
 }
 
-<SOY_TAG,YYINITIAL> {
+<TAG_KEYWORD,TAG_NO_KEYWORD,YYINITIAL> {
   /* Comments */
   ^{DoubleSlashComment} { return SoyTypes.COMMENT_BLOCK; }
   {DocComment} { return SoyTypes.DOC_COMMENT_BLOCK; }
@@ -218,8 +223,8 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
 
   "{literal}" { yybegin(LITERAL); return SoyTypes.LITERAL; }
   "{{literal}}" { yybegin(LITERAL); return SoyTypes.LITERAL_DOUBLE; }
-  "{" { yybegin(SOY_TAG); return SoyTypes.LBRACE; }
-  "{{" { yybegin(SOY_TAG); return SoyTypes.LBRACE_LBRACE; }
+  "{" { yybegin(TAG_KEYWORD); return SoyTypes.LBRACE; }
+  "{{" { yybegin(TAG_KEYWORD); return SoyTypes.LBRACE_LBRACE; }
 
   . { return SoyTypes.OTHER; }
 }
