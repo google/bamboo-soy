@@ -14,11 +14,11 @@
 
 package com.google.bamboo.soy.insight.annotators;
 
-import com.google.bamboo.soy.lang.ParamUtils;
 import com.google.bamboo.soy.elements.IdentifierElement;
-import com.google.bamboo.soy.parser.SoyTemplateBlock;
+import com.google.bamboo.soy.lang.ParamUtils;
 import com.google.bamboo.soy.lang.Parameter;
 import com.google.bamboo.soy.lang.Variable;
+import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
@@ -30,13 +30,15 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 public class UnusedParameterAnnotator implements Annotator {
+
   @Override
   public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder annotationHolder) {
     if (element instanceof SoyTemplateBlock) {
-
       // Abort if values are passed with data="...", parameter are sometimes defined for the sake
       // of added documentation even when not technically used directly in the template body.
-      if (element.getText().contains("data=")) return;
+      if (element.getText().contains("data=")) {
+        return;
+      }
 
       Collection<Parameter> parameters = ParamUtils.getParamDefinitions(element);
 
@@ -60,7 +62,8 @@ public class UnusedParameterAnnotator implements Annotator {
         }
 
         if (!isMatched) {
-          annotationHolder.createErrorAnnotation(parameter.element, "Unused parameter.");
+          annotationHolder.createInfoAnnotation(parameter.element,
+              "Parameter " + parameter.name + " is unused.");
         }
       }
     }
