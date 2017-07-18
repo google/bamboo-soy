@@ -29,6 +29,7 @@ import com.google.bamboo.soy.parser.SoyBeginDelCall;
 import com.google.bamboo.soy.parser.SoyBeginLet;
 import com.google.bamboo.soy.parser.SoyBeginParamTag;
 import com.google.bamboo.soy.parser.SoyBeginTemplate;
+import com.google.bamboo.soy.parser.SoyExpr;
 import com.google.bamboo.soy.parser.SoyExpression;
 import com.google.bamboo.soy.parser.SoyListType;
 import com.google.bamboo.soy.parser.SoyMapType;
@@ -187,7 +188,7 @@ public class SoyCompletionContributor extends CompletionContributor {
   private void extendWithVariableNamesInScope() {
     extend(
         CompletionType.BASIC,
-        psiElement().inside(SoyExpression.class),
+        psiElement().inside(SoyExpr.class),
         new CompletionProvider<CompletionParameters>() {
           @Override
           protected void addCompletions(

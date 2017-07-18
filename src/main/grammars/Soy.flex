@@ -26,6 +26,7 @@ CssIdentifierChar={IdentifierChar}|"-"
 IdentifierWord={IdentifierChar}({IdentifierChar}|{Digit})*
 DollarIdentifierWord="$"{IdentifierWord}
 IdentifierField="."{IdentifierWord}
+NullCheckIdentifierField="?."{IdentifierWord}
 CssIdentifierLiteral="%"?{CssIdentifierChar}({CssIdentifierChar}|{Digit})*
 
 /* Line terminators, white space, and comments */
@@ -200,8 +201,11 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   "<=" { return SoyTypes.LESS_EQUAL; }
   "!=" { return SoyTypes.NOT_EQUAL; }
 
+  "$" { return SoyTypes.DOLLAR; }
+
   {IdentifierWord} { return SoyTypes.IDENTIFIER_WORD; }
   {IdentifierField} { return SoyTypes.IDENTIFIER_FIELD; }
+  {NullCheckIdentifierField} { return SoyTypes.NULL_CHECK_IDENTIFIER_FIELD; }
   {DollarIdentifierWord} { return SoyTypes.DOLLAR_IDENTIFIER_WORD; }
   {CssIdentifierLiteral} { return SoyTypes.CSS_IDENTIFIER_LITERAL; }
 }

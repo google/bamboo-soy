@@ -22,7 +22,7 @@ Closure Template File
               SoyBeginIfImpl(BEGIN_IF)
                 PsiElement(SoyTokenType.{)('{')
                 PsiElement(SoyTokenType.if)('if')
-                PsiErrorElement:<expression> or SoyTokenType./} expected, got '}'
+                PsiErrorElement:<expr> or SoyTokenType./} expected, got '}'
                   <empty list>
                 PsiElement(SoyTokenType.})('}')
           PsiWhiteSpace('\n  ')

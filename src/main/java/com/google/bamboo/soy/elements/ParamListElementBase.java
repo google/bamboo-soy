@@ -35,7 +35,7 @@ public interface ParamListElementBase extends PsiElement {
   @Nullable
   default String getInlinedValue() {
     try {
-      return getBeginParamTag().getExpression().getText();
+      return getBeginParamTag().getExpr().getText();
     } catch (NullPointerException e) {
       return null;
     }

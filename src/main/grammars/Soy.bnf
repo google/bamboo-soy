@@ -15,6 +15,10 @@
 
   implements(".*Statement")="com.google.bamboo.soy.elements.StatementBase"
 
+  extends(".*Expr")=Expr
+  extends("VariableReferenceIdentifier|NumberLiteral|AnyStringLiteral")=Expr
+  consumeTokenMethod(".*Expr")="consumeTokenFast"
+
   tokens = [
     ALIAS = "alias"
     AMP_AMP = "&&"
@@ -35,6 +39,7 @@
     DELCALL = "delcall"
     DELPACKAGE = "delpackage"
     DELTEMPLATE = "deltemplate"
+    DOLLAR = "$"
     DOT = "."
     DOT_NULL_CHECK = "?."
     ELSE = "else"
@@ -129,6 +134,7 @@
     IDENTIFIER_WORD = "regexp:[a-zA-Z_]([a-zA-Z_0-9])*"
     DOLLAR_IDENTIFIER_WORD = "regexp:\$[a-zA-Z_]([a-zA-Z_0-9])*"
     IDENTIFIER_FIELD = "regexp:\.[a-zA-Z_]([a-zA-Z_0-9])*"
+    NULL_CHECK_IDENTIFIER_FIELD = "regexp:\?\.[a-zA-Z_]([a-zA-Z_0-9])*"
     CSS_IDENTIFIER_LITERAL = "regexp:%?[a-zA-Z_-]([a-zA-Z_0-9-])*"
 
     STRING_LITERAL = "regexp:'([^\r\n'\\]|\\.)*'"
@@ -155,7 +161,11 @@ private KeywordsAllowedInIdentifiers ::=
 private PlainIdentifier ::= IDENTIFIER_WORD | KeywordsAllowedInIdentifiers
 
 // A variable reference: $foo, $bar, $template
-private VariableIdentifier ::= DOLLAR_IDENTIFIER_WORD
+private VariableIdentifier ::= DOLLAR_IDENTIFIER_WORD | UnfinishedVariableIdentifier
+UnfinishedVariableIdentifier ::= DOLLAR
+
+private FieldAccess ::= IDENTIFIER_FIELD | NULL_CHECK_IDENTIFIER_FIELD | UnfinishedFieldAccess
+UnfinishedFieldAccess ::= DOT_NULL_CHECK
 
 // A sequence of tokens representing namespace, template or function id: my.name.space, .template
 private QualifiedIdentifier ::= (PlainIdentifier | IDENTIFIER_FIELD) IDENTIFIER_FIELD*
@@ -496,7 +506,7 @@ ForStatement
 
 BeginFor ::= <<BracedTag BeginForTagBody>>
 
-private BeginForTagBody ::= FOR VariableDefinitionIdentifier IN ExpressionList {
+private BeginForTagBody ::= FOR VariableDefinitionIdentifier IN Expr {
   pin = 1
   recoverWhile = "recoverEndOfTag"
 }
@@ -519,7 +529,7 @@ IfEmptyTag ::= <<BracedTag IFEMPTY>>
 
 BeginForeach ::= <<BracedTag BeginForeachTagBody>>
 
-private BeginForeachTagBody ::= FOREACH VariableDefinitionIdentifier IN ExpressionList {
+private BeginForeachTagBody ::= FOREACH VariableDefinitionIdentifier IN Expr {
   pin = 1
   recoverWhile = "recoverEndOfTag"
 }
@@ -538,7 +548,7 @@ IfStatement
 
 BeginIf ::= <<BracedTag BeginIfTagBody>>
 
-private BeginIfTagBody ::= IF ExpressionList {
+private BeginIfTagBody ::= IF Expr {
   pin = 1
   recoverWhile = "recoverEndOfTag"
 }
@@ -553,7 +563,7 @@ private ElseIfClauseList
 
 BeginElseIf ::= <<BracedTag BeginElseIfTagBody>>
 
-private BeginElseIfTagBody ::= ELSEIF ExpressionList {
+private BeginElseIfTagBody ::= ELSEIF Expr {
   pin = 1
 }
 
@@ -626,7 +636,7 @@ private ParamListElementBody ::= <<StatementList (BeginParamTag)>> EndParamTag {
 
 BeginParamTag ::= <<BracedTag BeginParamTagBody>>
 
-private BeginParamTagBody ::= PARAM (ParamSpecificationIdentifier COLON ExpressionList | AttributeList | ParamSpecificationIdentifier [AttributeList]) {
+private BeginParamTagBody ::= PARAM (ParamSpecificationIdentifier COLON Expr | AttributeList | ParamSpecificationIdentifier [AttributeList]) {
   pin = 1
   recoverWhile = "recoverEndOfTag"
 }
@@ -646,7 +656,7 @@ PluralStatement ::= BeginPlural CaseAndDefaultClauses EndPluralTag {
 
 BeginPlural ::= <<BracedTag BeginPluralTagBody>>
 
-private BeginPluralTagBody ::= PLURAL ExpressionList [AttributeKeyValuePair] {
+private BeginPluralTagBody ::= PLURAL Expr [AttributeKeyValuePair] {
   pin = 1
   recoverWhile = "recoverEndOfTag"
 }
@@ -660,7 +670,7 @@ SwitchStatement ::= BeginSwitch CaseAndDefaultClauses EndSwitchTag {
 
 BeginSwitch ::= <<BracedTag BeginSwitchTagBody>>
 
-private BeginSwitchTagBody ::= SWITCH ExpressionList {
+private BeginSwitchTagBody ::= SWITCH Expr {
   pin = 1
 }
 
@@ -673,7 +683,7 @@ SelectStatement ::= BeginSelectStatement CaseAndDefaultClauses EndSelectTag {
 
 BeginSelectStatement ::= <<BracedTag BeginSelectStatementTagBody>>
 
-private BeginSelectStatementTagBody ::= SELECT ExpressionList {
+private BeginSelectStatementTagBody ::= SELECT Expr {
   pin = 1
   recoverWhile = "recoverEndOfTag"
 }
@@ -733,7 +743,7 @@ private XidStatementTagBody ::= XID XidIdentifier {
 
 LetSingleStatement ::= <<BracedTag LetSingleTagBody>>
 
-private LetSingleTagBody ::= LET VariableDefinitionIdentifier COLON ExpressionList {
+private LetSingleTagBody ::= LET VariableDefinitionIdentifier COLON Expr {
   pin = 3
   recoverWhile = "recoverEndOfTag"
 }
@@ -794,12 +804,12 @@ PrintStatement ::= <<BracedTag PrintBody>>
 
 private PrintBody ::= ImplicitPrintBody | ExplicitPrintBody
 
-private ExplicitPrintBody ::= PRINT ExpressionList [PIPE DirectiveList] {
+private ExplicitPrintBody ::= PRINT Expr [PIPE DirectiveList] {
   pin = 1
   recoverWhile = "recoverEndOfTag"
 }
 
-private ImplicitPrintBody ::= ExpressionList [PIPE DirectiveList] [AttributeKeyValuePair]
+private ImplicitPrintBody ::= Expr [PIPE DirectiveList] [AttributeKeyValuePair]
 
 private DirectiveList ::= Directive (PIPE Directive)*
 
@@ -809,89 +819,53 @@ Directive
   |
     FunctionIdentifier COLON ValueLiteral (COMMA ValueLiteral)*
 
-CommaSeparatedExpressionList ::= ExpressionList (COMMA ExpressionList)* COMMA?
+CommaSeparatedExpressionList ::= Expr (COMMA Expr)* COMMA?
 
 // Whitespace statement
 
 WhitespaceStatement ::= <<BracedTag TAB>>|<<BracedTag NEWLINE_LITERAL>>|<<BracedTag CARRIAGE_RETURN>>
 
 // Expressions
+// https://developers.google.com/closure/templates/docs/concepts#expressions
+// https://github.com/JetBrains/Grammar-Kit/blob/master/HOWTO.md#24-compact-expression-parsing-with-priorities
+Expr ::= NullCheckTernaryExpr
+  | NullCheckBinExpr
+  | OrBinExpr
+  | AndBinExpr
+  | BoolOrBinExpr
+  | BoolAndBinExpr
+  | CompBinExpr
+  | RelCompBinExpr
+  | AddBinExpr
+  | MulBinExpr
+  | UnaryExpr
+  | AtomExpr
 
-private ExpressionList ::= Expression
+private AtomExpr ::= LiteralExpr
+  | FunctionCallExpr
+  | FieldExpr
+  | IndexExpr
+  | ListExpr
+  | ParenthesizedExpr
 
-private ObjectTypedExpression ::=
-    // List definition.
-    SQUARE_OPEN [CommaSeparatedExpressionList] SQUARE_CLOSE
-  |
-    PARENS_OPEN Expression PARENS_CLOSE
-  |
-    VariableReferenceIdentifier
-  |
-    FunctionCall
+LiteralExpr ::= VariableReferenceIdentifier
+  | NumberLiteral
+  | AnyStringLiteral
 
-private ObjectTypedOperators ::=
-    // List/Map access.
-    (SQUARE_OPEN | INDEX_NULL_CHECK) [CommaSeparatedExpressionList] SQUARE_CLOSE
-  |
-    // Dot operator
-    IDENTIFIER_FIELD
-  |
-    // ?. operator
-    DOT_NULL_CHECK IDENTIFIER_WORD
+NullCheckTernaryExpr ::= Expr QUESTIONMARK Expr COLON Expr
+NullCheckBinExpr ::= Expr TERNARY_COALESCER Expr
+OrBinExpr ::= Expr OR Expr
+AndBinExpr ::= Expr AND Expr
+BoolOrBinExpr ::= Expr PIPE_PIPE Expr
+BoolAndBinExpr ::= Expr AMP_AMP Expr
+CompBinExpr ::= Expr (EQUAL_EQUAL | NOT_EQUAL) Expr
+RelCompBinExpr ::= Expr (GREATER | GREATER_EQUAL | LESS_EQUAL | LESS) Expr
+AddBinExpr ::= Expr (PLUS | MINUS) Expr
+MulBinExpr ::= Expr (STAR | SLASH | PERCENT) Expr
+UnaryExpr ::= (PLUS | MINUS | NOT | EXCLAMATION) Expr
 
-private SimpleExpression ::=
-    NumberLiteral
-  |
-    AnyStringLiteral
-  |
-    BOOL_LITERAL
-  |
-    PLUS Expression
-  |
-    MINUS Expression
-  |
-    NOT Expression
-  |
-    EXCLAMATION Expression
-
-Expression ::=
-  (ObjectTypedExpression (ObjectTypedOperators)* | SimpleExpression) (BinaryOperator Expression)*
-
-FunctionCall ::= FunctionIdentifier PARENS_OPEN [CommaSeparatedExpressionList] PARENS_CLOSE
-
-private BinaryOperator ::=
-    BooleanOperator
-  |
-    ArithmeticOperator
-  |
-    RelationalOperator
-  |
-    DotReferenceOperator
-  |
-    NullCheckOperator
-
-private BooleanOperator ::= AND | OR | PIPE_PIPE | AMP_AMP
-
-private ArithmeticOperator ::= STAR | SLASH | PERCENT | PLUS | MINUS
-
-private RelationalOperator
-  ::=
-    GREATER_EQUAL
-  |
-    EQUAL_EQUAL
-  |
-    LESS_EQUAL
-  |
-    NOT_EQUAL
-  |
-    LESS
-  |
-    GREATER
-  |
-    QUESTIONMARK  // fake a ternary operator
-  |
-    COLON  // fake a ternary operator
-
-private DotReferenceOperator ::= DOT
-
-private NullCheckOperator ::= TERNARY_COALESCER | DOT_NULL_CHECK
+FunctionCallExpr ::= FunctionIdentifier PARENS_OPEN [CommaSeparatedExpressionList] PARENS_CLOSE
+FieldExpr ::= Expr FieldAccess
+IndexExpr ::= Expr (SQUARE_OPEN | INDEX_NULL_CHECK) [CommaSeparatedExpressionList] SQUARE_CLOSE
+ListExpr ::= SQUARE_OPEN [CommaSeparatedExpressionList] SQUARE_CLOSE
+ParenthesizedExpr ::= PARENS_OPEN Expr PARENS_CLOSE
