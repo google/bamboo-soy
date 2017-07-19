@@ -173,7 +173,7 @@ CssIdentifier ::= CSS_IDENTIFIER_LITERAL | PlainIdentifier
 
 // A lax rule for xid identifier: dashes are allowed, dots are allowed: %-foo.bar, %foo-bar, foo
 // Should be caught by annotation.
-XidIdentifier ::= (DOT? (CSS_IDENTIFIER_LITERAL | PlainIdentifier))*
+XidIdentifier ::= (DOT? (CSS_IDENTIFIER_LITERAL | PlainIdentifier))+
 
 TemplateDefinitionIdentifier ::= QualifiedIdentifier {
   mixin="com.google.bamboo.soy.elements.impl.TemplateDefinitionMixin"
@@ -723,19 +723,13 @@ DefaultTag ::= <<BracedTag DEFAULT>>
 
 CssStatement ::= <<BracedTag CssStatementTagBody>>
 
-private CssStatementTagBody ::= CSS CssIdentifier  {
-  pin = 1
-  recoverWhile = "recoverEndOfTag"
-}
+private CssStatementTagBody ::= CSS CssIdentifier
 
 // Xid statement
 
 XidStatement ::= <<BracedTag XidStatementTagBody>>
 
-private XidStatementTagBody ::= XID XidIdentifier {
-  pin = 1
-  recoverWhile = "recoverEndOfTag"
-}
+private XidStatementTagBody ::= XID XidIdentifier
 
 // Let statement
 
