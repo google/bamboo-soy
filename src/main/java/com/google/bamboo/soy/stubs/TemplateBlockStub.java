@@ -27,6 +27,7 @@ import com.intellij.psi.stubs.StubInputStream;
 import com.intellij.psi.stubs.StubOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
@@ -59,6 +60,7 @@ public class TemplateBlockStub extends StubBase<SoyTemplateBlock> {
         .stream()
         .filter((stub) -> stub instanceof AtParamStub)
         .map((stub) -> ((AtParamStub) stub).getPsi().toParameter())
+        .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }
 

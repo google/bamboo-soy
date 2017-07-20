@@ -30,6 +30,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -82,6 +83,7 @@ public abstract class TemplateBlockMixin extends SoyStubBasedPsiElementBase<Temp
     return getAtParamSingleList()
         .stream()
         .map(SoyAtParamSingle::toParameter)
+        .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }
 
@@ -104,6 +106,7 @@ public abstract class TemplateBlockMixin extends SoyStubBasedPsiElementBase<Temp
     return getAtInjectSingleList()
         .stream()
         .map(SoyAtInjectSingle::toVariable)
+        .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }
 }
