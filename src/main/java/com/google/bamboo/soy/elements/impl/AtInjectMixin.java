@@ -49,9 +49,10 @@ public abstract class AtInjectMixin extends ASTWrapperPsiElement implements AtIn
     return "";
   }
 
-  @NotNull
   @Override
   public Variable toVariable() {
-    return new Variable(getName(), getType(), this.getParamDefinitionIdentifier());
+    return this.getParamDefinitionIdentifier() == null
+        ? null
+        : new Variable(getName(), getType(), this.getParamDefinitionIdentifier());
   }
 }

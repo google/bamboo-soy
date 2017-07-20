@@ -2,13 +2,14 @@ package com.google.bamboo.soy.lang;
 
 import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
 import com.intellij.psi.PsiNamedElement;
+import org.jetbrains.annotations.NotNull;
 
 public class Parameter extends Variable {
   public final boolean isOptional;
 
-  public Parameter(String name, String type, boolean isOptional, PsiNamedElement element) {
+  public Parameter(
+      String name, String type, boolean isOptional, @NotNull SoyParamDefinitionIdentifier element) {
     super(name, type, element);
-    assert element instanceof SoyParamDefinitionIdentifier;
     this.isOptional = isOptional;
   }
 }

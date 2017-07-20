@@ -35,6 +35,5 @@ public interface AtParamElement extends StubBasedPsiElement<AtParamStub>, PsiNam
 
   boolean isOptional();
 
-  @NotNull
   Parameter toParameter();
 }
