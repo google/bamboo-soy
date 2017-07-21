@@ -1,22 +1,17 @@
 {namespace outer.space}
 
-{template .earth}
-{/template}
-
 {template .moon}
   {@param planet : string}
   {@inject probe : string}
   {let $shape: 'sphere' /}
 
-  {msg}
+  {msg desc="-"}
     Planet: {$planet}
     Probe: {$probe}
     Shape: {$shape}
   {/msg}
 {/template}
 
-{template .mars}
-{/template}
-
-{template .moose_ visibility="private"}
-{/template}
+{template .earth}{/template}
+{template .mars}{/template}
+{template .moose_ visibility="private"}{/template}
