@@ -131,6 +131,7 @@
     HTML_COMMENT ="regexp:<!--([^\r\n]|(\r|\n|\r\n))*-->"
 
     IDENTIFIER_WORD = "regexp:[a-zA-Z_]([a-zA-Z_0-9])*"
+    QUALIFIED_IDENTIFIER = "regexp:\.?[a-zA-Z_]([a-zA-Z_0-9])(\.[a-zA-Z_]([a-zA-Z_0-9]))*"
     CSS_IDENTIFIER_LITERAL = "regexp:%?[a-zA-Z_-]([a-zA-Z_0-9-])*"
 
     STRING_LITERAL = "regexp:'([^\r\n'\\]|\\.)*'"
@@ -166,7 +167,7 @@ private FieldAccess ::= (DOT | DOT_NULL_CHECK) IDENTIFIER_WORD {
 }
 
 // A sequence of tokens representing namespace, template or function id: my.name.space, .template
-private QualifiedIdentifier ::= DOT? PlainIdentifier (DOT IDENTIFIER_WORD)*
+private QualifiedIdentifier ::= QUALIFIED_IDENTIFIER
 
 // A valid css identifier: dashes are allowed, dots are not: -foo-bar, %foo-bar, foo
 CssIdentifier ::= CSS_IDENTIFIER_LITERAL | PlainIdentifier
@@ -221,9 +222,9 @@ NamespaceDeclarationIdentifier ::= QualifiedIdentifier {
 
 NamespaceIdentifier ::= QualifiedIdentifier
 
-AliasIdentifier ::= PlainIdentifier
+AliasIdentifier ::= QualifiedIdentifier
 
-TypeIdentifier ::= QualifiedIdentifier
+TypeIdentifier ::= PlainIdentifier
 
 PackageIdentifier ::= QualifiedIdentifier
 
@@ -231,7 +232,7 @@ FieldIdentifier ::= PlainIdentifier
 
 AttributeNameIdentifier ::= PlainIdentifier
 
-FunctionIdentifier ::= QualifiedIdentifier
+FunctionIdentifier ::= PlainIdentifier
 
 // Literals
 

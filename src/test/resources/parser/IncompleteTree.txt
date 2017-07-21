@@ -4,7 +4,7 @@ Closure Template File
       SoyBeginTemplateImpl(BEGIN_TEMPLATE)
         PsiElement(SoyTokenType.{)('{')
         PsiElement(SoyTokenType.template)('template')
-        PsiErrorElement:<attribute name identifier>, <template definition identifier> or SoyTokenType./} expected, got '}'
+        PsiErrorElement:<attribute name identifier>, SoyTokenType./} or SoyTokenType.QUALIFIED_IDENTIFIER expected, got '}'
           <empty list>
         PsiElement(SoyTokenType.})('}')
       PsiWhiteSpace('\n  ')
@@ -40,7 +40,7 @@ Closure Template File
       SoyBeginTemplateImpl(BEGIN_TEMPLATE)
         PsiElement(SoyTokenType.{)('{')
         PsiElement(SoyTokenType.template)('template')
-        PsiErrorElement:<attribute name identifier>, <template definition identifier> or SoyTokenType./} expected, got '}'
+        PsiErrorElement:<attribute name identifier>, SoyTokenType./} or SoyTokenType.QUALIFIED_IDENTIFIER expected, got '}'
           <empty list>
         PsiElement(SoyTokenType.})('}')
       PsiWhiteSpace('\n  ')
