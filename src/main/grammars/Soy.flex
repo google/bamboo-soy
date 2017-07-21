@@ -24,6 +24,7 @@ Digit=[0-9]
 CssIdentifierChar={IdentifierChar}|"-"
 
 IdentifierWord={IdentifierChar}({IdentifierChar}|{Digit})*
+QualifiedIdentifier="."?{IdentifierWord}("."{IdentifierWord})*
 CssIdentifierLiteral="%"?{CssIdentifierChar}({CssIdentifierChar}|{Digit})*
 
 /* Line terminators, white space, and comments */
@@ -61,35 +62,54 @@ SingleQuotedStringLiteral='([^\r\n'\\]|\\.)*'
 MultiLineDoubleQuotedStringLiteral=\"([^\"\\]|\\([^]))*\"
 MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
 
-/* Exclusive lexer states */
-%xstate TAG_KEYWORD
-%xstate LITERAL
-%xstate DOUBLE_BRACE
-%xstate TAG_NO_KEYWORD
+/* Lexer states */
+%state TAG
+%state LITERAL
+%state TAG_NO_KEYWORD
+%state TAG_QUALIFIED_IDENTIFIER
 
 %%
 
-<YYINITIAL,TAG_KEYWORD,LITERAL,DOUBLE_BRACE> {
+<YYINITIAL,TAG,TAG_QUALIFIED_IDENTIFIER,LITERAL> {
   {WhiteSpace}  { return TokenType.WHITE_SPACE; }
 }
 
 <TAG_NO_KEYWORD> {
-  {WhiteSpace}  { yybegin(TAG_KEYWORD); return TokenType.WHITE_SPACE; }
+  {WhiteSpace}  { yybegin(TAG); return TokenType.WHITE_SPACE; }
 }
 
-<TAG_KEYWORD> {
+
+<YYINITIAL,TAG,TAG_QUALIFIED_IDENTIFIER,TAG_NO_KEYWORD,LITERAL> {
+  /* Comments */
+  ^{DoubleSlashComment} { return SoyTypes.COMMENT_BLOCK; }
+  {DocComment} { return SoyTypes.DOC_COMMENT_BLOCK; }
+  {Comment} { return SoyTypes.COMMENT_BLOCK; }
+
+  "{literal}" { yybegin(LITERAL); return SoyTypes.LITERAL; }
+  "{{literal}}" { yybegin(LITERAL); return SoyTypes.LITERAL_DOUBLE; }
+  "{" { yybegin(TAG); return SoyTypes.LBRACE; }
+  "{{" { yybegin(TAG); return SoyTypes.LBRACE_LBRACE; }
+}
+
+// Inside a tag, not after "." or "$". Keywords can only be here.
+<TAG> {
+  /* Tag names only followed by a qualified identifier */
+  "alias" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.ALIAS; }
+  "call" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.CALL; }
+  "delcall" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELCALL; }
+  "deltemplate" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELTEMPLATE; }
+  "namespace" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.NAMESPACE; }
+  "template" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.TEMPLATE; }
+
   true { return SoyTypes.BOOL_LITERAL; }
   false { return SoyTypes.BOOL_LITERAL; }
 
   /* Tag names */
-  "alias" { return SoyTypes.ALIAS; }
-  "call" { return SoyTypes.CALL; }
   "case" { return SoyTypes.CASE; }
   "css" { return SoyTypes.CSS; }
   "default" { return SoyTypes.DEFAULT; }
-  "delcall" { return SoyTypes.DELCALL; }
   "delpackage" { return SoyTypes.DELPACKAGE; }
-  "deltemplate" { return SoyTypes.DELTEMPLATE; }
+
   "else" { return SoyTypes.ELSE; }
   "elseif" { return SoyTypes.ELSEIF; }
   "fallbackmsg" { return SoyTypes.FALLBACKMSG; }
@@ -100,7 +120,7 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   "lb" { return SoyTypes.LB; }
   "let" { return SoyTypes.LET; }
   "msg" { return SoyTypes.MSG; }
-  "namespace" { return SoyTypes.NAMESPACE; }
+
   "nil" { return SoyTypes.NIL; }
   "param" { return SoyTypes.PARAM; }
   "plural" { return SoyTypes.PLURAL; }
@@ -109,7 +129,6 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   "select" { return SoyTypes.SELECT; }
   "sp" { return SoyTypes.SP; }
   "switch" { return SoyTypes.SWITCH; }
-  "template" { return SoyTypes.TEMPLATE; }
   "xid" { return SoyTypes.XID; }
   "msg" { return SoyTypes.MSG; }
 
@@ -138,7 +157,15 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   "as" { return SoyTypes.AS; }
 }
 
-<TAG_KEYWORD,TAG_NO_KEYWORD> {
+// Inside a declaration/call tag. Only "as" and identifiers expected.
+<TAG_QUALIFIED_IDENTIFIER> {
+  "as" { return SoyTypes.AS; }
+
+  {QualifiedIdentifier} { return SoyTypes.QUALIFIED_IDENTIFIER; }
+}
+
+// Anywhere inside normal (not declaration/call) tag.
+<TAG,TAG_NO_KEYWORD> {
   /* Cannot be followed by a tag name. */
   "." { yybegin(TAG_NO_KEYWORD); return SoyTypes.DOT; }
   "?." { yybegin(TAG_NO_KEYWORD); return SoyTypes.DOT_NULL_CHECK; }
@@ -161,11 +188,6 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   "\\n" { return SoyTypes.NEWLINE_LITERAL; }
   "\\t" { return SoyTypes.TAB; }
 
-  /* Tag closing */
-  "/}" { yybegin(YYINITIAL); return SoyTypes.SLASH_RBRACE; }
-  "}" { yybegin(YYINITIAL); return SoyTypes.RBRACE; }
-  "}}" { yybegin(YYINITIAL); return SoyTypes.RBRACE_RBRACE; }
-  "/}}" { yybegin(YYINITIAL); return SoyTypes.SLASH_RBRACE_RBRACE; }
   "/call" { return SoyTypes.END_CALL; }
   "/delcall" { return SoyTypes.END_DELCALL; }
   "/deltemplate" { return SoyTypes.END_DELTEMPLATE; }
@@ -215,24 +237,18 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   {CssIdentifierLiteral} { return SoyTypes.CSS_IDENTIFIER_LITERAL; }
 }
 
-<TAG_KEYWORD,TAG_NO_KEYWORD,YYINITIAL> {
-  /* Comments */
-  ^{DoubleSlashComment} { return SoyTypes.COMMENT_BLOCK; }
-  {DocComment} { return SoyTypes.DOC_COMMENT_BLOCK; }
-  {Comment} { return SoyTypes.COMMENT_BLOCK; }
-
-  "{literal}" { yybegin(LITERAL); return SoyTypes.LITERAL; }
-  "{{literal}}" { yybegin(LITERAL); return SoyTypes.LITERAL_DOUBLE; }
-  "{" { yybegin(TAG_KEYWORD); return SoyTypes.LBRACE; }
-  "{{" { yybegin(TAG_KEYWORD); return SoyTypes.LBRACE_LBRACE; }
-
-  . { return SoyTypes.OTHER; }
+// Anywhere inside a tag.
+<TAG,TAG_NO_KEYWORD,TAG_QUALIFIED_IDENTIFIER> {
+  /* Tag closing */
+  "/}" { yybegin(YYINITIAL); return SoyTypes.SLASH_RBRACE; }
+  "}" { yybegin(YYINITIAL); return SoyTypes.RBRACE; }
+  "}}" { yybegin(YYINITIAL); return SoyTypes.RBRACE_RBRACE; }
+  "/}}" { yybegin(YYINITIAL); return SoyTypes.SLASH_RBRACE_RBRACE; }
 }
-
 
 <LITERAL> {
   "{/literal}" { yybegin(YYINITIAL); return SoyTypes.END_LITERAL; }
   "{{/literal}}" { yybegin(YYINITIAL); return SoyTypes.END_LITERAL_DOUBLE; }
-  . { return SoyTypes.OTHER; }
 }
 
+. { return SoyTypes.OTHER; }
