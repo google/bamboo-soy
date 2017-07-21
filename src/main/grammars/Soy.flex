@@ -97,6 +97,7 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   "alias" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.ALIAS; }
   "call" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.CALL; }
   "delcall" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELCALL; }
+  "delpackage" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELPACKAGE; }
   "deltemplate" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELTEMPLATE; }
   "namespace" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.NAMESPACE; }
   "template" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.TEMPLATE; }
@@ -108,7 +109,6 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   "case" { return SoyTypes.CASE; }
   "css" { return SoyTypes.CSS; }
   "default" { return SoyTypes.DEFAULT; }
-  "delpackage" { return SoyTypes.DELPACKAGE; }
 
   "else" { return SoyTypes.ELSE; }
   "elseif" { return SoyTypes.ELSEIF; }

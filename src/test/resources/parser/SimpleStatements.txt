@@ -6,7 +6,7 @@ Closure Template File
         PsiElement(SoyTokenType.template)('template')
         PsiWhiteSpace(' ')
         SoyTemplateDefinitionIdentifierImpl(TEMPLATE_DEFINITION_IDENTIFIER)
-          PsiElement(SoyTokenType.IDENTIFIER_WORD)('SimpleStatements')
+          PsiElement(SoyTokenType.QUALIFIED_IDENTIFIER)('SimpleStatements')
         PsiElement(SoyTokenType.})('}')
       PsiWhiteSpace('\n  ')
       SoyStatementListImpl(STATEMENT_LIST)

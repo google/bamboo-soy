@@ -226,7 +226,7 @@ AliasIdentifier ::= QualifiedIdentifier
 
 TypeIdentifier ::= PlainIdentifier
 
-PackageIdentifier ::= PlainIdentifier
+PackageIdentifier ::= QualifiedIdentifier
 
 FieldIdentifier ::= PlainIdentifier
 
