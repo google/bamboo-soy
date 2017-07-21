@@ -44,15 +44,10 @@ public class VariableReference extends PsiReferenceBase<PsiElement> implements P
   private ResolveResult[] multiResolve() {
     final Collection<Variable> definitions =
         Scope.getScopeOrEmpty(this.getElement()).getVariables();
-
-    System.out.println("VariableReference::multiResolve");
-
     List<ResolveResult> results = new ArrayList<>();
     for (Variable definition : definitions) {
       if (definition.name.equals(this.identifier)) {
         results.add(new PsiElementResolveResult(definition.element));
-
-        System.out.println(definition);
       }
     }
 
