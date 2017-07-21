@@ -36,7 +36,9 @@ public abstract class VariableDefinitionMixin extends ASTWrapperPsiElement
 
   @Override
   public int getTextOffset() {
-    return 1;
+    return getIdentifierWord() == null
+        ? super.getTextOffset()
+        : getIdentifierWord().getTextOffset();
   }
 
   @Override

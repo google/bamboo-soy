@@ -44,7 +44,6 @@ public class VariableReference extends PsiReferenceBase<PsiElement> implements P
   private ResolveResult[] multiResolve() {
     final Collection<Variable> definitions =
         Scope.getScopeOrEmpty(this.getElement()).getVariables();
-
     List<ResolveResult> results = new ArrayList<>();
     for (Variable definition : definitions) {
       if (definition.name.equals(this.identifier)) {
@@ -75,7 +74,8 @@ public class VariableReference extends PsiReferenceBase<PsiElement> implements P
   @Override
   @NotNull
   public Object[] getVariants() {
-    return Scope.getScopeOrEmpty(this.getElement()).getVariables()
+    return Scope.getScopeOrEmpty(this.getElement())
+        .getVariables()
         .stream()
         .map(v -> v.name)
         .map(LookupElementBuilder::create)
