@@ -31,6 +31,5 @@ public interface AtInjectElement extends PsiNamedElement {
   @NotNull
   String getType();
 
-  @NotNull
   Variable toVariable();
 }

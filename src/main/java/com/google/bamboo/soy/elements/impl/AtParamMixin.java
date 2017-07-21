@@ -75,9 +75,10 @@ public abstract class AtParamMixin extends SoyStubBasedPsiElementBase<AtParamStu
     return findChildByType(SoyTypes.AT_PARAM_OPT) != null;
   }
 
-  @NotNull
   @Override
   public Parameter toParameter() {
-    return new Parameter(getName(), getType(), isOptional(), this.getParamDefinitionIdentifier());
+    return this.getParamDefinitionIdentifier() == null
+        ? null
+        : new Parameter(getName(), getType(), isOptional(), this.getParamDefinitionIdentifier());
   }
 }
