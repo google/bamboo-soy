@@ -15,12 +15,12 @@
 package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.parser.SoyParamListElement;
-import com.intellij.psi.PsiElement;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface CallStatementBase extends PsiElement {
+public interface CallStatementBase extends StatementBase {
+
   @NotNull
   List<SoyParamListElement> getParamListElementList();
 
