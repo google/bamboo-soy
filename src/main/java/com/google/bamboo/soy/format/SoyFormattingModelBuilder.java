@@ -52,6 +52,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SoyFormattingModelBuilder extends TemplateLanguageFormattingModelBuilder {
+
   private static boolean isAlwaysIndented(PsiElement element) {
     return element instanceof ParamListElementBase
         || element instanceof SoyAtParamSingle
@@ -111,6 +112,7 @@ public class SoyFormattingModelBuilder extends TemplateLanguageFormattingModelBu
   }
 
   private static class SoyBlock extends TemplateLanguageBlock {
+
     private HtmlPolicy myHtmlPolicy;
 
     SoyBlock(
@@ -121,6 +123,11 @@ public class SoyFormattingModelBuilder extends TemplateLanguageFormattingModelBu
         HtmlPolicy htmlPolicy) {
       super(blockFactory, settings, node, foreignChildren);
       myHtmlPolicy = htmlPolicy;
+    }
+
+    private static boolean isSynthetic(BlockWithParent block) {
+      return block instanceof DataLanguageBlockWrapper && ((DataLanguageBlockWrapper) block)
+          .getOriginal() instanceof SyntheticBlock;
     }
 
     /**
@@ -263,7 +270,7 @@ public class SoyFormattingModelBuilder extends TemplateLanguageFormattingModelBu
       BlockWithParent parent = getParent();
 
       while (parent instanceof DataLanguageBlockWrapper) {
-        if (!(((DataLanguageBlockWrapper) parent).getOriginal() instanceof SyntheticBlock)) {
+        if (!isSynthetic(parent)) {
           ASTNode foreignNode = ((DataLanguageBlockWrapper) parent).getNode();
           // Returning false if it is an XmlTag that doesn't force indentation.
           return !(foreignNode instanceof XmlTag)
@@ -276,8 +283,8 @@ public class SoyFormattingModelBuilder extends TemplateLanguageFormattingModelBu
 
     private boolean isParentStatementOrStatementContainerIndented() {
       BlockWithParent parent = getParent();
-      while (parent instanceof SoyBlock) {
-        if (((SoyBlock) parent).isStatementOrStatementContainer()) {
+      while (parent instanceof SoyBlock || isSynthetic(parent)) {
+        if (parent instanceof SoyBlock && ((SoyBlock) parent).isStatementOrStatementContainer()) {
           return ((SoyBlock) parent).getIndent() != Indent.getNoneIndent();
         }
         parent = parent.getParent();

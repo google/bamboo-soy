@@ -16,12 +16,12 @@ package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.parser.SoyAttributeKeyValuePair;
 import com.google.bamboo.soy.parser.SoyBeginMsg;
-import com.intellij.psi.PsiElement;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface MsgStatement extends PsiElement {
+public interface MsgStatement extends StatementBase {
+
   @NotNull
   SoyBeginMsg getBeginMsg();
 
