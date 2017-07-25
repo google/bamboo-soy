@@ -14,6 +14,7 @@
 
 package com.google.bamboo.soy.format;
 
+import com.google.bamboo.soy.BracedTagUtils;
 import com.google.bamboo.soy.elements.ParamListElementBase;
 import com.google.bamboo.soy.elements.StatementBase;
 import com.google.bamboo.soy.parser.SoyAtInjectSingle;
@@ -236,6 +237,10 @@ public class SoyFormattingModelBuilder extends TemplateLanguageFormattingModelBu
 
       if (isStatementOrStatementContainer() && !isParentStatementOrStatementContainerIndented()) {
         return Indent.getNormalIndent();
+      }
+
+      if (isDirectTagChild()) {
+        return Indent.getContinuationIndent();
       } else {
         return Indent.getNoneIndent();
       }
@@ -304,6 +309,13 @@ public class SoyFormattingModelBuilder extends TemplateLanguageFormattingModelBu
     private boolean isStatementOrStatementContainer() {
       return myNode.getPsi() instanceof SoyStatementList
           || myNode.getPsi() instanceof StatementBase;
+    }
+
+    private boolean isDirectTagChild() {
+      PsiElement element = myNode.getPsi();
+      return !BracedTagUtils.isBrace(element)
+          && element.getParent() != null
+          && BracedTagUtils.isBracedTag(element.getParent());
     }
   }
 }
