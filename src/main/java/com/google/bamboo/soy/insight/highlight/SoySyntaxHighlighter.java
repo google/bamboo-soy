@@ -19,17 +19,18 @@ import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAtt
 import com.google.bamboo.soy.lexer.SoyLexer;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.tree.IElementType;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
 import org.jetbrains.annotations.NotNull;
 
 public class SoySyntaxHighlighter extends SyntaxHighlighterBase {
+
   public static final TextAttributesKey COMMENT =
       createTextAttributesKey("COMMENT_BLOCK", DefaultLanguageHighlighterColors.BLOCK_COMMENT);
   public static final TextAttributesKey KEYWORD =
@@ -45,18 +46,14 @@ public class SoySyntaxHighlighter extends SyntaxHighlighterBase {
   public static final TextAttributesKey VARIABLE_REFERENCE =
       createTextAttributesKey("VARIABLE_REFERENCE", DefaultLanguageHighlighterColors.IDENTIFIER);
 
-  private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
+  private static final ImmutableSet<TextAttributesKey> EMPTY_KEYS = ImmutableSet.of();
 
-  private static final ImmutableMap<IElementType, TextAttributesKey[]> tokenToAttributesMap;
-
-  static {
-    Map<TextAttributesKey, ImmutableSet<IElementType>> attributesToTokenMap = new HashMap<>();
-
-    attributesToTokenMap.put(
-        KEYWORD,
-        ImmutableSet.copyOf(
-            new IElementType[] {
-              /* Tag openers & single-word tag contents */
+  private static final
+  ImmutableMultimap<TextAttributesKey, IElementType> attributesToTokenMap =
+      ImmutableMultimap.<TextAttributesKey, IElementType>builder()
+          .putAll(
+              KEYWORD,
+          /* Tag openers & single-word tag contents */
               SoyTypes.AT_PARAM,
               SoyTypes.AT_PARAM_OPT,
               SoyTypes.AT_INJECT,
@@ -97,7 +94,7 @@ public class SoySyntaxHighlighter extends SyntaxHighlighterBase {
               SoyTypes.NEWLINE_LITERAL,
               SoyTypes.TAB,
 
-              /* Tag closing keywords */
+          /* Tag closing keywords */
               SoyTypes.END_CALL,
               SoyTypes.END_DELCALL,
               SoyTypes.END_DELTEMPLATE,
@@ -114,18 +111,13 @@ public class SoySyntaxHighlighter extends SyntaxHighlighterBase {
               SoyTypes.END_SWITCH,
               SoyTypes.END_TEMPLATE,
 
-              /* Other verbal tokens */
-              SoyTypes.AS,
-            }));
-
-    attributesToTokenMap.put(
-        OPERATOR_LITERAL,
-        ImmutableSet.copyOf(new IElementType[] {SoyTypes.AND, SoyTypes.OR, SoyTypes.NOT}));
-
-    attributesToTokenMap.put(
-        BUILTIN_TYPE,
-        ImmutableSet.copyOf(
-            new IElementType[] {
+          /* Other verbal tokens */
+              SoyTypes.AS)
+          .putAll(
+              OPERATOR_LITERAL,
+              SoyTypes.AND, SoyTypes.OR, SoyTypes.NOT)
+          .putAll(
+              BUILTIN_TYPE,
               SoyTypes.ANY,
               SoyTypes.ATTRIBUTES,
               SoyTypes.BOOL,
@@ -139,40 +131,19 @@ public class SoySyntaxHighlighter extends SyntaxHighlighterBase {
               SoyTypes.NULL,
               SoyTypes.NUMBER,
               SoyTypes.STRING,
-              SoyTypes.URI,
-            }));
+              SoyTypes.URI)
+          .putAll(
+              NUMBER,
+              SoyTypes.FLOAT_LITERAL, SoyTypes.INTEGER_LITERAL, SoyTypes.BOOL_LITERAL)
+          .putAll(
+              STRING, SoyTypes.STRING_LITERAL, SoyTypes.MULTI_LINE_STRING_LITERAL)
+          .putAll(
+              COMMENT, SoyTypes.COMMENT_BLOCK, SoyTypes.DOC_COMMENT_BLOCK)
+          .build();
 
-    attributesToTokenMap.put(
-        NUMBER,
-        ImmutableSet.of(SoyTypes.FLOAT_LITERAL, SoyTypes.INTEGER_LITERAL, SoyTypes.BOOL_LITERAL));
 
-    attributesToTokenMap.put(
-        STRING, ImmutableSet.of(SoyTypes.STRING_LITERAL, SoyTypes.MULTI_LINE_STRING_LITERAL));
-
-    attributesToTokenMap.put(
-        COMMENT, ImmutableSet.of(SoyTypes.COMMENT_BLOCK, SoyTypes.DOC_COMMENT_BLOCK));
-
-    tokenToAttributesMap = ImmutableMap.copyOf(createTokenToAttributesMap(attributesToTokenMap));
-  }
-
-  private static Map<IElementType, TextAttributesKey[]> createTokenToAttributesMap(
-      Map<TextAttributesKey, ImmutableSet<IElementType>> attributesToTokenMap) {
-    Map<IElementType, TextAttributesKey[]> tokenToAttributesMap = new HashMap<>();
-    Map<TextAttributesKey, TextAttributesKey[]> attributesKeyArrayCache = new HashMap<>();
-
-    attributesToTokenMap.forEach(
-        (TextAttributesKey attributes, ImmutableSet<IElementType> tokens) -> {
-          tokens.forEach(
-              (IElementType token) -> {
-                if (!attributesKeyArrayCache.containsKey(attributes)) {
-                  TextAttributesKey[] attributesArray = new TextAttributesKey[] {attributes};
-                  attributesKeyArrayCache.put(attributes, attributesArray);
-                }
-                tokenToAttributesMap.put(token, attributesKeyArrayCache.get(attributes));
-              });
-        });
-    return tokenToAttributesMap;
-  }
+  private static final ImmutableMap<IElementType, Collection<TextAttributesKey>>
+      tokenToAttributesMap = attributesToTokenMap.inverse().asMap();
 
   @NotNull
   @Override
@@ -183,6 +154,7 @@ public class SoySyntaxHighlighter extends SyntaxHighlighterBase {
   @NotNull
   @Override
   public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
-    return tokenToAttributesMap.getOrDefault(tokenType, EMPTY_KEYS);
+    return tokenToAttributesMap.getOrDefault(tokenType, EMPTY_KEYS)
+        .toArray(new TextAttributesKey[0]);
   }
 }
