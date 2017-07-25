@@ -20,14 +20,29 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.IElementType;
 
 public class BracedTagUtils {
-  private static final ImmutableSet<IElementType> slashRBraces =
+
+  private static final ImmutableSet<IElementType> SLASH_R_BRACES =
       ImmutableSet.of(SoyTypes.SLASH_RBRACE, SoyTypes.SLASH_RBRACE_RBRACE);
+  private static final ImmutableSet<IElementType> LEFT_BRACES =
+      ImmutableSet.of(SoyTypes.LBRACE, SoyTypes.LBRACE_LBRACE);
+  private static final ImmutableSet<IElementType> BRACES =
+      ImmutableSet
+          .of(SoyTypes.LBRACE, SoyTypes.LBRACE_LBRACE, SoyTypes.RBRACE, SoyTypes.RBRACE_RBRACE,
+              SoyTypes.SLASH_RBRACE, SoyTypes.SLASH_RBRACE_RBRACE);
+
+  public static boolean isBrace(PsiElement element) {
+    return BRACES.contains(element.getNode().getElementType());
+  }
+
+  public static boolean isBracedTag(PsiElement tag) {
+    return LEFT_BRACES.contains(tag.getFirstChild().getNode().getElementType());
+  }
 
   public static boolean isDoubleBraced(PsiElement tag) {
     return tag.getFirstChild().getNode().getElementType() == SoyTypes.LBRACE_LBRACE;
   }
 
   public static boolean isSelfClosed(PsiElement tag) {
-    return slashRBraces.contains(tag.getLastChild().getNode().getElementType());
+    return SLASH_R_BRACES.contains(tag.getLastChild().getNode().getElementType());
   }
 }
