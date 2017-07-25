@@ -33,8 +33,11 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
-/** Automatically inserts a matching closing tag when "{/" is typed. */
+/**
+ * Automatically inserts a matching closing tag when "{/" is typed.
+ */
 public class ClosingTagHandler implements TypedActionHandler {
+
   private static final ImmutableMap<IElementType, String> blockElementToTagName =
       ImmutableMap.<IElementType, String>builder()
           .put(SoyTypes.DIRECT_CALL_STATEMENT, "call")
@@ -69,15 +72,15 @@ public class ClosingTagHandler implements TypedActionHandler {
 
   private static boolean isMatchForClosingTag(@NotNull Editor editor, char charTyped) {
     return charTyped == '/'
-        && editor.getCaretModel().getOffset() >= 1
-        && editor.getDocument().getCharsSequence().charAt(editor.getCaretModel().getOffset() - 1)
-            == '{';
+        && editor.getCaretModel().getOffset() >= 2
+        && editor.getDocument().getCharsSequence().charAt(editor.getCaretModel().getOffset() - 2)
+        == '{';
   }
 
   private static void insertClosingTag(@NotNull Editor editor, int offset, String tag) {
     Document document = editor.getDocument();
     CharSequence charSequence = document.getImmutableCharSequence();
-    int startPosition = offset - 1;
+    int startPosition = offset - 2;
     // Consume second left brace if present.
     if (offset > 0 && charSequence.charAt(startPosition - 1) == '{') {
       startPosition--;
@@ -165,18 +168,14 @@ public class ClosingTagHandler implements TypedActionHandler {
   }
 
   public void execute(@NotNull Editor editor, char charTyped, @NotNull DataContext dataContext) {
-    try {
-      if (isMatchForClosingTag(editor, charTyped)) {
-        int offset = editor.getCaretModel().getOffset();
-        PsiElement el = dataContext.getData(LangDataKeys.PSI_FILE).findElementAt(offset - 1);
-        String closingTag = generateClosingTag(el);
-        if (closingTag != null) {
-          insertClosingTag(editor, offset, closingTag);
-          return;
-        }
-      }
-    } catch (Exception e) {
-    }
     myOriginalHandler.execute(editor, charTyped, dataContext);
+    if (isMatchForClosingTag(editor, charTyped)) {
+      int offset = editor.getCaretModel().getOffset();
+      PsiElement el = dataContext.getData(LangDataKeys.PSI_FILE).findElementAt(offset - 1);
+      String closingTag = generateClosingTag(el);
+      if (closingTag != null) {
+        insertClosingTag(editor, offset, closingTag);
+      }
+    }
   }
 }

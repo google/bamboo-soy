@@ -93,8 +93,8 @@ public class SoyTypingTest extends SoyCodeInsightFixtureTestCase {
     for (String tag : simpleTags) {
       doTypingTest(
           '/',
-          "{template .bar}{" + tag + "}{<caret> {/template}",
-          "{template .bar}{" + tag + "}{/" + tag + "}<caret> {/template}");
+          "{template .bar}{" + tag + "}{<caret>{/template}",
+          "{template .bar}{" + tag + "}{/" + tag + "}<caret>{/template}");
       doTypingTest(
           '/',
           "{template .bar}{{" + tag + "}} {<caret>} {/template}",
