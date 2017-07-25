@@ -130,6 +130,7 @@
       implementationClass="com.google.bamboo.soy.file.SoyFileViewProviderFactory"/>
     <html.scriptContentProvider language="ClosureTemplate"
       implementationClass="com.intellij.lang.HtmlScriptContentProvider.Empty"/>
+    <codeStyleSettingsProvider implementation="com.google.bamboo.soy.format.SoyCodeStyleSettingsProvider"/>
     <lang.formatter language="ClosureTemplate"
       implementationClass="com.google.bamboo.soy.format.SoyFormattingModelBuilder"/>
     <lang.syntaxHighlighterFactory
@@ -165,8 +166,7 @@
     <lang.documentationProvider language="ClosureTemplate"
       implementationClass="com.google.bamboo.soy.insight.documentation.SoyDocumentationProvider"/>
 
-    <fileIndentOptionsProvider
-      implementation="com.google.bamboo.soy.format.SoyFileIndentOptionsProvider"/>
+    <langCodeStyleSettingsProvider implementation="com.google.bamboo.soy.format.SoyLanguageCodeStyleSettingsProvider"/>
 
     <stubIndex implementation="com.google.bamboo.soy.stubs.index.NamespaceDeclarationIndex"/>
     <stubIndex implementation="com.google.bamboo.soy.stubs.index.TemplateBlockIndex"/>
