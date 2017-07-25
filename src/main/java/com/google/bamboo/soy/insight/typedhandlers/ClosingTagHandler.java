@@ -169,16 +169,13 @@ public class ClosingTagHandler implements TypedActionHandler {
 
   public void execute(@NotNull Editor editor, char charTyped, @NotNull DataContext dataContext) {
     myOriginalHandler.execute(editor, charTyped, dataContext);
-    try {
-      if (isMatchForClosingTag(editor, charTyped)) {
-        int offset = editor.getCaretModel().getOffset();
-        PsiElement el = dataContext.getData(LangDataKeys.PSI_FILE).findElementAt(offset - 1);
-        String closingTag = generateClosingTag(el);
-        if (closingTag != null) {
-          insertClosingTag(editor, offset, closingTag);
-        }
+    if (isMatchForClosingTag(editor, charTyped)) {
+      int offset = editor.getCaretModel().getOffset();
+      PsiElement el = dataContext.getData(LangDataKeys.PSI_FILE).findElementAt(offset - 1);
+      String closingTag = generateClosingTag(el);
+      if (closingTag != null) {
+        insertClosingTag(editor, offset, closingTag);
       }
-    } catch (Exception e) {
     }
   }
 }
