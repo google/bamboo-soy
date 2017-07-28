@@ -19,7 +19,7 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface ParamListElementBase extends PsiElement {
+public interface ParamListElementBase extends TagBase {
   @NotNull
   SoyBeginParamTag getBeginParamTag();
 

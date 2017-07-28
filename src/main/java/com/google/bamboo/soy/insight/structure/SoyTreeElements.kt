@@ -16,6 +16,8 @@ package com.google.bamboo.soy.insight.structure
 
 import com.google.bamboo.soy.elements.CallStatementBase
 import com.google.bamboo.soy.elements.ParamListElementBase
+import com.google.bamboo.soy.elements.StatementBase
+import com.google.bamboo.soy.elements.TagBase
 import com.google.bamboo.soy.file.SoyFile
 import com.google.bamboo.soy.file.SoyFileType
 import com.google.bamboo.soy.parser.*
@@ -48,19 +50,8 @@ fun getTreeElement(psiElement: PsiElement): PsiTreeElementBase<PsiElement> =
  */
 private fun getPresentableName(psiElement: PsiElement): String? =
     when (psiElement) {
-      is SoyDirectCallStatement -> "call"
-      is SoyDelCallStatement -> "delcall"
-      is SoyForStatement -> "for"
-      is SoyIfStatement -> "if"
-      is SoyMsgStatement -> "msg"
+      is TagBase -> psiElement.tagName
       is SoyNamespaceBlock -> "namespace"
-      is SoyLetCompoundStatement,
-      is SoyLetSingleStatement -> "let"
-      is SoyParamListElement -> "param"
-      is SoyPluralStatement -> "plural"
-      is SoySelectStatement -> "select"
-      is SoySwitchStatement -> "switch"
-      is SoyTemplateBlock -> if (psiElement.isDelegate) "deltemplate" else "template"
       else -> null
     }
 

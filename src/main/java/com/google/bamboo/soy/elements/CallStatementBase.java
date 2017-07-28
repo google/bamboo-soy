@@ -14,6 +14,7 @@
 
 package com.google.bamboo.soy.elements;
 
+import com.google.bamboo.soy.parser.SoyBeginCall;
 import com.google.bamboo.soy.parser.SoyParamListElement;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +26,12 @@ public interface CallStatementBase extends StatementBase {
   List<SoyParamListElement> getParamListElementList();
 
   @NotNull
-  BeginCallBase getBeginCall();
+  SoyBeginCall getBeginCall();
+
+  @NotNull
+  default boolean isDelegate() {
+    return getTagName().equals("delcall");
+  }
 
   @Nullable
   default String getTemplateName() {

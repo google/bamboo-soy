@@ -14,15 +14,16 @@
 
 package com.google.bamboo.soy.elements;
 
-import com.google.bamboo.soy.parser.SoyBeginDelCall;
+import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
-public interface DelCallStatementBase extends CallStatementBase {
+public interface TagBase extends PsiElement {
   @NotNull
-  SoyBeginDelCall getBeginDelCall();
-
-  @NotNull
-  default BeginCallBase getBeginCall() {
-    return getBeginDelCall();
+  default String getTagName() {
+    try {
+      return getFirstChild().getFirstChild().getNextSibling().getText().toLowerCase();
+    } catch (NullPointerException e) {
+      return "";
+    }
   }
 }
