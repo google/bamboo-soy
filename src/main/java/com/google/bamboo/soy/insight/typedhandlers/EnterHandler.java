@@ -14,6 +14,7 @@
 
 package com.google.bamboo.soy.insight.typedhandlers;
 
+import com.google.bamboo.soy.BracedTagUtils;
 import com.google.bamboo.soy.file.SoyFile;
 import com.google.bamboo.soy.file.SoyFileType;
 import com.google.bamboo.soy.parser.SoyTypes;
@@ -168,8 +169,7 @@ public class EnterHandler extends EnterHandlerDelegateAdapter {
    */
   private static boolean isBetweenBlockDefiningTags(PsiFile psiFile, int caretOffset) {
     PsiElement nextElement = psiFile.findElementAt(caretOffset);
-    if (nextElement == null
-        || !nextElement.getText().equals("{") && !nextElement.getText().equals("{{")) {
+    if (nextElement == null || !BracedTagUtils.isLeftBrace(nextElement)) {
       return false;
     }
     PsiElement nextTag = nextElement.getParent();

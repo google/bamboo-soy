@@ -95,21 +95,8 @@ public class SoySyntaxHighlighter extends SyntaxHighlighterBase {
               SoyTypes.TAB,
 
           /* Tag closing keywords */
-              SoyTypes.END_CALL,
-              SoyTypes.END_DELCALL,
-              SoyTypes.END_DELTEMPLATE,
-              SoyTypes.END_FOREACH,
-              SoyTypes.END_FOR,
-              SoyTypes.END_IF,
-              SoyTypes.END_LET,
               SoyTypes.END_LITERAL,
               SoyTypes.END_LITERAL_DOUBLE,
-              SoyTypes.END_MSG,
-              SoyTypes.END_PARAM,
-              SoyTypes.END_PLURAL,
-              SoyTypes.END_SELECT,
-              SoyTypes.END_SWITCH,
-              SoyTypes.END_TEMPLATE,
 
           /* Other verbal tokens */
               SoyTypes.AS)

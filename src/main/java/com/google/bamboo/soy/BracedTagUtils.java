@@ -24,22 +24,29 @@ public class BracedTagUtils {
   private static final ImmutableSet<IElementType> SLASH_R_BRACES =
       ImmutableSet.of(SoyTypes.SLASH_RBRACE, SoyTypes.SLASH_RBRACE_RBRACE);
   private static final ImmutableSet<IElementType> LEFT_BRACES =
-      ImmutableSet.of(SoyTypes.LBRACE, SoyTypes.LBRACE_LBRACE);
+      ImmutableSet.of(SoyTypes.LBRACE, SoyTypes.LBRACE_LBRACE, SoyTypes.LBRACE_SLASH,
+          SoyTypes.LBRACE_LBRACE_SLASH);
   private static final ImmutableSet<IElementType> BRACES =
       ImmutableSet
           .of(SoyTypes.LBRACE, SoyTypes.LBRACE_LBRACE, SoyTypes.RBRACE, SoyTypes.RBRACE_RBRACE,
-              SoyTypes.SLASH_RBRACE, SoyTypes.SLASH_RBRACE_RBRACE);
+              SoyTypes.SLASH_RBRACE, SoyTypes.SLASH_RBRACE_RBRACE, SoyTypes.LBRACE_SLASH,
+              SoyTypes.LBRACE_LBRACE_SLASH);
 
   public static boolean isBrace(PsiElement element) {
     return BRACES.contains(element.getNode().getElementType());
   }
 
+  public static boolean isLeftBrace(PsiElement element) {
+    return LEFT_BRACES.contains(element.getNode().getElementType());
+  }
+
   public static boolean isBracedTag(PsiElement tag) {
-    return LEFT_BRACES.contains(tag.getFirstChild().getNode().getElementType());
+    return isLeftBrace(tag.getFirstChild());
   }
 
   public static boolean isDoubleBraced(PsiElement tag) {
-    return tag.getFirstChild().getNode().getElementType() == SoyTypes.LBRACE_LBRACE;
+    return tag.getFirstChild().getNode().getElementType() == SoyTypes.LBRACE_LBRACE
+        || tag.getFirstChild().getNode().getElementType() == SoyTypes.LBRACE_LBRACE_SLASH;
   }
 
   public static boolean isSelfClosed(PsiElement tag) {

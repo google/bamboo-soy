@@ -89,6 +89,8 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   "{{literal}}" { yybegin(LITERAL); return SoyTypes.LITERAL_DOUBLE; }
   "{" { yybegin(TAG); return SoyTypes.LBRACE; }
   "{{" { yybegin(TAG); return SoyTypes.LBRACE_LBRACE; }
+  "{/" { yybegin(TAG); return SoyTypes.LBRACE_SLASH; }
+  "{{/" { yybegin(TAG); return SoyTypes.LBRACE_LBRACE_SLASH; }
 }
 
 // Inside a tag, not after "." or "$". Keywords can only be here.
@@ -187,7 +189,7 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   "\\r" { return SoyTypes.CARRIAGE_RETURN; }
   "\\n" { return SoyTypes.NEWLINE_LITERAL; }
   "\\t" { return SoyTypes.TAB; }
-
+/*
   "/call" { return SoyTypes.END_CALL; }
   "/delcall" { return SoyTypes.END_DELCALL; }
   "/deltemplate" { return SoyTypes.END_DELTEMPLATE; }
@@ -201,7 +203,7 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   "/select" { return SoyTypes.END_SELECT; }
   "/switch" { return SoyTypes.END_SWITCH; }
   "/template" { return SoyTypes.END_TEMPLATE; }
-
+*/
   "=" { return SoyTypes.EQUAL; }
   ":" { return SoyTypes.COLON; }
   "?" { return SoyTypes.QUESTIONMARK; }

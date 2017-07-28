@@ -43,20 +43,6 @@
     DOT_NULL_CHECK = "?."
     ELSE = "else"
     ELSEIF = "elseif"
-    END_CALL = "/call"
-    END_DELCALL = "/delcall"
-    END_DELTEMPLATE = "/deltemplate"
-    END_FOR = "/for"
-    END_FOREACH = "/foreach"
-    END_IF = "/if"
-    END_LET = "/let"
-    END_LITERAL = "{/literal}"
-    END_MSG = "/msg"
-    END_PARAM = "/param"
-    END_PLURAL = "/plural"
-    END_SELECT = "/select"
-    END_SWITCH = "/switch"
-    END_TEMPLATE = "/template"
     EQUAL = "="
     EQUAL_EQUAL = "=="
     EXCLAMATION = "!"
@@ -72,6 +58,8 @@
     LB = "lb"
     LBRACE = "{"
     LBRACE_LBRACE = "{{"
+    LBRACE_SLASH = "{/"
+    LBRACE_LBRACE_SLASH = "{{/"
     LESS = "<"
     LESS_EQUAL = "<="
     LET = "let"
@@ -143,6 +131,7 @@
     OTHER = "regexp:."
   ]
 }
+
 
 // Root rule
 
@@ -266,21 +255,29 @@ private meta DoubleBracedOpenTagInner ::= LBRACE_LBRACE <<p>> {
 }
 private meta DoubleBracedClosedTag ::= LBRACE_LBRACE <<p>> SLASH_RBRACE_RBRACE
 
+private meta EndTag ::= <<EndTagInner <<p>>>> (RBRACE | RBRACE_RBRACE) {
+  pin = 1
+}
+
+private meta EndTagInner ::= (LBRACE_SLASH | LBRACE_LBRACE_SLASH) <<p>> {
+  recoverWhile = "recoverEndOfTag"
+}
+
 // Possible ending tags
 
-EndCallTag ::= <<BracedTag END_CALL>>
-EndDelCallTag ::= <<BracedTag END_DELCALL>>
-EndDelTemplateTag ::= <<BracedTag END_DELTEMPLATE>>
-EndForeachTag ::= <<BracedTag END_FOREACH>>
-EndForTag ::= <<BracedTag END_FOR>>
-EndIfTag ::= <<BracedTag END_IF>>
-EndLetTag ::= <<BracedTag END_LET>>
-EndMsgTag ::= <<BracedTag END_MSG>>
-EndParamTag ::= <<BracedTag END_PARAM>>
-EndPluralTag ::= <<BracedTag END_PLURAL>>
-EndSelectTag ::= <<BracedTag END_SELECT>>
-EndSwitchTag ::= <<BracedTag END_SWITCH>>
-EndTemplateTag ::= <<BracedTag END_TEMPLATE>>
+EndCallTag ::= <<EndTag CALL>>
+EndDelCallTag ::= <<EndTag DELCALL>>
+EndDelTemplateTag ::= <<EndTag DELTEMPLATE>>
+EndForeachTag ::= <<EndTag FOREACH>>
+EndForTag ::= <<EndTag FOR>>
+EndIfTag ::= <<EndTag IF>>
+EndLetTag ::= <<EndTag LET>>
+EndMsgTag ::= <<EndTag MSG>>
+EndParamTag ::= <<EndTag PARAM>>
+EndPluralTag ::= <<EndTag PLURAL>>
+EndSelectTag ::= <<EndTag SELECT>>
+EndSwitchTag ::= <<EndTag SWITCH>>
+EndTemplateTag ::= <<EndTag TEMPLATE>>
 
 // Expanding on soy's hierarchical structure follows.
 
@@ -288,7 +285,7 @@ BlockList ::= (Block | OTHER | COMMENT_BLOCK | HTML_COMMENT)*
 
 private Block ::= NamespaceBlock | AliasBlock | TemplateBlock | DelegatePackageBlock | CatchallBraces
 
-CatchallBraces ::= <<BracedTag ()>>
+CatchallBraces ::= <<BracedTag ()>> | <<EndTag ()>>
 
 // Namespace block
 
