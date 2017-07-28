@@ -14,12 +14,11 @@
 
 package com.google.bamboo.soy.elements;
 
-import com.google.bamboo.soy.parser.SoyAtInjectSingle;
-import com.google.bamboo.soy.parser.SoyAtParamSingle;
-import com.google.bamboo.soy.parser.SoyBeginDelegateTemplate;
-import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
 import com.google.bamboo.soy.lang.Parameter;
 import com.google.bamboo.soy.lang.Scope;
+import com.google.bamboo.soy.parser.SoyAtInjectSingle;
+import com.google.bamboo.soy.parser.SoyAtParamSingle;
+import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
 import com.google.bamboo.soy.stubs.TemplateBlockStub;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.StubBasedPsiElement;
@@ -27,11 +26,11 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/** The PSI element that represents the template block definition. */
+/**
+ * The PSI element that represents the template block definition.
+ */
 public interface TemplateBlockElement
-    extends StubBasedPsiElement<TemplateBlockStub>, PsiNamedElement, Scope {
-  @Nullable
-  SoyBeginDelegateTemplate getBeginDelegateTemplate();
+    extends StubBasedPsiElement<TemplateBlockStub>, PsiNamedElement, TagBase, Scope {
 
   @NotNull
   List<SoyAtInjectSingle> getAtInjectSingleList();

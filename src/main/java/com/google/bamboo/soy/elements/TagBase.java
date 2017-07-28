@@ -14,30 +14,27 @@
 
 package com.google.bamboo.soy.elements;
 
-import com.google.bamboo.soy.parser.SoyBeginParamTag;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public interface ParamListElementBase extends TagBase {
+public interface TagBase extends PsiElement {
+
   @NotNull
-  SoyBeginParamTag getBeginParamTag();
-
-  @Nullable
-  default String getParamName() {
+  default TagName getTagName() {
     try {
-      return getBeginParamTag().getParamSpecificationIdentifier().getText();
-    } catch (NullPointerException e) {
-      return null;
+      // The first child is the opening tag, it's first child is an LBRACE,
+      // the next non-whitespace token is the name.
+      return TagName
+          .valueOf(PsiTreeUtil.skipSiblingsForward(getFirstChild().getFirstChild(),
+              PsiWhiteSpace.class).getText().toUpperCase());
+    } catch (NullPointerException | IllegalArgumentException e) {
+      return TagName._UNKNOWN_;
     }
   }
 
-  @Nullable
-  default String getInlinedValue() {
-    try {
-      return getBeginParamTag().getExpr().getText();
-    } catch (NullPointerException e) {
-      return null;
-    }
+  enum TagName {
+    _UNKNOWN_, CALL, DELCALL, TEMPLATE, DELTEMPLATE, FOR, FOREACH, IF, LET, MSG, PARAM, PLURAL, SELECT, SWITCH
   }
 }

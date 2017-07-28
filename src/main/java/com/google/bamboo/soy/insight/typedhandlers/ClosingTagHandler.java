@@ -15,6 +15,8 @@
 package com.google.bamboo.soy.insight.typedhandlers;
 
 import com.google.bamboo.soy.BracedTagUtils;
+import com.google.bamboo.soy.elements.StatementBase;
+import com.google.bamboo.soy.elements.TagBase;
 import com.google.bamboo.soy.parser.SoyParamListElement;
 import com.google.bamboo.soy.parser.SoyParserDefinition;
 import com.google.bamboo.soy.parser.SoyStatementList;
@@ -38,21 +40,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ClosingTagHandler implements TypedActionHandler {
 
-  private static final ImmutableMap<IElementType, String> blockElementToTagName =
-      ImmutableMap.<IElementType, String>builder()
-          .put(SoyTypes.DIRECT_CALL_STATEMENT, "call")
-          .put(SoyTypes.DEL_CALL_STATEMENT, "delcall")
-          .put(SoyTypes.FOREACH_STATEMENT, "foreach")
-          .put(SoyTypes.FOR_STATEMENT, "for")
-          .put(SoyTypes.IF_STATEMENT, "if")
-          .put(SoyTypes.LET_COMPOUND_STATEMENT, "let")
-          .put(SoyTypes.MSG_STATEMENT, "msg")
-          .put(SoyTypes.PARAM_LIST_ELEMENT, "param")
-          .put(SoyTypes.PLURAL_STATEMENT, "plural")
-          .put(SoyTypes.SELECT_STATEMENT, "select")
-          .put(SoyTypes.SWITCH_STATEMENT, "switch")
-          .put(SoyTypes.TEMPLATE_BLOCK, "template")
-          .build();
   private final TypedActionHandler myOriginalHandler;
 
   public ClosingTagHandler(TypedActionHandler originalHandler) {
@@ -60,13 +47,10 @@ public class ClosingTagHandler implements TypedActionHandler {
   }
 
   private static String getTagNameForElement(PsiElement element) {
-    IElementType elementType = element.getNode().getElementType();
-    if (blockElementToTagName.containsKey(elementType)) {
-      return blockElementToTagName.get(elementType);
+    if (element instanceof TagBase) {
+      return ((TagBase) element).getTagName().name().toLowerCase();
     }
-    if (element instanceof SoyTemplateBlock) {
-      return ((SoyTemplateBlock) element).isDelegate() ? "deltemplate" : "template";
-    }
+
     return null;
   }
 

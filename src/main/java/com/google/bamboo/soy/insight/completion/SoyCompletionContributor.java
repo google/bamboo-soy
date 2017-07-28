@@ -25,7 +25,6 @@ import com.google.bamboo.soy.parser.SoyAliasBlock;
 import com.google.bamboo.soy.parser.SoyAtInjectSingle;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.SoyBeginCall;
-import com.google.bamboo.soy.parser.SoyBeginDelCall;
 import com.google.bamboo.soy.parser.SoyBeginLet;
 import com.google.bamboo.soy.parser.SoyBeginParamTag;
 import com.google.bamboo.soy.parser.SoyBeginTemplate;
@@ -233,10 +232,7 @@ public class SoyCompletionContributor extends CompletionContributor {
     // Complete fully qualified template identifiers fragments for {call} and {delcall}.
     extend(
         CompletionType.BASIC,
-        psiElement()
-            .andOr(
-                psiElement().inside(SoyBeginCall.class),
-                psiElement().inside(SoyBeginDelCall.class)),
+        psiElement().inside(SoyBeginCall.class),
         new CompletionProvider<CompletionParameters>() {
           @Override
           protected void addCompletions(
@@ -250,8 +246,7 @@ public class SoyCompletionContributor extends CompletionContributor {
 
             boolean isDelegate =
                 PsiTreeUtil.getParentOfType(
-                    identifierElement, SoyBeginCall.class, SoyBeginDelCall.class)
-                    instanceof SoyBeginDelCall;
+                    identifierElement, CallStatementBase.class).isDelegate();
 
             String prefix = identifier.replaceFirst("IntellijIdeaRulezzz", "");
             Collection<TemplateNameUtils.Fragment> completions =
