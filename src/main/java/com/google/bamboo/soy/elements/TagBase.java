@@ -15,15 +15,26 @@
 package com.google.bamboo.soy.elements;
 
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
 public interface TagBase extends PsiElement {
+
   @NotNull
-  default String getTagName() {
+  default TagName getTagName() {
     try {
-      return getFirstChild().getFirstChild().getNextSibling().getText().toLowerCase();
-    } catch (NullPointerException e) {
-      return "";
+      // The first child is the opening tag, it's first child is an LBRACE,
+      // the next non-whitespace token is the name.
+      return TagName
+          .valueOf(PsiTreeUtil.skipSiblingsForward(getFirstChild().getFirstChild(),
+              PsiWhiteSpace.class).getText().toUpperCase());
+    } catch (NullPointerException | IllegalArgumentException e) {
+      return TagName._UNKNOWN_;
     }
+  }
+
+  enum TagName {
+    _UNKNOWN_, CALL, DELCALL, TEMPLATE, DELTEMPLATE, FOR, FOREACH, IF, LET, MSG, PARAM, PLURAL, SELECT, SWITCH
   }
 }

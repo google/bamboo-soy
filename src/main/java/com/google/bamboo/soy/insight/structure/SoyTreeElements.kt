@@ -50,7 +50,7 @@ fun getTreeElement(psiElement: PsiElement): PsiTreeElementBase<PsiElement> =
  */
 private fun getPresentableName(psiElement: PsiElement): String? =
     when (psiElement) {
-      is TagBase -> psiElement.tagName
+      is TagBase -> psiElement.tagName.name.toLowerCase()
       is SoyNamespaceBlock -> "namespace"
       else -> null
     }

@@ -71,7 +71,7 @@ public abstract class TemplateBlockMixin extends SoyStubBasedPsiElementBase<Temp
 
   @Override
   public boolean isDelegate() {
-    return getStub() != null ? getStub().isDelegate : getTagName().equals("deltemplate");
+    return getStub() != null ? getStub().isDelegate : getTagName() == TagName.DELTEMPLATE;
   }
 
   @NotNull

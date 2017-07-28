@@ -30,7 +30,7 @@ public interface CallStatementBase extends StatementBase {
 
   @NotNull
   default boolean isDelegate() {
-    return getTagName().equals("delcall");
+    return getTagName() == TagName.DELCALL;
   }
 
   @Nullable

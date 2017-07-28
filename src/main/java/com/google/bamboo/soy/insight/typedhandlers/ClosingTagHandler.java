@@ -48,7 +48,7 @@ public class ClosingTagHandler implements TypedActionHandler {
 
   private static String getTagNameForElement(PsiElement element) {
     if (element instanceof TagBase) {
-      return ((TagBase) element).getTagName();
+      return ((TagBase) element).getTagName().name().toLowerCase();
     }
 
     return null;
