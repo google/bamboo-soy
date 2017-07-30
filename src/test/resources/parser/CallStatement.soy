@@ -1,8 +1,8 @@
-{template callSingle}
+{template .callSingle}
   {call foo /}
 {/template}
 
-{template callBlock}
+{template .callBlock}
   {call bar}
     {param a: 1/}
     {param b kind="text"}
@@ -13,7 +13,7 @@
   {/call}
 {/template}
 
-{template callMany}
+{template .callMany}
   {call foo /}
   {call bar}
     {param a: 1/}
@@ -29,7 +29,7 @@
   {call last /}
 {/template}
 
-{template callNested}
+{template .callNested}
   {call l1}
     {param foo kind="text"}
       {call l2}

@@ -46,6 +46,7 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.Function;
 import com.intellij.util.ProcessingContext;
 import java.util.Collection;
 import java.util.List;
@@ -84,7 +85,7 @@ public class SoyCompletionContributor extends CompletionContributor {
           .collect(Collectors.toList());
 
   SoyCompletionContributor() {
-    extendWithVisibilityKeyword();
+    extendWithTemplateDefinitionLevelKeywords();
     extendWithKindKeyword();
     extendWithVariableNamesInScope();
     extendWithTemplateCallIdentifiers();
@@ -94,9 +95,9 @@ public class SoyCompletionContributor extends CompletionContributor {
   }
 
   /**
-   * Complete the "visibility" keyword in template definition open tags.
+   * Complete the "visibility" and "stricthtml" keywords in template definition open tags.
    */
-  private void extendWithVisibilityKeyword() {
+  private void extendWithTemplateDefinitionLevelKeywords() {
     extend(
         CompletionType.BASIC,
         psiElement().andOr(psiElement().inside(SoyBeginTemplate.class)),
@@ -106,18 +107,12 @@ public class SoyCompletionContributor extends CompletionContributor {
               @NotNull CompletionParameters completionParameters,
               ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
-            PsiElement prevSibling = completionParameters.getPosition().getPrevSibling();
-            while (prevSibling != null) {
-              if (!(prevSibling instanceof PsiWhiteSpace)) {
-                if (prevSibling instanceof SoyTemplateDefinitionIdentifier) {
-                  completionResultSet.addElement(
-                      LookupElementBuilder.create("visibility=\"private\""));
-                } else {
-                  return;
-                }
-              }
-
-              prevSibling = prevSibling.getPrevSibling();
+            if (isPrecededBy(completionParameters.getPosition(),
+                elt -> elt instanceof SoyTemplateDefinitionIdentifier)) {
+              completionResultSet.addElement(
+                  LookupElementBuilder.create("visibility=\"private\""));
+              completionResultSet.addElement(
+                  LookupElementBuilder.create("stricthtml=\"true\""));
             }
           }
         });
@@ -127,10 +122,7 @@ public class SoyCompletionContributor extends CompletionContributor {
    * Complete the "kind" keyword in begin parameter tags and complete the supported kind literals in
    * the string literal.
    */
-  // TODO(thso): Add support for same completion in let statements.
   private void extendWithKindKeyword() {
-    // Complete "kind" keyword after the identifier for let statements and parameters in template
-    // function calls.
     extend(
         CompletionType.BASIC,
         psiElement()
@@ -143,20 +135,12 @@ public class SoyCompletionContributor extends CompletionContributor {
               @NotNull CompletionParameters completionParameters,
               ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
-            PsiElement prevSibling = completionParameters.getPosition().getPrevSibling();
-            while (prevSibling != null) {
-              if (!(prevSibling instanceof PsiWhiteSpace)) {
-                if (prevSibling instanceof SoyParamSpecificationIdentifier
-                    || prevSibling instanceof SoyVariableDefinitionIdentifier) {
-                  completionResultSet.addElement(
-                      LookupElementBuilder.create("kind")
-                          .withInsertHandler(new PostfixInsertHandler("=\"", "\"")));
-                }
-
-                return;
-              }
-
-              prevSibling = prevSibling.getPrevSibling();
+            if (isPrecededBy(completionParameters.getPosition(),
+                elt -> elt instanceof SoyParamSpecificationIdentifier
+                    || elt instanceof SoyVariableDefinitionIdentifier)) {
+              completionResultSet.addElement(
+                  LookupElementBuilder.create("kind")
+                      .withInsertHandler(new PostfixInsertHandler("=\"", "\"")));
             }
           }
         });
@@ -242,7 +226,12 @@ public class SoyCompletionContributor extends CompletionContributor {
             PsiElement identifierElement =
                 PsiTreeUtil.getParentOfType(
                     completionParameters.getPosition(), SoyTemplateReferenceIdentifier.class);
-            String identifier = identifierElement == null ? "" : identifierElement.getText();
+
+            if (identifierElement == null) {
+              return;
+            }
+
+            String identifier = identifierElement.getText();
 
             boolean isDelegate =
                 PsiTreeUtil.getParentOfType(
@@ -391,5 +380,22 @@ public class SoyCompletionContributor extends CompletionContributor {
   @Override
   public boolean invokeAutoPopup(@NotNull PsiElement position, char typeChar) {
     return (typeChar == '.' || typeChar == '$');
+  }
+
+  /**
+   * Whether the given element is directly preceded by an element matching the predicate (ignoring
+   * whitespaces).
+   */
+  private boolean isPrecededBy(PsiElement startElement, Function<PsiElement, Boolean> predicate) {
+    PsiElement prevSibling = startElement.getPrevSibling();
+    while (prevSibling != null) {
+      if (!(prevSibling instanceof PsiWhiteSpace)) {
+        return predicate.fun(prevSibling);
+      }
+
+      prevSibling = prevSibling.getPrevSibling();
+    }
+
+    return false;
   }
 }
