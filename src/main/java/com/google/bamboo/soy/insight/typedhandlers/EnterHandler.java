@@ -14,6 +14,8 @@
 
 package com.google.bamboo.soy.insight.typedhandlers;
 
+import static org.apache.log4j.LogSF.warn;
+
 import com.google.bamboo.soy.BracedTagUtils;
 import com.google.bamboo.soy.file.SoyFile;
 import com.google.bamboo.soy.file.SoyFileType;
@@ -29,6 +31,7 @@ import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,6 +44,8 @@ import org.jetbrains.annotations.Nullable;
  * <p>If pressed right after an opening tag this handler will indent the cursor on the next line.
  */
 public class EnterHandler extends EnterHandlerDelegateAdapter {
+  private static final Logger LOG = Logger.getInstance(EnterHandler.class);
+
   @Override
   public Result preprocessEnter(
       @NotNull PsiFile psiFile,
@@ -50,7 +55,9 @@ public class EnterHandler extends EnterHandlerDelegateAdapter {
       @NotNull DataContext dataContext,
       @Nullable EditorActionHandler originalHandler) {
     if (psiFile instanceof SoyFile && isBetweenSiblingTags(psiFile, caretOffset.get())) {
-      originalHandler.execute(editor, dataContext);
+      if (originalHandler != null) {
+        originalHandler.execute(editor, dataContext);
+      }
       return Result.Default;
     }
     return Result.Continue;
@@ -127,6 +134,7 @@ public class EnterHandler extends EnterHandlerDelegateAdapter {
     }
     PsiElement nextTag = nextElement.getParent();
     PsiElement prevTag = nextTag.getPrevSibling();
+
     return prevTag != null
         && BracedTagUtils.isBracedTag(prevTag)
         && BracedTagUtils.isBracedTag(nextTag);
