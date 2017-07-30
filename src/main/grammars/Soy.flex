@@ -67,10 +67,11 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
 %state LITERAL
 %state TAG_NO_KEYWORD
 %state TAG_QUALIFIED_IDENTIFIER
+%state TAG_TEMPLATE
 
 %%
 
-<YYINITIAL,TAG,TAG_QUALIFIED_IDENTIFIER,LITERAL> {
+<YYINITIAL,TAG,TAG_QUALIFIED_IDENTIFIER,TAG_TEMPLATE,LITERAL> {
   {WhiteSpace}  { return TokenType.WHITE_SPACE; }
 }
 
@@ -79,7 +80,7 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
 }
 
 
-<YYINITIAL,TAG,TAG_QUALIFIED_IDENTIFIER,TAG_NO_KEYWORD,LITERAL> {
+<YYINITIAL,TAG,TAG_QUALIFIED_IDENTIFIER,TAG_TEMPLATE,TAG_NO_KEYWORD,LITERAL> {
   /* Comments */
   ^{DoubleSlashComment} { return SoyTypes.COMMENT_BLOCK; }
   {DocComment} { return SoyTypes.DOC_COMMENT_BLOCK; }
@@ -100,9 +101,9 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   "call" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.CALL; }
   "delcall" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELCALL; }
   "delpackage" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELPACKAGE; }
-  "deltemplate" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELTEMPLATE; }
+  "deltemplate" { yybegin(TAG_TEMPLATE); return SoyTypes.DELTEMPLATE; }
   "namespace" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.NAMESPACE; }
-  "template" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.TEMPLATE; }
+  "template" { yybegin(TAG_TEMPLATE); return SoyTypes.TEMPLATE; }
 
   true { return SoyTypes.BOOL_LITERAL; }
   false { return SoyTypes.BOOL_LITERAL; }
@@ -159,10 +160,23 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   "as" { return SoyTypes.AS; }
 }
 
-// Inside a declaration/call tag. Only "as" and identifiers expected.
+// Inside a template declaration or call tag. Only "as" and identifiers expected.
 <TAG_QUALIFIED_IDENTIFIER> {
   "as" { return SoyTypes.AS; }
 
+  {QualifiedIdentifier} { return SoyTypes.QUALIFIED_IDENTIFIER; }
+}
+
+// Inside a template declaration only identifiers and attributes expected.
+<TAG_TEMPLATE> {
+  {DoubleQuotedStringLiteral} { return SoyTypes.STRING_LITERAL; }
+  {SingleQuotedStringLiteral} { return SoyTypes.STRING_LITERAL; }
+  {MultiLineDoubleQuotedStringLiteral} { return SoyTypes.MULTI_LINE_STRING_LITERAL; }
+  {MultiLineSingleQuotedStringLiteral} { return SoyTypes.MULTI_LINE_STRING_LITERAL; }
+
+  "=" { return SoyTypes.EQUAL; }
+
+  {IdentifierWord} { return SoyTypes.IDENTIFIER_WORD; }
   {QualifiedIdentifier} { return SoyTypes.QUALIFIED_IDENTIFIER; }
 }
 
@@ -240,7 +254,7 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
 }
 
 // Anywhere inside a tag.
-<TAG,TAG_NO_KEYWORD,TAG_QUALIFIED_IDENTIFIER> {
+<TAG,TAG_NO_KEYWORD,TAG_QUALIFIED_IDENTIFIER,TAG_TEMPLATE> {
   /* Tag closing */
   "/}" { yybegin(YYINITIAL); return SoyTypes.SLASH_RBRACE; }
   "}" { yybegin(YYINITIAL); return SoyTypes.RBRACE; }

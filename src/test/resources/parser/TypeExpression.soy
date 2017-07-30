@@ -1,4 +1,4 @@
-{template primitiveTypes}
+{template .primitiveTypes}
   {@param a: any}
   {@param b: string}
   {@param c: bool}
@@ -13,7 +13,7 @@
   {@param l: attributes}
 {/template}
 
-{template unionTypes}
+{template .unionTypes}
   {@param a: int|string}
   {@param b: int|string|uri}
   {@param c: list<int>|string|uri}
@@ -21,12 +21,12 @@
   {@param e: map<string,string>|list<int>}
 {/template}
 
-{template recordTypes}
+{template .recordTypes}
   {@param a: [a:int]}
   {@param b: [a:int, b:string]}
   {@param c: [a:int, b:list<int>, c:string]}
 {/template}
 
-{template complexTypes}
+{template .complexTypes}
   {@param a: [a:int, b:list<map<string, map<?, any>>>, c:?]|null}
 {/template}
