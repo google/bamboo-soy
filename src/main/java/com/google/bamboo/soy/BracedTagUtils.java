@@ -18,6 +18,7 @@ import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.common.collect.ImmutableSet;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.IElementType;
+import org.jetbrains.annotations.NotNull;
 
 public class BracedTagUtils {
 
@@ -32,24 +33,24 @@ public class BracedTagUtils {
               SoyTypes.SLASH_RBRACE, SoyTypes.SLASH_RBRACE_RBRACE, SoyTypes.LBRACE_SLASH,
               SoyTypes.LBRACE_LBRACE_SLASH);
 
-  public static boolean isBrace(PsiElement element) {
+  public static boolean isBrace(@NotNull PsiElement element) {
     return BRACES.contains(element.getNode().getElementType());
   }
 
-  public static boolean isLeftBrace(PsiElement element) {
+  private static boolean isLeftBrace(@NotNull PsiElement element) {
     return LEFT_BRACES.contains(element.getNode().getElementType());
   }
 
-  public static boolean isBracedTag(PsiElement tag) {
-    return isLeftBrace(tag.getFirstChild());
+  public static boolean isBracedTag(@NotNull PsiElement tag) {
+    return tag.getFirstChild() != null && isLeftBrace(tag.getFirstChild());
   }
 
-  public static boolean isDoubleBraced(PsiElement tag) {
+  public static boolean isDoubleBraced(@NotNull PsiElement tag) {
     return tag.getFirstChild().getNode().getElementType() == SoyTypes.LBRACE_LBRACE
         || tag.getFirstChild().getNode().getElementType() == SoyTypes.LBRACE_LBRACE_SLASH;
   }
 
-  public static boolean isSelfClosed(PsiElement tag) {
+  public static boolean isSelfClosed(@NotNull PsiElement tag) {
     return SLASH_R_BRACES.contains(tag.getLastChild().getNode().getElementType());
   }
 }

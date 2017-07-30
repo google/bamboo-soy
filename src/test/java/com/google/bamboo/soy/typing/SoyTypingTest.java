@@ -48,6 +48,10 @@ public class SoyTypingTest extends SoyCodeInsightFixtureTestCase {
     myFixture.checkResult(textAfter);
   }
 
+  public void testAfterCloseTag() throws Throwable {
+    doTest('\n');
+  }
+
   public void testInDocComment() throws Throwable {
     doTest('\n');
   }
@@ -61,6 +65,10 @@ public class SoyTypingTest extends SoyCodeInsightFixtureTestCase {
   }
 
   public void testTemplateBeginTag() throws Throwable {
+    doTest('\n');
+  }
+
+  public void testBetweenOpenCloseTags() throws Throwable {
     doTest('\n');
   }
 
