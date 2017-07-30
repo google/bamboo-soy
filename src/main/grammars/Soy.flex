@@ -160,14 +160,14 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   "as" { return SoyTypes.AS; }
 }
 
-// Inside a template declaration or call tag. Only "as" and identifiers expected.
+// Inside a declaration or call tag. Only "as" and identifiers expected.
 <TAG_QUALIFIED_IDENTIFIER> {
   "as" { return SoyTypes.AS; }
 
   {QualifiedIdentifier} { return SoyTypes.QUALIFIED_IDENTIFIER; }
 }
 
-// Inside a template declaration only identifiers and attributes expected.
+// Inside a template declaration. Only identifiers and attributes expected.
 <TAG_TEMPLATE> {
   {DoubleQuotedStringLiteral} { return SoyTypes.STRING_LITERAL; }
   {SingleQuotedStringLiteral} { return SoyTypes.STRING_LITERAL; }
