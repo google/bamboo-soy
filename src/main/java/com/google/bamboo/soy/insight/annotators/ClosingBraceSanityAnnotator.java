@@ -32,13 +32,12 @@ import com.google.bamboo.soy.parser.impl.SoyDelegatePackageBlockImpl;
 import com.google.bamboo.soy.parser.impl.SoyElseTagImpl;
 import com.google.bamboo.soy.parser.impl.SoyEndCallImpl;
 import com.google.bamboo.soy.parser.impl.SoyEndChoiceImpl;
-import com.google.bamboo.soy.parser.impl.SoyEndDelTemplateTagImpl;
 import com.google.bamboo.soy.parser.impl.SoyEndForTagImpl;
 import com.google.bamboo.soy.parser.impl.SoyEndForeachTagImpl;
 import com.google.bamboo.soy.parser.impl.SoyEndIfTagImpl;
 import com.google.bamboo.soy.parser.impl.SoyEndLetTagImpl;
 import com.google.bamboo.soy.parser.impl.SoyEndMsgTagImpl;
-import com.google.bamboo.soy.parser.impl.SoyEndTemplateTagImpl;
+import com.google.bamboo.soy.parser.impl.SoyEndTemplateImpl;
 import com.google.bamboo.soy.parser.impl.SoyFallbackMsgTagImpl;
 import com.google.bamboo.soy.parser.impl.SoyLbStatementImpl;
 import com.google.bamboo.soy.parser.impl.SoyLetSingleStatementImpl;
@@ -78,13 +77,12 @@ public class ClosingBraceSanityAnnotator implements Annotator {
           .add(SoyElseTagImpl.class)
           .add(SoyEndCallImpl.class)
           .add(SoyEndChoiceImpl.class)
-          .add(SoyEndDelTemplateTagImpl.class)
+          .add(SoyEndTemplateImpl.class)
           .add(SoyEndForTagImpl.class)
           .add(SoyEndForeachTagImpl.class)
           .add(SoyEndIfTagImpl.class)
           .add(SoyEndLetTagImpl.class)
           .add(SoyEndMsgTagImpl.class)
-          .add(SoyEndTemplateTagImpl.class)
           .add(SoyFallbackMsgTagImpl.class)
           .add(SoyLbStatementImpl.class)
           .add(SoyNamespaceBlockImpl.class)
@@ -95,15 +93,14 @@ public class ClosingBraceSanityAnnotator implements Annotator {
           .add(SoyWhitespaceStatementImpl.class)
           .add(SoyXidStatementImpl.class)
           .build();
+  private static ImmutableSet<Class> mustCloseSlashRBraceTags =
+      ImmutableSet.of(SoyLetSingleStatementImpl.class);
 
   static {
     for (Class clazz : mustCloseRBraceTags) {
       assert (TagElement.class.isAssignableFrom(clazz));
     }
   }
-
-  private static ImmutableSet<Class> mustCloseSlashRBraceTags =
-      ImmutableSet.of(SoyLetSingleStatementImpl.class);
 
   @Override
   public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {

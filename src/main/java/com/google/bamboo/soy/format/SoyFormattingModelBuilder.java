@@ -14,6 +14,13 @@
 
 package com.google.bamboo.soy.format;
 
+import com.google.bamboo.soy.elements.TagBlockElement;
+import com.google.bamboo.soy.elements.TagElement;
+import com.google.bamboo.soy.format.blocks.SoyBlock;
+import com.google.bamboo.soy.format.blocks.SoyStatementListBlock;
+import com.google.bamboo.soy.format.blocks.SoyTagBlock;
+import com.google.bamboo.soy.format.blocks.SoyTagBlockBlock;
+import com.google.bamboo.soy.parser.SoyStatementList;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.intellij.formatting.Alignment;
 import com.intellij.formatting.FormattingModel;
@@ -44,12 +51,35 @@ public class SoyFormattingModelBuilder extends TemplateLanguageFormattingModelBu
       @NotNull CodeStyleSettings codeStyleSettings) {
     final FormattingDocumentModelImpl documentModel =
         FormattingDocumentModelImpl.createOn(node.getPsi().getContainingFile());
-    return new SoyBlock(
+    if (node.getPsi() instanceof TagElement) {
+      return new SoyTagBlock(
+          this,
+          codeStyleSettings,
+          node,
+          foreignChildren,
+          new HtmlPolicy(codeStyleSettings, documentModel));
+    } else if(node.getPsi() instanceof TagBlockElement) {
+      return new SoyTagBlockBlock(
+          this,
+          codeStyleSettings,
+          node,
+          foreignChildren,
+          new HtmlPolicy(codeStyleSettings, documentModel));
+    } else if (node.getPsi() instanceof SoyStatementList) {
+      return new SoyStatementListBlock(
+          this,
+          codeStyleSettings,
+          node,
+          foreignChildren,
+          new HtmlPolicy(codeStyleSettings, documentModel));
+    } else {
+      return new SoyBlock(
         this,
         codeStyleSettings,
         node,
         foreignChildren,
         new HtmlPolicy(codeStyleSettings, documentModel));
+    }
   }
 
   @NotNull

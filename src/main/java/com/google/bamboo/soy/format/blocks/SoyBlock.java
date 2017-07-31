@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.bamboo.soy.format;
+package com.google.bamboo.soy.format.blocks;
 
 import com.google.bamboo.soy.elements.ParamListElementBase;
 import com.google.bamboo.soy.elements.StatementBase;
+import com.google.bamboo.soy.elements.TagBlockElement;
 import com.google.bamboo.soy.elements.TagElement;
 import com.google.bamboo.soy.parser.SoyAtInjectSingle;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.SoyCaseClause;
 import com.google.bamboo.soy.parser.SoyDefaultClause;
 import com.google.bamboo.soy.parser.SoyStatementList;
-import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.intellij.formatting.Alignment;
-import com.intellij.formatting.ChildAttributes;
 import com.intellij.formatting.Indent;
 import com.intellij.formatting.templateLanguages.BlockWithParent;
 import com.intellij.formatting.templateLanguages.DataLanguageBlockWrapper;
@@ -82,6 +81,18 @@ public class SoyBlock extends TemplateLanguageBlock {
       sibling = sibling.getNextSibling();
     }
     return sibling instanceof SoyAtParamSingle || sibling instanceof SoyAtInjectSingle;
+  }
+
+  private static <T> T findLastDescendantOfType(PsiElement el, Class<T> clazz) {
+    while (el != null) {
+      if (clazz.isInstance(el)) {
+        return (T) el;
+      }
+
+      el = el.getLastChild();
+    }
+
+    return null;
   }
 
   /**
@@ -193,7 +204,7 @@ public class SoyBlock extends TemplateLanguageBlock {
     }
 
     if (isDirectTagChild()) {
-      return Indent.getContinuationIndent();
+      return Indent.getContinuationWithoutFirstIndent();
     } else {
       return Indent.getNoneIndent();
     }
@@ -214,16 +225,24 @@ public class SoyBlock extends TemplateLanguageBlock {
     return false;
   }
 
-  @NotNull
   @Override
-  public ChildAttributes getChildAttributes(int newChildIndex) {
-    if (isNewChildIndented()) {
-      return new ChildAttributes(Indent.getNormalIndent(), null);
+  public Indent getChildIndent() {
+    PsiElement element = myNode.getPsi();
+    if (element instanceof TagBlockElement
+        || element instanceof SoyCaseClause
+        || element instanceof SoyDefaultClause) {
+      return Indent.getNormalIndent();
     } else if (myNode.getPsi() instanceof TagElement) {
-      return new ChildAttributes(Indent.getContinuationIndent(), null);
+      return Indent.getContinuationWithoutFirstIndent();
     } else {
-      return new ChildAttributes(Indent.getNoneIndent(), null);
+      return null;
     }
+  }
+
+  @Override
+  public boolean isIncomplete() {
+    TagBlockElement block = findLastDescendantOfType(myNode.getPsi(), TagBlockElement.class);
+    return block != null && block.isIncomplete();
   }
 
   private boolean hasIndentingForeignBlockParent() {
@@ -250,15 +269,6 @@ public class SoyBlock extends TemplateLanguageBlock {
       parent = parent.getParent();
     }
     return false;
-  }
-
-  private boolean isNewChildIndented() {
-    PsiElement element = myNode.getPsi();
-    return element instanceof StatementBase
-        || element instanceof SoyTemplateBlock
-        || element instanceof ParamListElementBase
-        || element instanceof SoyCaseClause
-        || element instanceof SoyDefaultClause;
   }
 
   private boolean isStatementOrStatementContainer() {

@@ -1,6 +1,7 @@
 {
   parserClass="com.google.bamboo.soy.parser.SoyParser"
   parserUtilClass="com.google.bamboo.soy.parser.SoyParserUtil"
+  parserImports=["static com.intellij.lang.WhitespacesBinders.*"]
 
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
@@ -13,10 +14,11 @@
   elementTypeClass="com.google.bamboo.soy.parser.SoyElementType"
   tokenTypeClass="com.google.bamboo.soy.lexer.SoyTokenType"
 
-  implements(".*Statement")="com.google.bamboo.soy.elements.StatementBase"
   implements("Begin.*|End.*|.*Tag")="com.google.bamboo.soy.elements.TagElement"
+  implements("AliasBlock|NamespaceBlock|DelegatePackageBlock")="com.google.bamboo.soy.elements.TagElement"
   implements("(Css|Lb|LetSingle|Nil|Xid|Rb|Sp|Whitespace|Print)Statement")
       = ["com.google.bamboo.soy.elements.StatementBase" "com.google.bamboo.soy.elements.TagElement"]
+  implements(".*Statement")="com.google.bamboo.soy.elements.StatementBase"
 
 
   extends(".*Expr|VariableReferenceIdentifier")=Expr
@@ -261,13 +263,11 @@ private meta EndTagInner ::= (LBRACE_SLASH | LBRACE_LBRACE_SLASH) <<p>> {
 
 // Possible ending tags
 
-EndDelTemplateTag ::= <<EndTag DELTEMPLATE>>
 EndForeachTag ::= <<EndTag FOREACH>>
 EndForTag ::= <<EndTag FOR>>
 EndIfTag ::= <<EndTag IF>>
 EndLetTag ::= <<EndTag LET>>
 EndMsgTag ::= <<EndTag MSG>>
-EndTemplateTag ::= <<EndTag TEMPLATE>>
 EndParamTag ::= <<EndTag PARAM>>
 
 // Expanding on soy's hierarchical structure follows.
@@ -404,10 +404,11 @@ external endOfStatementBlock ::= parseEndOfStatementBlock
 // Should consume everything until the provided threshold rule or any end tag.
 // Should only expect statements.
 // Should (ideally) mark everything else as an error.
-meta StatementList ::= (Statement | !(<<p>> | endOfStatementBlock) CatchallBraces)+ {
+meta StatementList ::= (Statement | !(<<p>> | endOfStatementBlock) CatchallBraces)* {
   recoverWhile = "!(<<p>> | endOfStatementBlock)"
   implements = "com.google.bamboo.soy.elements.StatementListElement"
   mixin = "com.google.bamboo.soy.elements.impl.StatementListMixin"
+  hooks=[leftBinder="GREEDY_LEFT_BINDER" rightBinder="GREEDY_RIGHT_BINDER"]
 }
 
 // ! It is very important to have the following structure
@@ -464,7 +465,9 @@ private SingleTagStatement ::=
 
 // A wrapper for [StatementList] that parses all statements in an unexpected context.
 
-meta UnexpectedStatements ::= <<StatementList (<<p>>)>>
+meta UnexpectedStatements ::= (Statement | !(<<p>> | endOfStatementBlock) CatchallBraces)+ {
+  recoverWhile = "!(<<p>> | endOfStatementBlock)"
+}
 
 // For
 
