@@ -36,7 +36,7 @@ public class QuoteHandler implements TypedActionHandler {
           Pair.create('[', ']'));
   private final Set<Character> alwaysCloseCharacters = ImmutableSet.of('(', '[');
   private final Set<String> allowedPreviousCharacters = ImmutableSet
-      .of("\n", " ", "[", "]", "(", ")", "=");
+      .of("\n", " ", "[", "(", "=");
   private final Set<String> allowedNextCharacters = ImmutableSet.of("\n", " ", "]", ")", "}");
   private final TypedActionHandler myOriginalHandler;
 
