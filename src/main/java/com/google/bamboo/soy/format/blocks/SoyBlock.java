@@ -238,7 +238,12 @@ public class SoyBlock extends TemplateLanguageBlock {
   @Override
   public boolean isIncomplete() {
     TagBlockElement block = findLastDescendantOfType(myNode.getPsi(), TagBlockElement.class);
-    return block != null && block.isIncomplete();
+    if (block != null) {
+      return block.isIncomplete();
+    } else {
+      TagElement tag = findLastDescendantOfType(myNode.getPsi(), TagElement.class);
+      return tag != null && tag.isIncomplete();
+    }
   }
 
   private boolean hasIndentingForeignBlockParent() {
