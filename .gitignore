@@ -2,4 +2,5 @@
 *.iml
 .gradle
 build/
+classes/
 gen/
