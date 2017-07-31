@@ -23,15 +23,13 @@ import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDocumentManager;
 import java.util.Set;
+import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Inserts a matching closing character (quote, parenthesis, bracket) when typing one.
  */
 public class QuoteHandler implements TypedActionHandler {
-
-  private Character lastInsertedChar;
-  private int lastInsertedOffset;
 
   private final Set<Pair<Character, Character>> matchingCharacters = ImmutableSet
       .of(Pair.create('"', '"'), Pair.create('\'', '\''), Pair.create('(', ')'),
@@ -53,21 +51,50 @@ public class QuoteHandler implements TypedActionHandler {
     String prevChar = getPreviousChar(document, caretOffset);
     String nextChar = getNextChar(document, caretOffset);
 
-    // Prevent from re-typing the same character that was just automatically inserted.
-    if (caretOffset == lastInsertedOffset && lastInsertedChar.equals(charTyped) && nextChar
-        .equals(lastInsertedChar + "")) {
-      editor.getCaretModel().moveToOffset(caretOffset + 1);
-      return;
-    }
+    int lineNumber = document.getLineNumber(caretOffset);
+    String textBeforeCaret =
+        document.getText(new TextRange(document.getLineStartOffset(lineNumber),
+            caretOffset));
+    String textAfterCaret =
+        document.getText(new TextRange(caretOffset,
+            document.getLineEndOffset(lineNumber)));
 
-    for (Pair<Character, Character> charPair : matchingCharacters) {
-      if (charPair.first.equals(charTyped)) {
-        if ((alwaysCloseCharacters.contains(charPair.first) || allowedPreviousCharacters
+    Pair<Character, Character> matchingPairReverse = getMatchingPair(charTyped,
+        p -> p.getSecond());
+    if (matchingPairReverse != null && nextChar.equals(charTyped + "")) {
+      int countLeft = 0;
+      int countRight = 0;
+
+      // Number of opens on the left
+      for (String c : textBeforeCaret.split("")) {
+        if (c.equals(matchingPairReverse.first + "")) {
+          countLeft++;
+        } else if (c.equals(matchingPairReverse.second + "") && countLeft > 0) {
+          countLeft--;
+        }
+      }
+
+      // Number of closes on the right
+      for (String c : textAfterCaret.split("")) {
+        if (c.equals(matchingPairReverse.second + "")) {
+          countRight++;
+        } else if (c.equals(matchingPairReverse.first + "") && countRight > 0) {
+          countRight--;
+        }
+      }
+
+      if (countLeft <= countRight) {
+        editor.getCaretModel().moveToOffset(caretOffset + 1);
+        return;
+      }
+    } else {
+      Pair<Character, Character> matchingPair = getMatchingPair(charTyped,
+          p -> p.getFirst());
+      if (matchingPair != null) {
+        if ((alwaysCloseCharacters.contains(matchingPair.first) || allowedPreviousCharacters
             .contains(prevChar)) && allowedNextCharacters.contains(nextChar)
-            && !nextChar.equals(charPair.second + "")) {
-          document.insertString(editor.getCaretModel().getOffset(), charPair.second + "");
-          lastInsertedChar = charPair.second;
-          lastInsertedOffset = caretOffset + 1;
+            && !nextChar.equals(matchingPair.second + "")) {
+          document.insertString(editor.getCaretModel().getOffset(), matchingPair.second + "");
 
           if (editor.getProject() != null) {
             PsiDocumentManager.getInstance(editor.getProject()).commitDocument(document);
@@ -77,6 +104,17 @@ public class QuoteHandler implements TypedActionHandler {
     }
 
     myOriginalHandler.execute(editor, charTyped, dataContext);
+  }
+
+  private Pair<Character, Character> getMatchingPair(Character charTyped,
+      Function<Pair<Character, Character>, Character> getCharacter) {
+    for (Pair<Character, Character> charPair : matchingCharacters) {
+      if (getCharacter.apply(charPair).equals(charTyped)) {
+        return charPair;
+      }
+    }
+
+    return null;
   }
 
   private String getPreviousChar(Document document, int offset) {
