@@ -16,6 +16,7 @@ package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.elements.TagElement.TagName;
 import com.google.bamboo.soy.parser.SoyBeginCall;
+import com.google.bamboo.soy.parser.SoyEndParamTag;
 import com.google.bamboo.soy.parser.SoyParamListElement;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
@@ -42,4 +43,9 @@ public interface CallStatementBase extends TagBlockElement, StatementBase {
       return null;
     }
   }
+/*
+  @Override
+  default boolean isIncomplete() {
+    return !getBeginParamTag().isSelfClosed() && !(getLastChild() instanceof SoyEndParamTag);
+  }*/
 }

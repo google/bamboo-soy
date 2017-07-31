@@ -15,6 +15,7 @@
 package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.parser.SoyBeginParamTag;
+import com.google.bamboo.soy.parser.SoyEndParamTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,5 +39,10 @@ public interface ParamListElementBase extends TagBlockElement {
     } catch (NullPointerException e) {
       return null;
     }
+  }
+
+  @Override
+  default boolean isIncomplete() {
+    return !getBeginParamTag().isSelfClosed() && !(getLastChild() instanceof SoyEndParamTag);
   }
 }
