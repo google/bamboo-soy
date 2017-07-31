@@ -14,7 +14,7 @@
 
 package com.google.bamboo.soy.insight.annotators;
 
-import com.google.bamboo.soy.BracedTagUtils;
+import com.google.bamboo.soy.elements.TagElement;
 import com.google.bamboo.soy.parser.impl.SoyAliasBlockImpl;
 import com.google.bamboo.soy.parser.impl.SoyAtParamSingleImpl;
 import com.google.bamboo.soy.parser.impl.SoyBeginCaseClauseImpl;
@@ -39,9 +39,8 @@ import com.google.bamboo.soy.parser.impl.SoyEndIfTagImpl;
 import com.google.bamboo.soy.parser.impl.SoyEndLetTagImpl;
 import com.google.bamboo.soy.parser.impl.SoyEndMsgTagImpl;
 import com.google.bamboo.soy.parser.impl.SoyEndTemplateTagImpl;
-import com.google.bamboo.soy.parser.impl.SoyFallbackMsgClauseImpl;
+import com.google.bamboo.soy.parser.impl.SoyFallbackMsgTagImpl;
 import com.google.bamboo.soy.parser.impl.SoyLbStatementImpl;
-import com.google.bamboo.soy.parser.impl.SoyLetCompoundStatementImpl;
 import com.google.bamboo.soy.parser.impl.SoyLetSingleStatementImpl;
 import com.google.bamboo.soy.parser.impl.SoyNamespaceBlockImpl;
 import com.google.bamboo.soy.parser.impl.SoyNilStatementImpl;
@@ -86,8 +85,7 @@ public class ClosingBraceSanityAnnotator implements Annotator {
           .add(SoyEndLetTagImpl.class)
           .add(SoyEndMsgTagImpl.class)
           .add(SoyEndTemplateTagImpl.class)
-          .add(SoyFallbackMsgClauseImpl.class)
-          .add(SoyLetCompoundStatementImpl.class)
+          .add(SoyFallbackMsgTagImpl.class)
           .add(SoyLbStatementImpl.class)
           .add(SoyNamespaceBlockImpl.class)
           .add(SoyNilStatementImpl.class)
@@ -103,14 +101,16 @@ public class ClosingBraceSanityAnnotator implements Annotator {
 
   @Override
   public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
-    if (mustCloseRBraceTags.contains(psiElement.getClass())
-        && BracedTagUtils.isSelfClosed(psiElement)) {
-      annotationHolder.createErrorAnnotation(psiElement, MUST_CLOSE_RBRACE);
-    }
+    if (psiElement instanceof TagElement) {
+      if (mustCloseRBraceTags.contains(psiElement.getClass())
+          && ((TagElement) psiElement).isSelfClosed()) {
+        annotationHolder.createErrorAnnotation(psiElement, MUST_CLOSE_RBRACE);
+      }
 
-    if (mustCloseSlashRBraceTags.contains(psiElement.getClass())
-        && !BracedTagUtils.isSelfClosed(psiElement)) {
-      annotationHolder.createErrorAnnotation(psiElement, MUST_CLOSE_SLASH_RBRACE);
+      if (mustCloseSlashRBraceTags.contains(psiElement.getClass())
+          && !((TagElement) psiElement).isSelfClosed()) {
+        annotationHolder.createErrorAnnotation(psiElement, MUST_CLOSE_SLASH_RBRACE);
+      }
     }
   }
 }

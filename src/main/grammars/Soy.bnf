@@ -702,8 +702,8 @@ LiteralStatement ::= (LITERAL Content END_LITERAL) | (LITERAL_DOUBLE Content END
 MsgStatement
   ::=
     BeginMsg
-      [<<StatementList (FallbackMsgClause)>>]
-    [FallbackMsgClause
+      [<<StatementList (FallbackMsgTag)>>]
+    [FallbackMsgTag
       [<<StatementList !()>>]]
     EndMsgTag {
   pin = 1
@@ -717,7 +717,7 @@ private BeginMsgTagBody ::= MSG AttributeList {
   recoverWhile = "recoverEndOfTag"
 }
 
-FallbackMsgClause ::= <<BracedTag FallbackMsgTagBody>>
+FallbackMsgTag ::= <<BracedTag FallbackMsgTagBody>>
 
 private FallbackMsgTagBody ::= FALLBACKMSG AttributeList {
   pin = 1

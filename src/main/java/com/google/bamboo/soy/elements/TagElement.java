@@ -23,11 +23,14 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
 public interface TagElement extends PsiElement {
+
   ImmutableSet<IElementType> SLASH_R_BRACES =
       ImmutableSet.of(SoyTypes.SLASH_RBRACE, SoyTypes.SLASH_RBRACE_RBRACE);
   ImmutableSet<IElementType> LEFT_BRACES =
       ImmutableSet.of(SoyTypes.LBRACE, SoyTypes.LBRACE_LBRACE, SoyTypes.LBRACE_SLASH,
           SoyTypes.LBRACE_LBRACE_SLASH);
+  ImmutableSet<IElementType> LEFT_SLASH_BRACES = ImmutableSet.of(
+      SoyTypes.LBRACE_SLASH, SoyTypes.LBRACE_LBRACE_SLASH);
   ImmutableSet<IElementType> RIGHT_BRACES =
       ImmutableSet.of(SoyTypes.RBRACE, SoyTypes.RBRACE_RBRACE, SoyTypes.SLASH_RBRACE,
           SoyTypes.SLASH_RBRACE_RBRACE);
@@ -54,6 +57,10 @@ public interface TagElement extends PsiElement {
         || getFirstChild().getNode().getElementType() == SoyTypes.LBRACE_LBRACE_SLASH;
   }
 
+  default boolean isClosingTag() {
+    return LEFT_SLASH_BRACES.contains(getFirstChild().getNode().getElementType());
+  }
+
   default boolean isSelfClosed() {
     return SLASH_R_BRACES.contains(getLastChild().getNode().getElementType());
   }
@@ -71,6 +78,35 @@ public interface TagElement extends PsiElement {
   }
 
   enum TagName {
-    _UNKNOWN_, CALL, DELCALL, TEMPLATE, DELTEMPLATE, FOR, FOREACH, IF, LET, MSG, PARAM, PLURAL, SELECT, SWITCH
+    _UNKNOWN_,
+    ALIAS,
+    CALL,
+    DELCALL,
+    DELPACKAGE,
+    NAMESPACE,
+    TEMPLATE,
+    DELTEMPLATE,
+    CASE,
+    CSS,
+    DEFAULT,
+    ELSE,
+    ELSIF,
+    FALLBACKMSG,
+    FOR,
+    FOREACH,
+    IF,
+    IFEMPTY,
+    LB,
+    LET,
+    MSG,
+    NIL,
+    PARAM,
+    PLURAL,
+    PRINT,
+    RB,
+    SELECT,
+    SP,
+    SWITCH,
+    XID
   }
 }

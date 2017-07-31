@@ -30,4 +30,9 @@ public interface TagBlockElement extends PsiElement {
   default TagName getTagName() {
     return getOpeningTag().getTagName();
   }
+
+  default boolean isIncomplete() {
+    PsiElement lastChild = getLastChild();
+    return !(lastChild instanceof TagElement && ((TagElement) lastChild).isClosingTag());
+  }
 }

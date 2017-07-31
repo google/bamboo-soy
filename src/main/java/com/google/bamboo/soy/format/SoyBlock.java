@@ -14,9 +14,9 @@
 
 package com.google.bamboo.soy.format;
 
-import com.google.bamboo.soy.BracedTagUtils;
 import com.google.bamboo.soy.elements.ParamListElementBase;
 import com.google.bamboo.soy.elements.StatementBase;
+import com.google.bamboo.soy.elements.TagElement;
 import com.google.bamboo.soy.parser.SoyAtInjectSingle;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.SoyCaseClause;
@@ -219,7 +219,7 @@ public class SoyBlock extends TemplateLanguageBlock {
   public ChildAttributes getChildAttributes(int newChildIndex) {
     if (isNewChildIndented()) {
       return new ChildAttributes(Indent.getNormalIndent(), null);
-    } else if (BracedTagUtils.isBracedTag(myNode.getPsi())) {
+    } else if (myNode.getPsi() instanceof TagElement) {
       return new ChildAttributes(Indent.getContinuationIndent(), null);
     } else {
       return new ChildAttributes(Indent.getNoneIndent(), null);
@@ -267,9 +267,6 @@ public class SoyBlock extends TemplateLanguageBlock {
   }
 
   private boolean isDirectTagChild() {
-    PsiElement element = myNode.getPsi();
-    return !BracedTagUtils.isBrace(element)
-        && element.getParent() != null
-        && BracedTagUtils.isBracedTag(element.getParent());
+    return myNode.getPsi().getParent() instanceof TagElement;
   }
 }

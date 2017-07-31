@@ -14,13 +14,12 @@
 
 package com.google.bamboo.soy.insight.typedhandlers;
 
-import static org.apache.log4j.LogSF.warn;
-
-import com.google.bamboo.soy.BracedTagUtils;
+import com.google.bamboo.soy.elements.TagElement;
 import com.google.bamboo.soy.file.SoyFile;
 import com.google.bamboo.soy.file.SoyFileType;
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegateAdapter;
 import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorModificationUtil;
@@ -31,7 +30,6 @@ import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,46 +42,8 @@ import org.jetbrains.annotations.Nullable;
  * <p>If pressed right after an opening tag this handler will indent the cursor on the next line.
  */
 public class EnterHandler extends EnterHandlerDelegateAdapter {
+
   private static final Logger LOG = Logger.getInstance(EnterHandler.class);
-
-  @Override
-  public Result preprocessEnter(
-      @NotNull PsiFile psiFile,
-      @NotNull Editor editor,
-      @NotNull Ref<Integer> caretOffset,
-      @NotNull Ref<Integer> caretOffsetChange,
-      @NotNull DataContext dataContext,
-      @Nullable EditorActionHandler originalHandler) {
-    if (psiFile instanceof SoyFile && isBetweenSiblingTags(psiFile, caretOffset.get())) {
-      if (originalHandler != null) {
-        originalHandler.execute(editor, dataContext);
-      }
-      return Result.Default;
-    }
-    return Result.Continue;
-  }
-
-  @Override
-  public Result postProcessEnter(
-      @NotNull PsiFile file, @NotNull Editor editor, @NotNull DataContext dataContext) {
-    if (file.getFileType() != SoyFileType.INSTANCE) return Result.Continue;
-
-    int caretOffset = editor.getCaretModel().getOffset();
-    PsiElement element = file.findElementAt(caretOffset);
-    Document document = editor.getDocument();
-
-    int lineNumber = document.getLineNumber(caretOffset) - 1;
-    int lineStartOffset = document.getLineStartOffset(lineNumber);
-    String lineTextBeforeCaret = document.getText(new TextRange(lineStartOffset, caretOffset));
-
-    if (element instanceof PsiComment && element.getTextOffset() < caretOffset) {
-      handleEnterInComment(element, file, editor);
-    } else if (lineTextBeforeCaret.startsWith("/*")) {
-      insertText(file, editor, " * \n ", 3);
-    }
-
-    return Result.Continue;
-  }
 
   private static void handleEnterInComment(
       PsiElement element, @NotNull PsiFile file, @NotNull Editor editor) {
@@ -122,9 +82,9 @@ public class EnterHandler extends EnterHandlerDelegateAdapter {
    * to
    *
    * <pre<code>
-   *   {left}
-   *     <caret>
-   *   {right}
+   * {left}
+   * <caret>
+   * {right}
    * </code></pre>
    */
   private static boolean isBetweenSiblingTags(PsiFile psiFile, int caretOffset) {
@@ -135,8 +95,47 @@ public class EnterHandler extends EnterHandlerDelegateAdapter {
     PsiElement nextTag = nextElement.getParent();
     PsiElement prevTag = nextTag.getPrevSibling();
 
-    return prevTag != null
-        && BracedTagUtils.isBracedTag(prevTag)
-        && BracedTagUtils.isBracedTag(nextTag);
+    return prevTag instanceof TagElement && nextTag instanceof TagElement;
+  }
+
+  @Override
+  public Result preprocessEnter(
+      @NotNull PsiFile psiFile,
+      @NotNull Editor editor,
+      @NotNull Ref<Integer> caretOffset,
+      @NotNull Ref<Integer> caretOffsetChange,
+      @NotNull DataContext dataContext,
+      @Nullable EditorActionHandler originalHandler) {
+    if (psiFile instanceof SoyFile && isBetweenSiblingTags(psiFile, caretOffset.get())) {
+      if (originalHandler != null) {
+        originalHandler.execute(editor, dataContext);
+      }
+      return Result.Default;
+    }
+    return Result.Continue;
+  }
+
+  @Override
+  public Result postProcessEnter(
+      @NotNull PsiFile file, @NotNull Editor editor, @NotNull DataContext dataContext) {
+    if (file.getFileType() != SoyFileType.INSTANCE) {
+      return Result.Continue;
+    }
+
+    int caretOffset = editor.getCaretModel().getOffset();
+    PsiElement element = file.findElementAt(caretOffset);
+    Document document = editor.getDocument();
+
+    int lineNumber = document.getLineNumber(caretOffset) - 1;
+    int lineStartOffset = document.getLineStartOffset(lineNumber);
+    String lineTextBeforeCaret = document.getText(new TextRange(lineStartOffset, caretOffset));
+
+    if (element instanceof PsiComment && element.getTextOffset() < caretOffset) {
+      handleEnterInComment(element, file, editor);
+    } else if (lineTextBeforeCaret.startsWith("/*")) {
+      insertText(file, editor, " * \n ", 3);
+    }
+
+    return Result.Continue;
   }
 }
