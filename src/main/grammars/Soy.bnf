@@ -578,7 +578,9 @@ private meta CallTagBody ::= <<p>> (TemplateReferenceIdentifier [AttributeList] 
 }
 
 // ParamList
-private ParamList ::= (ParamListElement | <<UnexpectedStatements (BeginParamTag)>>)* {
+private ParamList ::=
+  (ParamListElement | <<UnexpectedStatements (BeginParamTag)>>)*
+  <<StatementList (BeginParamTag)>> {
   recoverWhile = "!(endOfStatementBlock)"
 }
 
@@ -618,7 +620,7 @@ PluralStatement ::= <<AbstractChoiceStatement PLURAL>> {
 
 private meta AbstractChoiceStatement ::=
     <<BeginChoice <<p>>>>
-    CaseAndDefaultClauses
+    ChoiceClausesList
     <<EndChoice <<p>>>> {
   pin = 1
 }
@@ -635,28 +637,23 @@ private meta AbstractBeginChoiceStatementBody ::= <<p>> Expr [AttributeKeyValueP
 // Statements are only "unexpected" before the first {case} or {default} tag. After that they are
 // consumed by the appropriate *Clause rule.
 
-private CaseAndDefaultClauses
+private ChoiceClausesList
   ::=
-    [<<UnexpectedStatements (BeginCaseClause | DefaultTag)>>]
-    (CaseClause | DefaultClause)*
+    [<<UnexpectedStatements (BeginChoiceClause)>>]
+    (ChoiceClause)*
+    <<StatementList (BeginChoiceClause)>>
 
-CaseClause ::= BeginCaseClause [<<StatementList (BeginCaseClause | DefaultTag)>>] {
+ChoiceClause ::= BeginChoiceClause [<<StatementList (BeginChoiceClause)>>] {
   pin = 1
+  implements = "com.google.bamboo.soy.elements.ChoiceClauseElement"
 }
 
-BeginCaseClause ::= <<BracedTag BeginCaseClauseTagBody>>
+BeginChoiceClause ::= <<BracedTag BeginCaseClauseTagBody>> | <<BracedTag DEFAULT>>
 
 private BeginCaseClauseTagBody ::= CASE CommaSeparatedExpressionList {
   pin = 1
   recoverWhile = "recoverEndOfTag"
 }
-
-DefaultClause ::= DefaultTag [<<StatementList (BeginCaseClause | DefaultTag)>>] {
-  pin = 1
-}
-
-DefaultTag ::= <<BracedTag DEFAULT>>
-
 
 
 /*

@@ -20,8 +20,7 @@ import com.google.bamboo.soy.elements.TagBlockElement;
 import com.google.bamboo.soy.elements.TagElement;
 import com.google.bamboo.soy.parser.SoyAtInjectSingle;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
-import com.google.bamboo.soy.parser.SoyCaseClause;
-import com.google.bamboo.soy.parser.SoyDefaultClause;
+import com.google.bamboo.soy.parser.SoyChoiceClause;
 import com.google.bamboo.soy.parser.SoyStatementList;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.intellij.formatting.Alignment;
@@ -48,7 +47,7 @@ public class SoyBlock extends TemplateLanguageBlock {
 
   private HtmlPolicy myHtmlPolicy;
 
-  SoyBlock(
+  public SoyBlock(
       @NotNull TemplateLanguageBlockFactory blockFactory,
       @NotNull CodeStyleSettings settings,
       @NotNull ASTNode node,
@@ -67,8 +66,7 @@ public class SoyBlock extends TemplateLanguageBlock {
     return element instanceof ParamListElementBase
         || element instanceof SoyAtParamSingle
         || element instanceof SoyAtInjectSingle
-        || element instanceof SoyDefaultClause
-        || element instanceof SoyCaseClause
+        || element instanceof SoyChoiceClause
         || isAtParamOrInjectDoc(element);
   }
 
@@ -228,9 +226,7 @@ public class SoyBlock extends TemplateLanguageBlock {
   @Override
   public Indent getChildIndent() {
     PsiElement element = myNode.getPsi();
-    if (element instanceof TagBlockElement
-        || element instanceof SoyCaseClause
-        || element instanceof SoyDefaultClause) {
+    if (element instanceof TagBlockElement) {
       return Indent.getNormalIndent();
     } else if (myNode.getPsi() instanceof TagElement) {
       return Indent.getContinuationWithoutFirstIndent();

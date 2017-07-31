@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SoyTagBlockBlock extends SoyBlock {
 
-  SoyTagBlockBlock(
+  public SoyTagBlockBlock(
       @NotNull TemplateLanguageBlockFactory blockFactory,
       @NotNull CodeStyleSettings settings,
       @NotNull ASTNode node,

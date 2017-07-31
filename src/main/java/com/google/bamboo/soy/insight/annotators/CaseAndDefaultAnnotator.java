@@ -15,8 +15,7 @@
 package com.google.bamboo.soy.insight.annotators;
 
 import com.google.bamboo.soy.elements.ChoiceStatementBaseElement;
-import com.google.bamboo.soy.parser.SoyCaseClause;
-import com.google.bamboo.soy.parser.SoyDefaultClause;
+import com.google.bamboo.soy.parser.SoyChoiceClause;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
@@ -29,15 +28,21 @@ public class CaseAndDefaultAnnotator implements Annotator {
     if (psiElement instanceof ChoiceStatementBaseElement) {
       boolean foundDefault = false;
       for (PsiElement child : psiElement.getChildren()) {
+        if (!(child instanceof SoyChoiceClause)) {
+          continue;
+        }
+
+        SoyChoiceClause clause = (SoyChoiceClause) child;
+
         if (foundDefault) {
-          if (child instanceof SoyCaseClause) {
+          if (!clause.isDefault()) {
             annotationHolder.createErrorAnnotation(
                 child, "{case} clauses are not allowed after {default}.");
-          } else if (child instanceof SoyDefaultClause) {
+          } else if (clause.isDefault()) {
             annotationHolder.createErrorAnnotation(
                 child, "There can only be one {default} clause.");
           }
-        } else if (child instanceof SoyDefaultClause) {
+        } else if (clause.isDefault()) {
           foundDefault = true;
         }
       }

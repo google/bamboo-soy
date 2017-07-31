@@ -12,25 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.bamboo.soy.format.blocks;
+package com.google.bamboo.soy.elements;
 
-import com.intellij.formatting.templateLanguages.DataLanguageBlockWrapper;
-import com.intellij.formatting.templateLanguages.TemplateLanguageBlockFactory;
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.codeStyle.CodeStyleSettings;
-import com.intellij.psi.formatter.xml.HtmlPolicy;
+import com.google.bamboo.soy.elements.TagElement.TagName;
+import com.google.bamboo.soy.parser.SoyBeginCall;
+import com.google.bamboo.soy.parser.SoyParamListElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SoyTagBlock extends SoyBlock {
+public interface ChoiceClauseElement extends TagBlockElement {
+  default boolean isDefault() {
+    return getTagName() == TagName.DEFAULT;
+  }
 
-  public SoyTagBlock(
-      @NotNull TemplateLanguageBlockFactory blockFactory,
-      @NotNull CodeStyleSettings settings,
-      @NotNull ASTNode node,
-      @Nullable List<DataLanguageBlockWrapper> foreignChildren,
-      HtmlPolicy htmlPolicy) {
-    super(blockFactory, settings, node, foreignChildren, htmlPolicy);
+  @Override
+  default boolean isIncomplete() {
+    return true;
   }
 }
