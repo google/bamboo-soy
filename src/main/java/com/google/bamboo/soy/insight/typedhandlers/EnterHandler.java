@@ -17,6 +17,11 @@ package com.google.bamboo.soy.insight.typedhandlers;
 import com.google.bamboo.soy.elements.TagElement;
 import com.google.bamboo.soy.file.SoyFile;
 import com.google.bamboo.soy.file.SoyFileType;
+import com.google.bamboo.soy.parser.SoyBeginChoiceClause;
+import com.google.bamboo.soy.parser.SoyBeginParamTag;
+import com.google.bamboo.soy.parser.SoyChoiceClause;
+import com.google.bamboo.soy.parser.SoyParamListElement;
+import com.google.bamboo.soy.parser.SoyStatementList;
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegateAdapter;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.diagnostic.Logger;
@@ -30,6 +35,7 @@ import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -92,10 +98,18 @@ public class EnterHandler extends EnterHandlerDelegateAdapter {
     if (nextElement == null || nextElement.getParent() == null) {
       return false;
     }
-    PsiElement nextTag = nextElement.getParent();
-    PsiElement prevTag = nextTag.getPrevSibling();
+    nextElement = nextElement.getParent();
+    if (nextElement instanceof SoyBeginChoiceClause || nextElement instanceof SoyBeginParamTag) {
+      nextElement = nextElement.getParent();
+      PsiElement prevElement = PsiTreeUtil
+          .skipSiblingsBackward(nextElement, SoyStatementList.class);
+      return prevElement instanceof SoyChoiceClause || prevElement instanceof SoyParamListElement;
+    } else {
+      PsiElement prevElement = PsiTreeUtil
+          .skipSiblingsBackward(nextElement, SoyStatementList.class);
 
-    return prevTag instanceof TagElement && nextTag instanceof TagElement;
+      return prevElement instanceof TagElement && nextElement instanceof TagElement;
+    }
   }
 
   @Override

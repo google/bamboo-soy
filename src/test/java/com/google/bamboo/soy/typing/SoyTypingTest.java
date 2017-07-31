@@ -95,6 +95,28 @@ public class SoyTypingTest extends SoyCodeInsightFixtureTestCase {
         "{template .bar}{msg description='Hello'}\n    <caret>\n{/msg}{/template}");
   }
 
+  public void testBetweenTags_noWhiteSpace() throws Throwable {
+    List<String> choiceTags = Arrays.asList("select", "switch", "plural");
+    for (String tag : choiceTags) {
+      doTypingTest(
+          '\n',
+          "{template .bar}{" + tag + "}{case}<caret>{default}{/template}",
+          "{template .bar}{" + tag + "}{case}\n    <caret>\n{default}{/template}");
+      doTypingTest(
+          '\n',
+          "{template .bar}{" + tag + "}{case}<caret>{case}{/template}",
+          "{template .bar}{" + tag + "}{case}\n    <caret>\n{case}{/template}");
+    }
+
+    List<String> callTags = Arrays.asList("call", "delcall");
+    for (String tag : callTags) {
+      doTypingTest(
+          '\n',
+          "{template .bar}{" + tag + "}{param/}<caret>{param/}{/template}",
+          "{template .bar}{" + tag + "}{param/}\n    <caret>\n{param/}{/template}");
+    }
+  }
+
   public void testClosingTags() throws Throwable {
     List<String> simpleTags =
         Arrays.asList("if", "for", "foreach", "msg", "plural", "select", "switch");
@@ -141,6 +163,56 @@ public class SoyTypingTest extends SoyCodeInsightFixtureTestCase {
           '/',
           "{template .bar}{" + tag + "} {param} test {<caret>",
           "{template .bar}{" + tag + "} {param} test {/param}<caret>");
+    }
+  }
+
+  public void testNewlineIndent() throws Throwable {
+    List<String> simpleTags =
+        Arrays.asList("if", "for", "foreach", "msg", "plural", "select", "switch", "call");
+    for (String tag : simpleTags) {
+      doTypingTest(
+          '\n',
+          "{template .bar}\n    {" + tag + "}<caret>\n{/template}",
+          "{template .bar}\n    {" + tag + "}\n        <caret>\n{/template}");
+    }
+
+    List<String> choiceTags = Arrays.asList("select", "switch", "plural");
+    for (String tag : choiceTags) {
+      doTypingTest(
+          '\n',
+          "{template .bar}\n    {" + tag + "}\n        {case}<caret>\n{/template}",
+          "{template .bar}\n    {" + tag + "}\n        {case}\n            <caret>\n{/template}");
+      doTypingTest(
+          '\n',
+          "{template .bar}\n    {" + tag + "}\n        {default}<caret>\n{/template}",
+          "{template .bar}\n    {" + tag + "}\n        {default}\n            <caret>\n{/template}");
+    }
+
+    List<String> callTags = Arrays.asList("call", "delcall");
+    for (String tag : callTags) {
+      doTypingTest(
+          '\n',
+          "{template .bar}\n    {" + tag + "/}<caret>\n{/template}",
+          "{template .bar}\n    {" + tag + "/}\n    <caret>\n{/template}");
+      doTypingTest(
+          '\n',
+          "{template .bar}\n    {" + tag + "}\n        {param}<caret>\n{/template}",
+          "{template .bar}\n    {" + tag + "}\n        {param}\n            <caret>\n{/template}");
+      doTypingTest(
+          '\n',
+          "{template .bar}\n    {" + tag + "}\n        {param/}<caret>\n{/template}",
+          "{template .bar}\n    {" + tag + "}\n        {param/}\n        <caret>\n{/template}");
+    }
+  }
+
+  public void testNewlineContinuationIndent() throws Throwable {
+    List<String> simpleTags =
+        Arrays.asList("if", "for", "foreach", "msg", "plural", "select", "switch", "call");
+    for (String tag : simpleTags) {
+      doTypingTest(
+          '\n',
+          "{template .bar}\n    {" + tag + "<caret>\n{/template}",
+          "{template .bar}\n    {" + tag + "\n            <caret>\n{/template}");
     }
   }
 }
