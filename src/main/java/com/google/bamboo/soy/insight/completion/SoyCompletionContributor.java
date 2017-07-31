@@ -22,19 +22,27 @@ import com.google.bamboo.soy.lang.Scope;
 import com.google.bamboo.soy.lang.TemplateNameUtils;
 import com.google.bamboo.soy.lang.Variable;
 import com.google.bamboo.soy.parser.SoyAliasBlock;
+import com.google.bamboo.soy.parser.SoyAnyStringLiteral;
 import com.google.bamboo.soy.parser.SoyAtInjectSingle;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.SoyBeginCall;
+import com.google.bamboo.soy.parser.SoyBeginElseIf;
+import com.google.bamboo.soy.parser.SoyBeginFor;
+import com.google.bamboo.soy.parser.SoyBeginForeach;
+import com.google.bamboo.soy.parser.SoyBeginIf;
 import com.google.bamboo.soy.parser.SoyBeginLet;
 import com.google.bamboo.soy.parser.SoyBeginParamTag;
 import com.google.bamboo.soy.parser.SoyBeginTemplate;
+import com.google.bamboo.soy.parser.SoyElementType;
 import com.google.bamboo.soy.parser.SoyExpr;
 import com.google.bamboo.soy.parser.SoyListType;
 import com.google.bamboo.soy.parser.SoyMapType;
 import com.google.bamboo.soy.parser.SoyNamespaceIdentifier;
 import com.google.bamboo.soy.parser.SoyParamSpecificationIdentifier;
+import com.google.bamboo.soy.parser.SoyPrintStatement;
 import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyTemplateReferenceIdentifier;
+import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;
@@ -170,14 +178,23 @@ public class SoyCompletionContributor extends CompletionContributor {
   private void extendWithVariableNamesInScope() {
     extend(
         CompletionType.BASIC,
-        psiElement().inside(SoyExpr.class),
+        psiElement().andOr(
+            psiElement().inside(SoyExpr.class),
+            psiElement().inside(SoyBeginIf.class),
+            psiElement().inside(SoyBeginElseIf.class),
+            psiElement().inside(SoyBeginFor.class),
+            psiElement().inside(SoyBeginForeach.class),
+            psiElement().inside(SoyPrintStatement.class),
+            psiElement().inside(SoyBeginParamTag.class).and(
+                psiElement().afterLeafSkipping(psiElement(PsiWhiteSpace.class),
+                    psiElement(SoyTypes.COLON)))
+        ),
         new CompletionProvider<CompletionParameters>() {
           @Override
           protected void addCompletions(
               @NotNull CompletionParameters completionParameters,
               ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
-
             Collection<Variable> params =
                 Scope.getScopeOrEmpty(completionParameters.getPosition()).getVariables();
             completionResultSet.addAllElements(
