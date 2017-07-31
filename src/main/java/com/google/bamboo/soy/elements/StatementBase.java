@@ -14,4 +14,6 @@
 
 package com.google.bamboo.soy.elements;
 
-public interface StatementBase extends TagBase {}
+import com.intellij.psi.PsiElement;
+
+public interface StatementBase extends PsiElement {}

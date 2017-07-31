@@ -15,14 +15,10 @@
 package com.google.bamboo.soy.insight.typedhandlers;
 
 import com.google.bamboo.soy.BracedTagUtils;
-import com.google.bamboo.soy.elements.StatementBase;
-import com.google.bamboo.soy.elements.TagBase;
+import com.google.bamboo.soy.elements.TagBlockElement;
 import com.google.bamboo.soy.parser.SoyParamListElement;
 import com.google.bamboo.soy.parser.SoyParserDefinition;
 import com.google.bamboo.soy.parser.SoyStatementList;
-import com.google.bamboo.soy.parser.SoyTemplateBlock;
-import com.google.bamboo.soy.parser.SoyTypes;
-import com.google.common.collect.ImmutableMap;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.editor.Document;
@@ -31,7 +27,6 @@ import com.intellij.openapi.editor.actionSystem.TypedActionHandler;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,8 +42,8 @@ public class ClosingTagHandler implements TypedActionHandler {
   }
 
   private static String getTagNameForElement(PsiElement element) {
-    if (element instanceof TagBase) {
-      return ((TagBase) element).getTagName().name().toLowerCase();
+    if (element instanceof TagBlockElement) {
+      return ((TagBlockElement) element).getTagName().name().toLowerCase();
     }
 
     return null;
@@ -87,10 +82,10 @@ public class ClosingTagHandler implements TypedActionHandler {
     PsiElement prev = null;
     while (el != null && !(el instanceof PsiFile)) {
       if (!isEmptyInlinedStatement(el, prev)) {
-        if (getTagNameForElement(el) != null) {
+        if (el instanceof TagBlockElement) {
           String closingTag = "{/" + getTagNameForElement(el) + "}";
           // Assuming statement's first child is a braced tag.
-          if (BracedTagUtils.isDoubleBraced(el.getFirstChild())) {
+          if (((TagBlockElement) el).getOpeningTag().isDoubleBraced()) {
             closingTag = "{" + closingTag + "}";
           }
           return closingTag;

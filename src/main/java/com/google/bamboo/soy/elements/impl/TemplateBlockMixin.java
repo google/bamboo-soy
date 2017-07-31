@@ -14,13 +14,14 @@
 
 package com.google.bamboo.soy.elements.impl;
 
-import com.google.bamboo.soy.parser.SoyAtInjectSingle;
+import com.google.bamboo.soy.elements.TagElement.TagName;
 import com.google.bamboo.soy.elements.TemplateBlockElement;
-import com.google.bamboo.soy.parser.SoyAtParamSingle;
-import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
 import com.google.bamboo.soy.lang.Parameter;
 import com.google.bamboo.soy.lang.Scope;
 import com.google.bamboo.soy.lang.Variable;
+import com.google.bamboo.soy.parser.SoyAtInjectSingle;
+import com.google.bamboo.soy.parser.SoyAtParamSingle;
+import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
 import com.google.bamboo.soy.stubs.TemplateBlockStub;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
@@ -37,6 +38,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class TemplateBlockMixin extends SoyStubBasedPsiElementBase<TemplateBlockStub>
     implements TemplateBlockElement {
+
   public TemplateBlockMixin(TemplateBlockStub stub, IStubElementType type) {
     super(stub, type);
   }

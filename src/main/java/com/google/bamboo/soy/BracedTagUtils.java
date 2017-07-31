@@ -14,6 +14,7 @@
 
 package com.google.bamboo.soy;
 
+import com.google.bamboo.soy.elements.TagElement;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.common.collect.ImmutableSet;
 import com.intellij.psi.PsiElement;
@@ -45,7 +46,7 @@ public class BracedTagUtils {
     return tag.getFirstChild() != null && isLeftBrace(tag.getFirstChild());
   }
 
-  public static boolean isDoubleBraced(@NotNull PsiElement tag) {
+  public static boolean isDoubleBraced(@NotNull TagElement tag) {
     return tag.getFirstChild().getNode().getElementType() == SoyTypes.LBRACE_LBRACE
         || tag.getFirstChild().getNode().getElementType() == SoyTypes.LBRACE_LBRACE_SLASH;
   }
