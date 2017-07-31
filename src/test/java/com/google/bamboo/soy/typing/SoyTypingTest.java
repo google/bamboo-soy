@@ -22,6 +22,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 public class SoyTypingTest extends SoyCodeInsightFixtureTestCase {
+
   @Override
   protected String getBasePath() {
     return "/typing";
@@ -70,6 +71,27 @@ public class SoyTypingTest extends SoyCodeInsightFixtureTestCase {
 
   public void testBetweenOpenCloseTags() throws Throwable {
     doTest('\n');
+  }
+
+  public void testCloseCharacterInsertion() throws Throwable {
+    // Auto-closing
+    doTypingTest('\'', "<caret>", "'<caret>'");
+    doTypingTest('\'', "=<caret>", "='<caret>'");
+    doTypingTest('"', "<caret>", "\"<caret>\"");
+    doTypingTest('"', "=<caret>", "=\"<caret>\"");
+    doTypingTest('[', "<caret>", "[<caret>]");
+    doTypingTest('[', "foo<caret>", "foo[<caret>]");
+    doTypingTest('(', "<caret>", "(<caret>)");
+
+    // Auto-closing exceptions
+    doTypingTest('\'', "foo<caret>", "foo'<caret>");
+
+    // Character skipping
+    doTypingTest(']', "[]<caret>", "[]]<caret>");
+    doTypingTest(']', "[<caret>]", "[]<caret>");
+    doTypingTest(']', "[[]<caret>]", "[[]]<caret>");
+    doTypingTest(']', "[[]][<caret>]]", "[[]][]<caret>]");
+    doTypingTest(']', "]]][<caret>]", "]]][]<caret>");
   }
 
   public void testBeginTags_noWhiteSpace() throws Throwable {
