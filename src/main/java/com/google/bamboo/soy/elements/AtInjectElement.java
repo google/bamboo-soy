@@ -21,7 +21,7 @@ import com.intellij.psi.PsiNamedElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface AtInjectElement extends PsiNamedElement {
+public interface AtInjectElement extends PsiNamedElement, TagElement {
   @Nullable
   SoyParamDefinitionIdentifier getParamDefinitionIdentifier();
 

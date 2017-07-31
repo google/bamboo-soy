@@ -20,7 +20,7 @@ import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface MsgStatement extends StatementBase {
+public interface MsgStatement extends TagBlockElement, StatementBase {
 
   @NotNull
   SoyBeginMsg getBeginMsg();

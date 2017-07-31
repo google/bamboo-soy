@@ -14,6 +14,10 @@
   tokenTypeClass="com.google.bamboo.soy.lexer.SoyTokenType"
 
   implements(".*Statement")="com.google.bamboo.soy.elements.StatementBase"
+  implements("Begin.*|End.*|.*Tag")="com.google.bamboo.soy.elements.TagElement"
+  implements("(Css|Lb|LetSingle|Nil|Xid|Rb|Sp|Whitespace|Print)Statement")
+      = ["com.google.bamboo.soy.elements.StatementBase" "com.google.bamboo.soy.elements.TagElement"]
+
 
   extends(".*Expr|VariableReferenceIdentifier")=Expr
   consumeTokenMethod(".*Expr")="consumeTokenFast"
@@ -418,13 +422,11 @@ meta StatementList ::= (Statement | !(<<p>> | endOfStatementBlock) CatchallBrace
 private Content ::= OTHER
 
 private Statement ::=
+    SingleTagStatement
+  |
     CallStatement
   |
     ChoiceStatement
-  |
-//    DelCallStatement
-  //|
-    CssStatement
   |
     ForStatement
   |
@@ -432,15 +434,21 @@ private Statement ::=
   |
     IfStatement
   |
-    LbStatement
-  |
-    LetSingleStatement
-  |
     LetCompoundStatement
   |
     LiteralStatement
   |
     MsgStatement
+  |
+    Content
+
+
+private SingleTagStatement ::=
+    CssStatement
+  |
+    LbStatement
+  |
+    LetSingleStatement
   |
     NilStatement
   |
@@ -453,8 +461,6 @@ private Statement ::=
     WhitespaceStatement
   |
     PrintStatement
-  |
-    Content
 
 // A wrapper for [StatementList] that parses all statements in an unexpected context.
 
@@ -511,6 +517,7 @@ IfStatement
     [ElseTag [<<StatementList !()>>]]
     EndIfTag {
   pin = 1
+  implements = ["com.google.bamboo.soy.elements.StatementBase" "com.google.bamboo.soy.elements.TagBlockElement"]
 }
 
 BeginIf ::= <<BracedTag BeginIfTagBody>>
@@ -568,19 +575,15 @@ private meta CallTagBody ::= <<p>> (TemplateReferenceIdentifier [AttributeList] 
 }
 
 // ParamList
-private ParamList ::= (ParamListElement | <<UnexpectedStatements (BeginParamTag)>>)*
+private ParamList ::= (ParamListElement | <<UnexpectedStatements (BeginParamTag)>>)* {
+  recoverWhile = "!(endOfStatementBlock)"
+}
 
-ParamListElement
-  ::=
-    BeginParamTag
-    [ParamListElementBody | EndParamTag] {
-  pin = 1
-  // Ideally, should be useless and parsed by [ParamListElementBody]
-  recoverWhile = "!(BeginParamTag | endOfStatementBlock)"
+ParamListElement ::= !<<ClosedBracedTag BeginParamTagBody>> BlockParamListElement | BeginParamTag {
   implements = "com.google.bamboo.soy.elements.ParamListElementBase"
 }
 
-private ParamListElementBody ::= <<StatementList (BeginParamTag)>> EndParamTag {
+private BlockParamListElement ::= BeginParamTag <<StatementList (BeginParamTag)>> EndParamTag {
   pin = 1
 }
 
@@ -590,7 +593,6 @@ private BeginParamTagBody ::= PARAM (ParamSpecificationIdentifier COLON Expr | A
   pin = 1
   recoverWhile = "recoverEndOfTag"
 }
-
 
 
 /*
@@ -681,6 +683,7 @@ private LetSingleTagBody ::= LET VariableDefinitionIdentifier COLON Expr {
 
 LetCompoundStatement ::= BeginLet [<<StatementList !()>>] EndLetTag {
   pin = 1
+  implements = ["com.google.bamboo.soy.elements.StatementBase" "com.google.bamboo.soy.elements.TagBlockElement"]
 }
 
 BeginLet ::= <<BracedTag BeginLetTagBody>>
@@ -699,8 +702,8 @@ LiteralStatement ::= (LITERAL Content END_LITERAL) | (LITERAL_DOUBLE Content END
 MsgStatement
   ::=
     BeginMsg
-      [<<StatementList (FallbackMsgClause)>>]
-    [FallbackMsgClause
+      [<<StatementList (FallbackMsgTag)>>]
+    [FallbackMsgTag
       [<<StatementList !()>>]]
     EndMsgTag {
   pin = 1
@@ -714,7 +717,7 @@ private BeginMsgTagBody ::= MSG AttributeList {
   recoverWhile = "recoverEndOfTag"
 }
 
-FallbackMsgClause ::= <<BracedTag FallbackMsgTagBody>>
+FallbackMsgTag ::= <<BracedTag FallbackMsgTagBody>>
 
 private FallbackMsgTagBody ::= FALLBACKMSG AttributeList {
   pin = 1

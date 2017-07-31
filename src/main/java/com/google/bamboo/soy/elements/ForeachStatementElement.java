@@ -4,7 +4,7 @@ import com.google.bamboo.soy.lang.Scope;
 import com.google.bamboo.soy.parser.SoyBeginForeach;
 import org.jetbrains.annotations.NotNull;
 
-public interface ForeachStatementElement extends Scope, StatementBase {
+public interface ForeachStatementElement extends Scope, TagBlockElement, StatementBase {
 
   @NotNull
   SoyBeginForeach getBeginForeach();

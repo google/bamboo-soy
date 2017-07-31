@@ -131,17 +131,12 @@ public class SoyTypingTest extends SoyCodeInsightFixtureTestCase {
           '/',
           "{template .bar}{ " + tag + "} {param} test {/param} {<caret>",
           "{template .bar}{ " + tag + "} {param} test {/param} {/" + tag + "}<caret>");
-      // Assuming that a {param/} not followed by a statement is inlined.
+      // {param/} should be ignored.
       doTypingTest(
           '/',
           "{template .bar}{" + tag + "} {param/} {<caret>",
           "{template .bar}{" + tag + "} {param/} {/" + tag + "}<caret>");
-      // Assuming that a {param/} followed by a statement is not inlined.
-      doTypingTest(
-          '/',
-          "{template .bar}{" + tag + "} {param/} test {<caret>",
-          "{template .bar}{" + tag + "} {param/} test {/param}<caret>");
-      // Assuming that a {param} followed by a statement is not inlined.
+      // {param} should be closed.
       doTypingTest(
           '/',
           "{template .bar}{" + tag + "} {param} test {<caret>",

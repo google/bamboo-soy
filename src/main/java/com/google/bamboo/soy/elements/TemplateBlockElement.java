@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
  * The PSI element that represents the template block definition.
  */
 public interface TemplateBlockElement
-    extends StubBasedPsiElement<TemplateBlockStub>, PsiNamedElement, TagBase, Scope {
+    extends StubBasedPsiElement<TemplateBlockStub>, PsiNamedElement, TagBlockElement, Scope {
 
   @NotNull
   List<SoyAtInjectSingle> getAtInjectSingleList();

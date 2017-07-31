@@ -4,7 +4,7 @@ import com.google.bamboo.soy.lang.Scope;
 import com.google.bamboo.soy.parser.SoyBeginFor;
 import org.jetbrains.annotations.NotNull;
 
-public interface ForStatementElement extends Scope, StatementBase {
+public interface ForStatementElement extends Scope, TagBlockElement, StatementBase {
 
   @NotNull
   SoyBeginFor getBeginFor();

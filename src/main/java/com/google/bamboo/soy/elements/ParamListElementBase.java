@@ -15,11 +15,10 @@
 package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.parser.SoyBeginParamTag;
-import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface ParamListElementBase extends TagBase {
+public interface ParamListElementBase extends TagBlockElement {
   @NotNull
   SoyBeginParamTag getBeginParamTag();
 
