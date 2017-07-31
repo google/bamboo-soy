@@ -62,6 +62,14 @@ public interface TagElement extends PsiElement {
     return !RIGHT_BRACES.contains(getLastChild().getNode().getElementType());
   }
 
+  default String generateClosingTag() {
+    String closingTag = "{/" + getTagName().name().toLowerCase() + "}";
+    if (isDoubleBraced()) {
+      closingTag = "{" + closingTag + "}";
+    }
+    return closingTag;
+  }
+
   enum TagName {
     _UNKNOWN_, CALL, DELCALL, TEMPLATE, DELTEMPLATE, FOR, FOREACH, IF, LET, MSG, PARAM, PLURAL, SELECT, SWITCH
   }

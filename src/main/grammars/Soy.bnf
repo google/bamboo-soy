@@ -575,19 +575,15 @@ private meta CallTagBody ::= <<p>> (TemplateReferenceIdentifier [AttributeList] 
 }
 
 // ParamList
-private ParamList ::= (ParamListElement | <<UnexpectedStatements (BeginParamTag)>>)*
+private ParamList ::= (ParamListElement | <<UnexpectedStatements (BeginParamTag)>>)* {
+  recoverWhile = "!(endOfStatementBlock)"
+}
 
-ParamListElement
-  ::=
-    BeginParamTag
-    [ParamListElementBody | EndParamTag] {
-  pin = 1
-  // Ideally, should be useless and parsed by [ParamListElementBody]
-  recoverWhile = "!(BeginParamTag | endOfStatementBlock)"
+ParamListElement ::= !<<ClosedBracedTag BeginParamTagBody>> BlockParamListElement | BeginParamTag {
   implements = "com.google.bamboo.soy.elements.ParamListElementBase"
 }
 
-private ParamListElementBody ::= <<StatementList (BeginParamTag)>> EndParamTag {
+private BlockParamListElement ::= BeginParamTag <<StatementList (BeginParamTag)>> EndParamTag {
   pin = 1
 }
 
@@ -597,7 +593,6 @@ private BeginParamTagBody ::= PARAM (ParamSpecificationIdentifier COLON Expr | A
   pin = 1
   recoverWhile = "recoverEndOfTag"
 }
-
 
 
 /*

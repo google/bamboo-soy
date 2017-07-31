@@ -14,11 +14,7 @@
 
 package com.google.bamboo.soy.insight.typedhandlers;
 
-import com.google.bamboo.soy.BracedTagUtils;
 import com.google.bamboo.soy.elements.TagBlockElement;
-import com.google.bamboo.soy.parser.SoyParamListElement;
-import com.google.bamboo.soy.parser.SoyParserDefinition;
-import com.google.bamboo.soy.parser.SoyStatementList;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.editor.Document;
@@ -26,7 +22,6 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.actionSystem.TypedActionHandler;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,14 +34,6 @@ public class ClosingTagHandler implements TypedActionHandler {
 
   public ClosingTagHandler(TypedActionHandler originalHandler) {
     myOriginalHandler = originalHandler;
-  }
-
-  private static String getTagNameForElement(PsiElement element) {
-    if (element instanceof TagBlockElement) {
-      return ((TagBlockElement) element).getTagName().name().toLowerCase();
-    }
-
-    return null;
   }
 
   private static boolean isMatchForClosingTag(@NotNull Editor editor, char charTyped) {
@@ -79,71 +66,12 @@ public class ClosingTagHandler implements TypedActionHandler {
   }
 
   private static String generateClosingTag(PsiElement el) {
-    PsiElement prev = null;
-    while (el != null && !(el instanceof PsiFile)) {
-      if (!isEmptyInlinedStatement(el, prev)) {
-        if (el instanceof TagBlockElement) {
-          String closingTag = "{/" + getTagNameForElement(el) + "}";
-          // Assuming statement's first child is a braced tag.
-          if (((TagBlockElement) el).getOpeningTag().isDoubleBraced()) {
-            closingTag = "{" + closingTag + "}";
-          }
-          return closingTag;
-        }
-      }
-      prev = el;
-      el = el.getParent();
-      // Skipping the StatementList wrapper
-      if (el instanceof SoyStatementList) {
-        el = el.getParent();
-      }
+    TagBlockElement block = (TagBlockElement) PsiTreeUtil
+        .findFirstParent(el, parent -> parent instanceof TagBlockElement);
+    if (block != null) {
+      return block.getOpeningTag().generateClosingTag();
     }
     return null;
-  }
-
-  /**
-   * There are 3 types of statements:
-   *
-   * <p>1. Normal statements that always need a closing tag, i.e., {if}, {for}, compound {let} etc.
-   *
-   * <p>2. Maybe-self-closed statements that would contain the [caretElement] _only_if_ they aren't
-   * already closed, i.e. {call} and {delcall}.
-   *
-   * <p>3. Maybe-self-closed statements that would _always_ contain following statements (and thus,
-   * the [caretElement]), i.e. {param}.
-   *
-   * <p>This method is trying to process the last case. In particular, the following situation:
-   * "{param ... /} <whitespace only> {/<caret>" in which the {param} tags should not be attempted
-   * to close.
-   */
-  private static boolean isEmptyInlinedStatement(PsiElement statement, PsiElement caretElement) {
-    if (!(statement instanceof SoyParamListElement)
-        || caretElement.getParent().getParent() != statement) {
-      return false;
-    }
-
-    // If {param} is not self-closed, do not skip.
-    if (!BracedTagUtils.isSelfClosed(statement.getFirstChild())) {
-      return false;
-    }
-
-    // If there are non-whitespace statements inside the {param} preceding current
-    // editing position, do not skip.
-    // Skipping the begin_*_tag and diving into StatementList
-    PsiElement statementList = PsiTreeUtil.findChildOfType(statement, SoyStatementList.class);
-    if (statementList == null) {
-      return false;
-    }
-    PsiElement child = statementList.getFirstChild();
-    while (child != null && !child.isEquivalentTo(caretElement)) {
-      if (!(SoyParserDefinition.WHITE_SPACES.contains(child.getNode().getElementType()))) {
-        return false;
-      }
-      child = child.getNextSibling();
-    }
-
-    // Otherwise, skip.
-    return true;
   }
 
   public void execute(@NotNull Editor editor, char charTyped, @NotNull DataContext dataContext) {
