@@ -204,4 +204,15 @@ public class SoyTypingTest extends SoyCodeInsightFixtureTestCase {
           "{template .bar}\n    {" + tag + "}\n        {param/}\n        <caret>\n{/template}");
     }
   }
+
+  public void testNewlineContinuationIndent() throws Throwable {
+    List<String> simpleTags =
+        Arrays.asList("if", "for", "foreach", "msg", "plural", "select", "switch", "call");
+    for (String tag : simpleTags) {
+      doTypingTest(
+          '\n',
+          "{template .bar}\n    {" + tag + "<caret>\n{/template}",
+          "{template .bar}\n    {" + tag + "\n            <caret>\n{/template}");
+    }
+  }
 }
