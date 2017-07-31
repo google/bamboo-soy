@@ -22,7 +22,6 @@ import com.google.bamboo.soy.lang.Scope;
 import com.google.bamboo.soy.lang.TemplateNameUtils;
 import com.google.bamboo.soy.lang.Variable;
 import com.google.bamboo.soy.parser.SoyAliasBlock;
-import com.google.bamboo.soy.parser.SoyAnyStringLiteral;
 import com.google.bamboo.soy.parser.SoyAtInjectSingle;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.SoyBeginCall;
