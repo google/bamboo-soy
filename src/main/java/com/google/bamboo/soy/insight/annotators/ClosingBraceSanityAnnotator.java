@@ -96,6 +96,12 @@ public class ClosingBraceSanityAnnotator implements Annotator {
           .add(SoyXidStatementImpl.class)
           .build();
 
+  static {
+    for (Class clazz : mustCloseRBraceTags) {
+      assert (TagElement.class.isAssignableFrom(clazz));
+    }
+  }
+
   private static ImmutableSet<Class> mustCloseSlashRBraceTags =
       ImmutableSet.of(SoyLetSingleStatementImpl.class);
 
