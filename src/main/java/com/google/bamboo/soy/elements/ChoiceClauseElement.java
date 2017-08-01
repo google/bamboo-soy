@@ -14,35 +14,21 @@
 
 package com.google.bamboo.soy.elements;
 
-import com.google.bamboo.soy.parser.SoyBeginParamTag;
-import com.google.bamboo.soy.parser.SoyEndParamTag;
+import com.google.bamboo.soy.elements.TagElement.TagName;
+import com.google.bamboo.soy.parser.SoyBeginCall;
+import com.google.bamboo.soy.parser.SoyParamListElement;
+import com.intellij.psi.util.PsiTreeUtil;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface ParamListElementBase extends TagBlockElement {
-  @NotNull
-  SoyBeginParamTag getBeginParamTag();
-
-  @Nullable
-  default String getParamName() {
-    try {
-      return getBeginParamTag().getParamSpecificationIdentifier().getText();
-    } catch (NullPointerException e) {
-      return null;
-    }
-  }
-
-  @Nullable
-  default String getInlinedValue() {
-    try {
-      return getBeginParamTag().getExpr().getText();
-    } catch (NullPointerException e) {
-      return null;
-    }
+public interface ChoiceClauseElement extends TagBlockElement {
+  default boolean isDefault() {
+    return getTagName() == TagName.DEFAULT;
   }
 
   @Override
   default boolean isIncomplete() {
-    return !getBeginParamTag().isSelfClosed() && !(getLastChild() instanceof SoyEndParamTag);
+    return true;
   }
 }
