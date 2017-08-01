@@ -694,7 +694,7 @@ private BeginLetTagBody ::= LET VariableDefinitionIdentifier [AttributeKeyValueP
 
 // Literal statement
 
-LiteralStatement ::= (LITERAL Content END_LITERAL) | (LITERAL_DOUBLE Content END_LITERAL_DOUBLE)
+LiteralStatement ::= (LITERAL Content? END_LITERAL) | (LITERAL_DOUBLE Content? END_LITERAL_DOUBLE)
 
 // Msg statement
 
