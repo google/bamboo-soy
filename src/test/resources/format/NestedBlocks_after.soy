@@ -1,0 +1,21 @@
+{namespace
+        foo}
+
+{template .bar}
+    {@param p: html}
+    <div>
+        {call .bar}
+            {param p
+                    kind="html"}
+                <div class="foo">
+                    {switch $foo}
+                        {case 1}
+                            1
+                        {default}
+                            2
+                    {/switch}
+                </div>
+            {/param}
+        {/call}
+    </div>
+{/template}
