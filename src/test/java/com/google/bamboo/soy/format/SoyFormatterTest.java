@@ -16,16 +16,19 @@ package com.google.bamboo.soy.format;
 
 import com.google.bamboo.soy.SoyCodeInsightFixtureTestCase;
 import com.google.bamboo.soy.SoyLanguage;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.codeStyle.CodeStyleManager;
+import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
 import com.intellij.psi.templateLanguages.TemplateDataLanguageMappings;
+import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class SoyFormatterTest extends SoyCodeInsightFixtureTestCase {
+public class SoyFormatterTest extends SoyCodeInsightFixtureTestCase {
 
   @Override
   protected String getBasePath() {
@@ -33,30 +36,19 @@ public abstract class SoyFormatterTest extends SoyCodeInsightFixtureTestCase {
   }
 
   protected void doTest() throws Throwable {
-    PsiFile baseFile = myFixture.configureByFile(getTestName(false) + ".soy");
-    VirtualFile virtualFile = baseFile.getVirtualFile();
-    assert virtualFile != null;
-    TemplateDataLanguageMappings.getInstance(getProject())
-        .setMapping(virtualFile, SoyLanguage.INSTANCE);
-
-    // fetch a fresh instance of the file -- the template data mapping creates a new instance,
-    // which was causing problems in PsiFileImpl.isValid()
-    final PsiFile file = PsiManager.getInstance(getProject()).findFile(virtualFile);
-    assert file != null;
-
-    TextRange rangeToUse = file.getTextRange();
-    CodeStyleManager styleManager = CodeStyleManager.getInstance(getProject());
-    styleManager.reformatText(file, rangeToUse.getStartOffset(), rangeToUse.getEndOffset());
+    myFixture.configureByFiles(getTestName(false) + ".soy");
+    new WriteCommandAction.Simple(getProject()) {
+      @Override
+      protected void run() throws Throwable {
+        CodeStyleManager.getInstance(getProject()).reformatText(myFixture.getFile(),
+            ContainerUtil.newArrayList(myFixture.getFile().getTextRange()));
+      }
+    }.execute();
     myFixture.checkResultByFile(getTestName(false) + "_after.soy");
   }
 
 
-  private void doFormatterTest(
-      @NotNull final LanguageFileType fileType,
-      @NotNull final String textBefore,
-      @NotNull final String textAfter) {
-    myFixture.configureByText(fileType, textBefore);
-
-    myFixture.checkResult(textAfter);
+  public void testNestedBlocks() throws Throwable {
+    doTest();
   }
 }
