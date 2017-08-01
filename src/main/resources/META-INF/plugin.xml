@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.google.bamboo.id</id>
   <name>Bamboo Soy</name>
-  <version>1.1</version>
+  <version>1.2</version>
   <vendor>Google</vendor>
 
   <description><![CDATA[
@@ -10,6 +10,18 @@
   </description>
 
   <change-notes><![CDATA[
+      <p>
+        <b>Release notes for 1.2</b>
+
+        <ul>
+          <li>Code style settings, better formatting and newline indentation</li>
+          <li>Live templates for {let}</li>
+          <li>Improved context triggering of variable auto-completion</li>
+          <li>Improved insertion of matching closing quote and brace characters</li>
+          <li>Minor bug fixes: empty {literal} statements, closing tag insertion, smart indent</li>
+        </ul>
+     </p>
+
      <p>
         <b>Release notes for 1.1</b>
 
