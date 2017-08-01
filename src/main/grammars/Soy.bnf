@@ -20,7 +20,6 @@
       = ["com.google.bamboo.soy.elements.StatementBase" "com.google.bamboo.soy.elements.TagElement"]
   implements(".*Statement")="com.google.bamboo.soy.elements.StatementBase"
 
-
   extends(".*Expr|VariableReferenceIdentifier")=Expr
   consumeTokenMethod(".*Expr")="consumeTokenFast"
 

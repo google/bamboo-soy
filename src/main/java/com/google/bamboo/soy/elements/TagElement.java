@@ -21,6 +21,7 @@ import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface TagElement extends PsiElement {
 
@@ -52,21 +53,33 @@ public interface TagElement extends PsiElement {
     }
   }
 
+  @NotNull
+  default IElementType getOpeningBraceType() {
+    return getFirstChild().getNode().getElementType();
+  }
+
+  @Nullable
+  default IElementType getClosingBraceType() {
+    IElementType type = getLastChild().getNode().getElementType();
+    return RIGHT_BRACES.contains(type) ? type : null;
+  }
+
+
   default boolean isDoubleBraced() {
-    return getFirstChild().getNode().getElementType() == SoyTypes.LBRACE_LBRACE
-        || getFirstChild().getNode().getElementType() == SoyTypes.LBRACE_LBRACE_SLASH;
+    return getOpeningBraceType() == SoyTypes.LBRACE_LBRACE
+        || getOpeningBraceType() == SoyTypes.LBRACE_LBRACE_SLASH;
   }
 
   default boolean isClosingTag() {
-    return LEFT_SLASH_BRACES.contains(getFirstChild().getNode().getElementType());
+    return LEFT_SLASH_BRACES.contains(getOpeningBraceType());
   }
 
   default boolean isSelfClosed() {
-    return SLASH_R_BRACES.contains(getLastChild().getNode().getElementType());
+    return SLASH_R_BRACES.contains(getClosingBraceType());
   }
 
   default boolean isIncomplete() {
-    return !RIGHT_BRACES.contains(getLastChild().getNode().getElementType());
+    return getClosingBraceType() == null;
   }
 
   default String generateClosingTag() {

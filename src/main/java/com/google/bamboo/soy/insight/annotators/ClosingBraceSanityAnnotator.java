@@ -47,6 +47,7 @@ import com.google.bamboo.soy.parser.impl.SoyRbStatementImpl;
 import com.google.bamboo.soy.parser.impl.SoySpStatementImpl;
 import com.google.bamboo.soy.parser.impl.SoyWhitespaceStatementImpl;
 import com.google.bamboo.soy.parser.impl.SoyXidStatementImpl;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
@@ -57,7 +58,9 @@ public class ClosingBraceSanityAnnotator implements Annotator {
 
   private static final String MUST_CLOSE_SLASH_RBRACE = "Must close by /} or /}}";
   private static final String MUST_CLOSE_RBRACE = "Must close by } or }}";
-  private static final ImmutableSet<Class> mustCloseRBraceTags =
+
+  @VisibleForTesting
+  static final ImmutableSet<Class> mustCloseRBraceTags =
       ImmutableSet.<Class>builder()
           .add(SoyAliasBlockImpl.class)
           .add(SoyAtParamSingleImpl.class)
@@ -93,12 +96,6 @@ public class ClosingBraceSanityAnnotator implements Annotator {
           .build();
   private static ImmutableSet<Class> mustCloseSlashRBraceTags =
       ImmutableSet.of(SoyLetSingleStatementImpl.class);
-
-  static {
-    for (Class clazz : mustCloseRBraceTags) {
-      assert (TagElement.class.isAssignableFrom(clazz));
-    }
-  }
 
   @Override
   public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
