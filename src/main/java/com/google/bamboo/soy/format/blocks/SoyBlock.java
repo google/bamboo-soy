@@ -62,6 +62,11 @@ public class SoyBlock extends TemplateLanguageBlock {
         .getOriginal() instanceof SyntheticBlock;
   }
 
+  private static boolean isXMLTagBlock(BlockWithParent block) {
+    return block instanceof DataLanguageBlockWrapper && ((DataLanguageBlockWrapper) block)
+        .getNode() instanceof XmlTag;
+  }
+
   private static boolean isAlwaysIndented(PsiElement element) {
     return element instanceof ParamListElementBase
         || element instanceof SoyAtParamSingle
@@ -193,6 +198,10 @@ public class SoyBlock extends TemplateLanguageBlock {
       return Indent.getNormalIndent();
     }
 
+    if (isDirectXMLTagChild()) {
+      return Indent.getContinuationIndent();
+    }
+
     if (hasIndentingForeignBlockParent()) {
       return Indent.getNormalIndent();
     }
@@ -244,6 +253,10 @@ public class SoyBlock extends TemplateLanguageBlock {
       TagElement tag = findLastDescendantOfType(myNode.getPsi(), TagElement.class);
       return tag != null && tag.isIncomplete();
     }
+  }
+
+  private boolean isDirectXMLTagChild() {
+    return isSynthetic(getParent()) && isXMLTagBlock(getParent().getParent());
   }
 
   private boolean hasIndentingForeignBlockParent() {
