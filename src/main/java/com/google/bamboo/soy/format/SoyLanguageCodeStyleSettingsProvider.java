@@ -20,12 +20,14 @@ import com.intellij.application.options.SmartIndentOptionsEditor;
 import com.intellij.lang.Language;
 import com.intellij.lang.html.HTMLLanguage;
 import com.intellij.openapi.util.io.StreamUtil;
+import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider;
 import java.io.IOException;
 import org.jetbrains.annotations.NotNull;
 
 public class SoyLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSettingsProvider {
+
   @NotNull
   @Override
   public Language getLanguage() {
@@ -44,7 +46,8 @@ public class SoyLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSetti
 
   @Override
   public CommonCodeStyleSettings getDefaultCommonSettings() {
-    return getDefaultCommonSettings(HTMLLanguage.INSTANCE);
+    return CodeStyleSettingsManager.getInstance().getCurrentSettings()
+        .getCommonSettings(HTMLLanguage.INSTANCE);
   }
 
   @Override
