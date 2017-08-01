@@ -13,10 +13,11 @@
   elementTypeClass="com.google.bamboo.soy.parser.SoyElementType"
   tokenTypeClass="com.google.bamboo.soy.lexer.SoyTokenType"
 
-  implements(".*Statement")="com.google.bamboo.soy.elements.StatementBase"
-  implements("Begin.*|End.*|.*Tag")="com.google.bamboo.soy.elements.TagElement"
+  implements("(Alias|Namespace|DelegatePackage)Block")="com.google.bamboo.soy.elements.TagElement"
   implements("(Css|Lb|LetSingle|Nil|Xid|Rb|Sp|Whitespace|Print)Statement")
       = ["com.google.bamboo.soy.elements.StatementBase" "com.google.bamboo.soy.elements.TagElement"]
+  implements(".*Statement")="com.google.bamboo.soy.elements.StatementBase"
+  implements("Begin.*|End.*|.*Tag")="com.google.bamboo.soy.elements.TagElement"
 
 
   extends(".*Expr|VariableReferenceIdentifier")=Expr

@@ -15,9 +15,7 @@
 package com.google.bamboo.soy.insight;
 
 import com.google.bamboo.soy.SoyCodeInsightFixtureTestCase;
-import com.google.bamboo.soy.elements.AtParamElement;
 import com.google.bamboo.soy.elements.CallStatementBase;
-import com.google.bamboo.soy.parser.SoyAtInjectSingle;
 import com.google.bamboo.soy.parser.SoyMsgStatement;
 import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyParamListElement;
@@ -28,12 +26,26 @@ import com.google.common.collect.Iterables;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.psi.util.QualifiedName;
 import com.intellij.usageView.UsageInfo;
 import java.util.Collection;
 import org.junit.Assert;
 
 public class SoyReferenceTest extends SoyCodeInsightFixtureTestCase {
+
+  private static void assertIsAtParam(PsiElement target, String name) {
+    Assert.assertTrue(target instanceof SoyParamDefinitionIdentifier);
+    Assert.assertEquals(name, target.getText());
+  }
+
+  private static void assertIsAtInject(PsiElement target, String name) {
+    Assert.assertTrue(target instanceof SoyParamDefinitionIdentifier);
+    Assert.assertEquals(name, target.getText());
+  }
+
+  private static void assertIsVariableDefinition(PsiElement target, String name) {
+    Assert.assertTrue(target instanceof SoyVariableDefinitionIdentifier);
+    Assert.assertEquals(name, target.getText());
+  }
 
   @Override
   protected String getBasePath() {
@@ -121,20 +133,5 @@ public class SoyReferenceTest extends SoyCodeInsightFixtureTestCase {
     assertSize(1, usages);
     assertInstanceOf(
         Iterables.getOnlyElement(usages).getElement(), SoyVariableReferenceIdentifier.class);
-  }
-
-  private static void assertIsAtParam(PsiElement target, String name) {
-    Assert.assertTrue(target instanceof SoyParamDefinitionIdentifier);
-    Assert.assertEquals(name, target.getText());
-  }
-
-  private static void assertIsAtInject(PsiElement target, String name) {
-    Assert.assertTrue(target instanceof SoyParamDefinitionIdentifier);
-    Assert.assertEquals(name, target.getText());
-  }
-
-  private static void assertIsVariableDefinition(PsiElement target, String name) {
-    Assert.assertTrue(target instanceof SoyVariableDefinitionIdentifier);
-    Assert.assertEquals(name, target.getText());
   }
 }
