@@ -1,0 +1,10 @@
+{namespace space}
+
+{template .foo}
+  <error descr="Must close by }">{if 1 == 1}}</error>
+  {/if}
+  <error descr="Must close by }}">{{if 1 == 1}</error>
+  {/if}
+  <error descr="Must close by /}}">{{let $bar : 1}}</error>
+  <error descr="Must close by /} or }">{call .foo}}</error>
+{/template}

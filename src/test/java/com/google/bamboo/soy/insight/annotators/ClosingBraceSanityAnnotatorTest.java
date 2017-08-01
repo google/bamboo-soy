@@ -1,18 +1,23 @@
 package com.google.bamboo.soy.insight.annotators;
 
+import com.google.bamboo.soy.SoyCodeInsightFixtureTestCase;
 import com.google.bamboo.soy.elements.TagElement;
-import junit.framework.TestCase;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
-@RunWith(JUnit4.class)
-public class ClosingBraceSanityAnnotatorTest extends TestCase {
+public class ClosingBraceSanityAnnotatorTest extends SoyCodeInsightFixtureTestCase {
 
-  @Test
+  @Override
+  protected String getBasePath() {
+    return "/insight/annotators";
+  }
+
   public void testAllTags() {
     for (Class clazz : ClosingBraceSanityAnnotator.mustCloseRBraceTags) {
       assertTrue(clazz.getName(), TagElement.class.isAssignableFrom(clazz));
     }
+  }
+
+  public void testAnnotator() {
+    myFixture.configureByFile("ClosingBraceSanity.soy");
+    myFixture.checkHighlighting(false, false, true, true);
   }
 }

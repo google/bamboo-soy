@@ -49,15 +49,16 @@ import com.google.bamboo.soy.parser.impl.SoyWhitespaceStatementImpl;
 import com.google.bamboo.soy.parser.impl.SoyXidStatementImpl;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.tree.IElementType;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 public class ClosingBraceSanityAnnotator implements Annotator {
-
-  private static final String MUST_CLOSE_SLASH_RBRACE = "Must close by /} or /}}";
-  private static final String MUST_CLOSE_RBRACE = "Must close by } or }}";
 
   @VisibleForTesting
   static final ImmutableSet<Class> mustCloseRBraceTags =
@@ -100,14 +101,28 @@ public class ClosingBraceSanityAnnotator implements Annotator {
   @Override
   public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
     if (psiElement instanceof TagElement) {
-      if (mustCloseRBraceTags.contains(psiElement.getClass())
-          && ((TagElement) psiElement).isSelfClosed()) {
-        annotationHolder.createErrorAnnotation(psiElement, MUST_CLOSE_RBRACE);
+      TagElement tagElement = (TagElement) psiElement;
+
+      Set<IElementType> allowedRBraces = TagElement.RIGHT_BRACES;
+      if (mustCloseRBraceTags.contains(tagElement.getClass())) {
+        allowedRBraces = Sets.difference(allowedRBraces, TagElement.SLASH_R_BRACES);
+      } else if (mustCloseSlashRBraceTags.contains(tagElement.getClass())) {
+        allowedRBraces = Sets.intersection(allowedRBraces, TagElement.SLASH_R_BRACES);
       }
 
-      if (mustCloseSlashRBraceTags.contains(psiElement.getClass())
-          && !((TagElement) psiElement).isSelfClosed()) {
-        annotationHolder.createErrorAnnotation(psiElement, MUST_CLOSE_SLASH_RBRACE);
+      if (tagElement.isDoubleBraced()) {
+        allowedRBraces = Sets.intersection(allowedRBraces, TagElement.DOUBLE_BRACES);
+      } else {
+        allowedRBraces = Sets.difference(allowedRBraces, TagElement.DOUBLE_BRACES);
+      }
+
+      if (!allowedRBraces.contains(tagElement.getClosingBraceType())) {
+        annotationHolder.createErrorAnnotation(tagElement, "Must close by " +
+            allowedRBraces
+                .stream()
+                .map(TagElement.BRACE_TYPE_TO_STRING::get)
+                .sorted()
+                .collect(Collectors.joining(" or ")));
       }
     }
   }
