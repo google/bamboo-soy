@@ -218,7 +218,7 @@ NamespaceIdentifier ::= QualifiedIdentifier
 
 AliasIdentifier ::= QualifiedIdentifier
 
-TypeIdentifier ::= PlainIdentifier
+TypeIdentifier ::= PlainIdentifier (DOT PlainIdentifier)*
 
 PackageIdentifier ::= QualifiedIdentifier
 
