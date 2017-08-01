@@ -96,7 +96,7 @@ public class ClosingBraceSanityAnnotator implements Annotator {
           .build();
   private static ImmutableSet<Class> mustCloseSlashRBraceTags =
       ImmutableSet.of(SoyLetSingleStatementImpl.class);
-  
+
   @Override
   public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
     if (psiElement instanceof TagElement) {
