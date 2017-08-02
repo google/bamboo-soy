@@ -15,11 +15,8 @@
 package com.google.bamboo.soy.elements.impl;
 
 import com.google.bamboo.soy.elements.VariableDefinitionElement;
-import com.google.bamboo.soy.lang.Variable;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
-import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class VariableDefinitionMixin extends ASTWrapperPsiElement
@@ -29,6 +26,7 @@ public abstract class VariableDefinitionMixin extends ASTWrapperPsiElement
     super(node);
   }
 
+  @NotNull
   @Override
   public String getName() {
     return getIdentifierWord() == null ? "" : getIdentifierWord().getText();
@@ -39,16 +37,5 @@ public abstract class VariableDefinitionMixin extends ASTWrapperPsiElement
     return getIdentifierWord() == null
         ? super.getTextOffset()
         : getIdentifierWord().getTextOffset();
-  }
-
-  @Override
-  public PsiElement setName(@NotNull String s) throws IncorrectOperationException {
-    return null;
-  }
-
-  @Override
-  @NotNull
-  public Variable toVariable() {
-    return new Variable(getName(), "", this);
   }
 }

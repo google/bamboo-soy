@@ -53,15 +53,18 @@ public interface TagElement extends PsiElement {
   }
 
   @NotNull
-  default TagName getTagName() {
-    try {
-      // The first child is a brace, the next non-whitespace token is the name.
-      return TagName
-          .valueOf(PsiTreeUtil.skipSiblingsForward(getFirstChild(), PsiWhiteSpace.class).getText()
-              .toUpperCase());
-    } catch (NullPointerException | IllegalArgumentException e) {
-      return TagName._UNKNOWN_;
-    }
+  default PsiElement getTagNameToken() {
+    return PsiTreeUtil.skipSiblingsForward(getFirstChild(), PsiWhiteSpace.class);
+  }
+
+  @NotNull
+  default IElementType getTagNameTokenType() {
+    return getTagNameToken().getNode().getElementType();
+  }
+
+  @NotNull
+  default String getTagName() {
+    return getTagNameToken().getText().toLowerCase();
   }
 
   @NotNull
@@ -79,7 +82,7 @@ public interface TagElement extends PsiElement {
     return isDoubleBrace(getOpeningBraceType());
   }
 
-  default boolean isClosingTag() {
+  default boolean isEndTag() {
     return LEFT_SLASH_BRACES.contains(getOpeningBraceType());
   }
 
@@ -92,43 +95,10 @@ public interface TagElement extends PsiElement {
   }
 
   default String generateClosingTag() {
-    String closingTag = "{/" + getTagName().name().toLowerCase() + "}";
+    String closingTag = "{/" + getTagName() + "}";
     if (isDoubleBraced()) {
       closingTag = "{" + closingTag + "}";
     }
     return closingTag;
-  }
-
-  enum TagName {
-    _UNKNOWN_,
-    ALIAS,
-    CALL,
-    DELCALL,
-    DELPACKAGE,
-    NAMESPACE,
-    TEMPLATE,
-    DELTEMPLATE,
-    CASE,
-    CSS,
-    DEFAULT,
-    ELSE,
-    ELSIF,
-    FALLBACKMSG,
-    FOR,
-    FOREACH,
-    IF,
-    IFEMPTY,
-    LB,
-    LET,
-    MSG,
-    NIL,
-    PARAM,
-    PLURAL,
-    PRINT,
-    RB,
-    SELECT,
-    SP,
-    SWITCH,
-    XID
   }
 }

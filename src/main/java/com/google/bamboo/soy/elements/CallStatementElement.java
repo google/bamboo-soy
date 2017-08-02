@@ -14,9 +14,9 @@
 
 package com.google.bamboo.soy.elements;
 
-import com.google.bamboo.soy.elements.TagElement.TagName;
 import com.google.bamboo.soy.parser.SoyBeginCall;
 import com.google.bamboo.soy.parser.SoyParamListElement;
+import com.google.bamboo.soy.parser.SoyTypes;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +31,7 @@ public interface CallStatementElement extends TagBlockElement, StatementElement 
 
   @NotNull
   default boolean isDelegate() {
-    return getTagName() == TagName.DELCALL;
+    return getTagNameTokenType() == SoyTypes.DELCALL;
   }
 
   @Nullable
