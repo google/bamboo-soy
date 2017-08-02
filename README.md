@@ -40,17 +40,7 @@ unbalanced tags (things don’t break when you type).
 
 ## Release notes
 
-For the complete history, see the [release notes page](releasenotes.md).
-
-### Release notes for alpha-5.
-
- * Added completion for `visibility="private"` in template open tags.
- * Recognize usage of variables inside string literals, like `{msg desc="$variable"}`.
- * Fix referencing of variables declared in let statements.
- * Disallow referencing `@inject` declarations from template call sites.
- * Fix checking for slash before closing brace on single-tag call statements.
- * Parser accepts index access of parenthesized expressions, like `($foo)[0]`
- * Parser accepts `for` statements with empty body.
+See the [release notes page](releasenotes.md).
 
 ## Contributing
 
