@@ -54,10 +54,6 @@ public interface TagElement extends PsiElement {
     return SoyTokenTypes.DOUBLE_BRACES.contains(getOpeningBraceType());
   }
 
-  default boolean isEndTag() {
-    return SoyTokenTypes.LEFT_SLASH_BRACES.contains(getOpeningBraceType());
-  }
-
   default boolean isSelfClosed() {
     return SoyTokenTypes.SLASH_R_BRACES.contains(getClosingBraceType());
   }

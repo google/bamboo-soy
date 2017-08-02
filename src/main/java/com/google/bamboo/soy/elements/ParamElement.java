@@ -15,11 +15,12 @@
 package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.parser.SoyBeginParamTag;
-import com.google.bamboo.soy.parser.SoyEndParamTag;
+import com.google.bamboo.soy.parser.SoyEndTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface ParamElement extends TagBlockElement {
+
   @NotNull
   SoyBeginParamTag getBeginParamTag();
 
@@ -43,6 +44,6 @@ public interface ParamElement extends TagBlockElement {
 
   @Override
   default boolean isIncomplete() {
-    return !getBeginParamTag().isSelfClosed() && !(getLastChild() instanceof SoyEndParamTag);
+    return !getBeginParamTag().isSelfClosed() && !(getLastChild() instanceof SoyEndTag);
   }
 }

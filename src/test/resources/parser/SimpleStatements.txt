@@ -78,7 +78,7 @@ Closure Template File
           PsiElement(SoyTokenType.{literal})('{literal}')
           PsiElement(SoyTokenType.END_LITERAL)('{/literal}')
         PsiWhiteSpace('\n')
-      SoyEndTemplateImpl(END_TEMPLATE)
+      SoyEndTagImpl(END_TAG)
         PsiElement(SoyTokenType.{/)('{/')
         PsiElement(SoyTokenType.template)('template')
         PsiElement(SoyTokenType.})('}')

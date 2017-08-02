@@ -14,6 +14,7 @@
 
 package com.google.bamboo.soy.elements;
 
+import com.google.bamboo.soy.parser.SoyEndTag;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
@@ -37,6 +38,6 @@ public interface TagBlockElement extends PsiElement {
 
   default boolean isIncomplete() {
     PsiElement lastChild = getLastChild();
-    return !(lastChild instanceof TagElement && ((TagElement) lastChild).isEndTag());
+    return !(lastChild instanceof SoyEndTag);
   }
 }

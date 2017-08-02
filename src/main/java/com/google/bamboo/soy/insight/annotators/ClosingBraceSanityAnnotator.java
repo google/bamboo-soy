@@ -30,14 +30,7 @@ import com.google.bamboo.soy.parser.impl.SoyBeginTemplateImpl;
 import com.google.bamboo.soy.parser.impl.SoyCssStatementImpl;
 import com.google.bamboo.soy.parser.impl.SoyDelegatePackageBlockImpl;
 import com.google.bamboo.soy.parser.impl.SoyElseTagImpl;
-import com.google.bamboo.soy.parser.impl.SoyEndCallImpl;
-import com.google.bamboo.soy.parser.impl.SoyEndChoiceImpl;
-import com.google.bamboo.soy.parser.impl.SoyEndForTagImpl;
-import com.google.bamboo.soy.parser.impl.SoyEndForeachTagImpl;
-import com.google.bamboo.soy.parser.impl.SoyEndIfTagImpl;
-import com.google.bamboo.soy.parser.impl.SoyEndLetTagImpl;
-import com.google.bamboo.soy.parser.impl.SoyEndMsgTagImpl;
-import com.google.bamboo.soy.parser.impl.SoyEndTemplateImpl;
+import com.google.bamboo.soy.parser.impl.SoyEndTagImpl;
 import com.google.bamboo.soy.parser.impl.SoyFallbackMsgTagImpl;
 import com.google.bamboo.soy.parser.impl.SoyLbStatementImpl;
 import com.google.bamboo.soy.parser.impl.SoyLetSingleStatementImpl;
@@ -77,14 +70,7 @@ public class ClosingBraceSanityAnnotator implements Annotator {
           .add(SoyCssStatementImpl.class)
           .add(SoyDelegatePackageBlockImpl.class)
           .add(SoyElseTagImpl.class)
-          .add(SoyEndCallImpl.class)
-          .add(SoyEndChoiceImpl.class)
-          .add(SoyEndTemplateImpl.class)
-          .add(SoyEndForTagImpl.class)
-          .add(SoyEndForeachTagImpl.class)
-          .add(SoyEndIfTagImpl.class)
-          .add(SoyEndLetTagImpl.class)
-          .add(SoyEndMsgTagImpl.class)
+          .add(SoyEndTagImpl.class)
           .add(SoyFallbackMsgTagImpl.class)
           .add(SoyLbStatementImpl.class)
           .add(SoyNamespaceBlockImpl.class)
