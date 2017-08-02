@@ -1,6 +1,7 @@
 # Bamboo Soy for IntelliJ 🏮🍣🏮
 
 [![Build Status](https://travis-ci.org/google/bamboo-soy.svg?branch=master)](https://travis-ci.org/google/bamboo-soy)
+[![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
 
 The smartest Intellij plugin for the [Soy templating language](https://github.com/google/closure-templates).
 
@@ -39,17 +40,7 @@ unbalanced tags (things don’t break when you type).
 
 ## Release notes
 
-For the complete history, see the [release notes page](releasenotes.md).
-
-### Release notes for alpha-5.
-
- * Added completion for `visibility="private"` in template open tags.
- * Recognize usage of variables inside string literals, like `{msg desc="$variable"}`.
- * Fix referencing of variables declared in let statements.
- * Disallow referencing `@inject` declarations from template call sites.
- * Fix checking for slash before closing brace on single-tag call statements.
- * Parser accepts index access of parenthesized expressions, like `($foo)[0]`
- * Parser accepts `for` statements with empty body.
+See the [release notes page](releasenotes.md).
 
 ## Contributing
 

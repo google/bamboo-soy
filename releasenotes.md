@@ -1,5 +1,43 @@
 # Release notes
 
+## Release notes for 1.2
+### Features
+
+ * Automatic insertion of closing characters for `"`, `'`, `(` and `[`,
+ * Code style settings are now available,
+   * Pressing enter after an open tag now places the cursor at the right indentation level,
+ * Formatting improvements:
+   * Continuation indent on multiline `alias`,
+   * Continuation indent on tag attributes,
+   * Improved frormatting for deeply nested tags,
+ * Live templates for `{let}` and `{let /}`,
+ * Autocompletion
+   * Add support for `stricthtml="true"` in template definition blocks,
+   * Better context-detection for where variable autocompletion should trigger,
+ 
+### Stability and bug fixes
+ * Fixed various NPEs and bugs that occured on partial/incomplete code constructs,
+
+## Release notes for 1.1
+
+ * Autocompletion now respects block scoping.
+ * Performance improvements to parsing and indexing phase.
+ * Fixed bug where Soy parser would not correctly delegate to HTML.
+
+## Release notes for 1.0
+
+ * HTML highlighting and completion.
+ * Autoformatting.
+ * Structure view.
+ * Autoclosing of soy tags when typing `{/`.
+ * Doc comment support for `@param`, `@inject` and `let` statements.
+ * Completion improvements:
+     * Kind keyword and supported literals in string literal.
+     * Show type in parameter identifier suggestions.
+     * Only deltemplates are suggested for delcalls and vice verso for normal templates.
+ * Indexing of files is now persisted accross restarts.
+ * Stability and bug fixes.
+
 ## Release notes for alpha-5.
 
  * Added completion for `visibility="private"` in template open tags.
