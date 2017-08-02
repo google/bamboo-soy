@@ -14,25 +14,30 @@
 
 package com.google.bamboo.soy.elements;
 
-import com.google.bamboo.soy.elements.TagElement.TagName;
+import com.google.bamboo.soy.parser.SoyEndTag;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiWhiteSpace;
-import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 
 public interface TagBlockElement extends PsiElement {
+
   @NotNull
   default TagElement getOpeningTag() {
     return (TagElement) getFirstChild();
   }
 
   @NotNull
-  default TagName getTagName() {
+  default IElementType getTagNameTokenType() {
+    return getOpeningTag().getTagNameTokenType();
+  }
+
+  @NotNull
+  default String getTagName() {
     return getOpeningTag().getTagName();
   }
 
   default boolean isIncomplete() {
     PsiElement lastChild = getLastChild();
-    return !(lastChild instanceof TagElement && ((TagElement) lastChild).isClosingTag());
+    return !(lastChild instanceof SoyEndTag);
   }
 }

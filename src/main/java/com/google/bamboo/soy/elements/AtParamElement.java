@@ -17,9 +17,12 @@ package com.google.bamboo.soy.elements;
 import com.google.bamboo.soy.lang.Parameter;
 import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyTypeExpression;
+import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.bamboo.soy.stubs.AtParamStub;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.StubBasedPsiElement;
+import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,10 +35,31 @@ public interface AtParamElement extends StubBasedPsiElement<AtParamStub>, PsiNam
   @Nullable
   SoyTypeExpression getTypeExpression();
 
+  default PsiElement setName(@NotNull String s) throws IncorrectOperationException {
+    return null;
+  }
+
   @NotNull
-  String getType();
+  default String getType() {
+    if (getStub() != null) {
+      return getStub().type;
+    }
+    if (getTypeExpression() != null) {
+      return getTypeExpression().getText();
+    }
+    return "";
+  }
 
-  boolean isOptional();
+  default boolean isOptional() {
+    if (getStub() != null) {
+      return getStub().isOptional;
+    }
+    return getTagNameTokenType() == SoyTypes.AT_PARAM_OPT;
+  }
 
-  Parameter toParameter();
+  default Parameter toParameter() {
+    return this.getParamDefinitionIdentifier() == null
+        ? null
+        : new Parameter(getName(), getType(), isOptional(), this.getParamDefinitionIdentifier());
+  }
 }

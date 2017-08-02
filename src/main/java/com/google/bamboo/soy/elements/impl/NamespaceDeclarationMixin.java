@@ -17,14 +17,13 @@ package com.google.bamboo.soy.elements.impl;
 import com.google.bamboo.soy.elements.NamespaceDeclarationElement;
 import com.google.bamboo.soy.stubs.NamespaceDeclarationStub;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
-import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 
 public class NamespaceDeclarationMixin extends SoyStubBasedPsiElementBase<NamespaceDeclarationStub>
     implements NamespaceDeclarationElement {
+
   public NamespaceDeclarationMixin(NamespaceDeclarationStub stub, IStubElementType type) {
     super(stub, type);
   }
@@ -37,13 +36,9 @@ public class NamespaceDeclarationMixin extends SoyStubBasedPsiElementBase<Namesp
     super(stub, type, node);
   }
 
+  @NotNull
   @Override
   public String getName() {
     return getStub() != null ? getStub().getName() : getText();
-  }
-
-  @Override
-  public PsiElement setName(@NotNull String s) throws IncorrectOperationException {
-    return null;
   }
 }

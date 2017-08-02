@@ -15,7 +15,7 @@
 package com.google.bamboo.soy.insight.annotators;
 
 import com.google.bamboo.soy.lang.ParamUtils;
-import com.google.bamboo.soy.elements.CallStatementBase;
+import com.google.bamboo.soy.elements.CallStatementElement;
 import com.google.bamboo.soy.parser.SoyTemplateReferenceIdentifier;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
@@ -29,8 +29,8 @@ import org.jetbrains.annotations.NotNull;
 public class MissingParametersAnnotator implements Annotator {
   @Override
   public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
-    if (psiElement instanceof CallStatementBase) {
-      CallStatementBase statement = (CallStatementBase) psiElement;
+    if (psiElement instanceof CallStatementElement) {
+      CallStatementElement statement = (CallStatementElement) psiElement;
 
       Collection<String> givenParameters = ParamUtils.getGivenParameters(statement);
 

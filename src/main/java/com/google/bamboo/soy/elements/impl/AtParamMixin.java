@@ -15,18 +15,15 @@
 package com.google.bamboo.soy.elements.impl;
 
 import com.google.bamboo.soy.elements.AtParamElement;
-import com.google.bamboo.soy.parser.SoyTypes;
-import com.google.bamboo.soy.lang.Parameter;
 import com.google.bamboo.soy.stubs.AtParamStub;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
-import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AtParamMixin extends SoyStubBasedPsiElementBase<AtParamStub>
     implements AtParamElement {
+
   public AtParamMixin(AtParamStub stub, IStubElementType type) {
     super(stub, type);
   }
@@ -39,6 +36,7 @@ public abstract class AtParamMixin extends SoyStubBasedPsiElementBase<AtParamStu
     super(stub, type, node);
   }
 
+  @NotNull
   @Override
   public String getName() {
     if (getStub() != null) {
@@ -48,37 +46,5 @@ public abstract class AtParamMixin extends SoyStubBasedPsiElementBase<AtParamStu
       return getParamDefinitionIdentifier().getName();
     }
     return "";
-  }
-
-  @Override
-  public PsiElement setName(@NotNull String s) throws IncorrectOperationException {
-    return null;
-  }
-
-  @NotNull
-  @Override
-  public String getType() {
-    if (getStub() != null) {
-      return getStub().type;
-    }
-    if (getTypeExpression() != null) {
-      return getTypeExpression().getText();
-    }
-    return "";
-  }
-
-  @Override
-  public boolean isOptional() {
-    if (getStub() != null) {
-      return getStub().isOptional;
-    }
-    return findChildByType(SoyTypes.AT_PARAM_OPT) != null;
-  }
-
-  @Override
-  public Parameter toParameter() {
-    return this.getParamDefinitionIdentifier() == null
-        ? null
-        : new Parameter(getName(), getType(), isOptional(), this.getParamDefinitionIdentifier());
   }
 }

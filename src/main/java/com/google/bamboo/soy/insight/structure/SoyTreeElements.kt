@@ -14,9 +14,8 @@
 
 package com.google.bamboo.soy.insight.structure
 
-import com.google.bamboo.soy.elements.CallStatementBase
-import com.google.bamboo.soy.elements.ParamListElementBase
-import com.google.bamboo.soy.elements.StatementBase
+import com.google.bamboo.soy.elements.CallStatementElement
+import com.google.bamboo.soy.elements.ParamElement
 import com.google.bamboo.soy.elements.TagBlockElement
 import com.google.bamboo.soy.file.SoyFile
 import com.google.bamboo.soy.file.SoyFileType
@@ -33,10 +32,10 @@ import javax.swing.Icon
  */
 fun getTreeElement(psiElement: PsiElement): PsiTreeElementBase<PsiElement> =
     when (psiElement) {
-      is CallStatementBase -> CallTreeElement(psiElement)
+      is CallStatementElement -> CallTreeElement(psiElement)
       is SoyLetCompoundStatement -> LetCompoundTreeElement(psiElement)
       is SoyLetSingleStatement -> LetSingleTreeElement(psiElement)
-      is ParamListElementBase -> ParamTreeElement(psiElement)
+      is ParamElement -> ParamTreeElement(psiElement)
       is SoyTemplateBlock -> TemplateTreeElement(psiElement)
       is SoyFile -> FileTreeElement(psiElement)
       is SoyMsgStatement -> MsgTreeElement(psiElement)
@@ -50,7 +49,7 @@ fun getTreeElement(psiElement: PsiElement): PsiTreeElementBase<PsiElement> =
  */
 private fun getPresentableName(psiElement: PsiElement): String? =
     when (psiElement) {
-      is TagBlockElement -> psiElement.tagName.name.toLowerCase()
+      is TagBlockElement -> psiElement.tagName
       is SoyNamespaceBlock -> "namespace"
       else -> null
     }
@@ -98,7 +97,7 @@ private open class BaseTreeElement(psiElement: PsiElement)
 /**
  * A TreeElement for call statements.
  */
-private class CallTreeElement(val psiElement: CallStatementBase) : BaseTreeElement(psiElement) {
+private class CallTreeElement(val psiElement: CallStatementElement) : BaseTreeElement(psiElement) {
   override fun getPresentableText(): String? =
       getPresentableName(psiElement) + " ${psiElement.templateName}"
 }
@@ -141,7 +140,7 @@ private class MsgTreeElement(val psiElement: SoyMsgStatement)
 /**
  * A TreeElement for the [SoyParamListElement].
  */
-private class ParamTreeElement(val psiElement: ParamListElementBase) : BaseTreeElement(psiElement) {
+private class ParamTreeElement(val psiElement: ParamElement) : BaseTreeElement(psiElement) {
   override fun getPresentableText(): String? =
       getPresentableName(psiElement) + " ${psiElement.paramName}"
 

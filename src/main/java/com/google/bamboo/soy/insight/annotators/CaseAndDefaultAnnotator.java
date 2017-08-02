@@ -14,7 +14,7 @@
 
 package com.google.bamboo.soy.insight.annotators;
 
-import com.google.bamboo.soy.elements.ChoiceStatementBaseElement;
+import com.google.bamboo.soy.elements.ChoiceStatementElement;
 import com.google.bamboo.soy.parser.SoyChoiceClause;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
@@ -25,7 +25,7 @@ public class CaseAndDefaultAnnotator implements Annotator {
 
   @Override
   public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
-    if (psiElement instanceof ChoiceStatementBaseElement) {
+    if (psiElement instanceof ChoiceStatementElement) {
       boolean foundDefault = false;
       for (PsiElement child : psiElement.getChildren()) {
         if (!(child instanceof SoyChoiceClause)) {

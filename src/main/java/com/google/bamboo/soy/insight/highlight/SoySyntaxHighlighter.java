@@ -17,7 +17,7 @@ package com.google.bamboo.soy.insight.highlight;
 import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
 
 import com.google.bamboo.soy.lexer.SoyLexer;
-import com.google.bamboo.soy.parser.SoyTypes;
+import com.google.bamboo.soy.lexer.SoyTokenTypes;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
@@ -51,81 +51,12 @@ public class SoySyntaxHighlighter extends SyntaxHighlighterBase {
   private static final
   ImmutableMultimap<TextAttributesKey, IElementType> attributesToTokenMap =
       ImmutableMultimap.<TextAttributesKey, IElementType>builder()
-          .putAll(
-              KEYWORD,
-          /* Tag openers & single-word tag contents */
-              SoyTypes.AT_PARAM,
-              SoyTypes.AT_PARAM_OPT,
-              SoyTypes.AT_INJECT,
-              SoyTypes.AT_INJECT_OPT,
-              SoyTypes.ALIAS,
-              SoyTypes.CALL,
-              SoyTypes.CASE,
-              SoyTypes.CSS,
-              SoyTypes.DEFAULT,
-              SoyTypes.DELCALL,
-              SoyTypes.DELPACKAGE,
-              SoyTypes.DELTEMPLATE,
-              SoyTypes.ELSE,
-              SoyTypes.ELSEIF,
-              SoyTypes.FALLBACKMSG,
-              SoyTypes.FOR,
-              SoyTypes.FOREACH,
-              SoyTypes.IF,
-              SoyTypes.IFEMPTY,
-              SoyTypes.LB,
-              SoyTypes.LET,
-              SoyTypes.LITERAL,
-              SoyTypes.LITERAL_DOUBLE,
-              SoyTypes.MSG,
-              SoyTypes.NAMESPACE,
-              SoyTypes.NIL,
-              SoyTypes.PARAM,
-              SoyTypes.PLURAL,
-              SoyTypes.PRINT,
-              SoyTypes.RB,
-              SoyTypes.SELECT,
-              SoyTypes.SP,
-              SoyTypes.SWITCH,
-              SoyTypes.TEMPLATE,
-              SoyTypes.XID,
-              SoyTypes.MSG,
-              SoyTypes.CARRIAGE_RETURN,
-              SoyTypes.NEWLINE_LITERAL,
-              SoyTypes.TAB,
-
-          /* Tag closing keywords */
-              SoyTypes.END_LITERAL,
-              SoyTypes.END_LITERAL_DOUBLE,
-
-          /* Other verbal tokens */
-              SoyTypes.AS)
-          .putAll(
-              OPERATOR_LITERAL,
-              SoyTypes.AND, SoyTypes.OR, SoyTypes.NOT)
-          .putAll(
-              BUILTIN_TYPE,
-              SoyTypes.ANY,
-              SoyTypes.ATTRIBUTES,
-              SoyTypes.BOOL,
-              SoyTypes.CSS,
-              SoyTypes.FLOAT,
-              SoyTypes.HTML,
-              SoyTypes.INT,
-              SoyTypes.JS,
-              SoyTypes.LIST,
-              SoyTypes.MAP,
-              SoyTypes.NULL,
-              SoyTypes.NUMBER,
-              SoyTypes.STRING,
-              SoyTypes.URI)
-          .putAll(
-              NUMBER,
-              SoyTypes.FLOAT_LITERAL, SoyTypes.INTEGER_LITERAL, SoyTypes.BOOL_LITERAL)
-          .putAll(
-              STRING, SoyTypes.STRING_LITERAL, SoyTypes.MULTI_LINE_STRING_LITERAL)
-          .putAll(
-              COMMENT, SoyTypes.COMMENT_BLOCK, SoyTypes.DOC_COMMENT_BLOCK)
+          .putAll(KEYWORD, SoyTokenTypes.KEYWORDS.getTypes())
+          .putAll(OPERATOR_LITERAL, SoyTokenTypes.OPERATOR_LITERALS.getTypes())
+          .putAll(BUILTIN_TYPE, SoyTokenTypes.BUILTIN_TYPES.getTypes())
+          .putAll(NUMBER, SoyTokenTypes.NUMBER_LITERALS.getTypes())
+          .putAll(STRING, SoyTokenTypes.STRING_LITERALS.getTypes())
+          .putAll(COMMENT, SoyTokenTypes.COMMENTS.getTypes())
           .build();
 
 

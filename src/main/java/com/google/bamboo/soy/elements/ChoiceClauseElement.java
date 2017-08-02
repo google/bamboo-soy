@@ -14,17 +14,12 @@
 
 package com.google.bamboo.soy.elements;
 
-import com.google.bamboo.soy.elements.TagElement.TagName;
-import com.google.bamboo.soy.parser.SoyBeginCall;
-import com.google.bamboo.soy.parser.SoyParamListElement;
-import com.intellij.psi.util.PsiTreeUtil;
-import java.util.List;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.google.bamboo.soy.parser.SoyTypes;
 
 public interface ChoiceClauseElement extends TagBlockElement {
+
   default boolean isDefault() {
-    return getTagName() == TagName.DEFAULT;
+    return getTagNameTokenType() == SoyTypes.DEFAULT;
   }
 
   @Override
