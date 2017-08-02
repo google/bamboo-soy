@@ -14,35 +14,29 @@
 
 package com.google.bamboo.soy.elements;
 
-import com.google.bamboo.soy.parser.SoyBeginParamTag;
-import com.google.bamboo.soy.parser.SoyEndParamTag;
+import com.google.bamboo.soy.parser.SoyAttributeKeyValuePair;
+import com.google.bamboo.soy.parser.SoyBeginMsg;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface ParamListElementBase extends TagBlockElement {
+public interface MsgStatementElement extends TagBlockElement, StatementElement {
+
   @NotNull
-  SoyBeginParamTag getBeginParamTag();
+  SoyBeginMsg getBeginMsg();
 
   @Nullable
-  default String getParamName() {
-    try {
-      return getBeginParamTag().getParamSpecificationIdentifier().getText();
-    } catch (NullPointerException e) {
+  default String getDescription() {
+    Optional<SoyAttributeKeyValuePair> keyValuePair =
+        getBeginMsg()
+            .getAttributeKeyValuePairList()
+            .stream()
+            .filter(pair -> pair.getAttributeNameIdentifier().getText().equalsIgnoreCase("desc"))
+            .findFirst();
+    if (keyValuePair.isPresent()) {
+      return keyValuePair.get().getAnyStringLiteral().getText();
+    } else {
       return null;
     }
-  }
-
-  @Nullable
-  default String getInlinedValue() {
-    try {
-      return getBeginParamTag().getExpr().getText();
-    } catch (NullPointerException e) {
-      return null;
-    }
-  }
-
-  @Override
-  default boolean isIncomplete() {
-    return !getBeginParamTag().isSelfClosed() && !(getLastChild() instanceof SoyEndParamTag);
   }
 }

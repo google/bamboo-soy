@@ -14,38 +14,35 @@
 
 package com.google.bamboo.soy.elements;
 
-import com.google.bamboo.soy.elements.TagElement.TagName;
-import com.google.bamboo.soy.parser.SoyBeginCall;
+import com.google.bamboo.soy.parser.SoyBeginParamTag;
 import com.google.bamboo.soy.parser.SoyEndParamTag;
-import com.google.bamboo.soy.parser.SoyParamListElement;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface CallStatementBase extends TagBlockElement, StatementBase {
-
+public interface ParamElement extends TagBlockElement {
   @NotNull
-  List<SoyParamListElement> getParamListElementList();
-
-  @NotNull
-  SoyBeginCall getBeginCall();
-
-  @NotNull
-  default boolean isDelegate() {
-    return getTagName() == TagName.DELCALL;
-  }
+  SoyBeginParamTag getBeginParamTag();
 
   @Nullable
-  default String getTemplateName() {
+  default String getParamName() {
     try {
-      return getBeginCall().getTemplateReferenceIdentifier().getText();
+      return getBeginParamTag().getParamSpecificationIdentifier().getText();
     } catch (NullPointerException e) {
       return null;
     }
   }
-/*
+
+  @Nullable
+  default String getInlinedValue() {
+    try {
+      return getBeginParamTag().getExpr().getText();
+    } catch (NullPointerException e) {
+      return null;
+    }
+  }
+
   @Override
   default boolean isIncomplete() {
     return !getBeginParamTag().isSelfClosed() && !(getLastChild() instanceof SoyEndParamTag);
-  }*/
+  }
 }

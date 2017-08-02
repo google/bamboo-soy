@@ -14,4 +14,4 @@
 
 package com.google.bamboo.soy.elements;
 
-public interface ChoiceStatementBaseElement extends TagBlockElement, StatementBase {}
+public interface ChoiceStatementElement extends TagBlockElement, StatementElement {}

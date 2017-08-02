@@ -14,8 +14,8 @@
 
 package com.google.bamboo.soy.insight.annotators;
 
-import com.google.bamboo.soy.elements.CallStatementBase;
-import com.google.bamboo.soy.elements.ChoiceStatementBaseElement;
+import com.google.bamboo.soy.elements.CallStatementElement;
+import com.google.bamboo.soy.elements.ChoiceStatementElement;
 import com.google.bamboo.soy.parser.SoyUnexpectedStatements;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
@@ -28,9 +28,9 @@ public class UnexpectedStatementsAnnotator implements Annotator {
   public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
     if (psiElement instanceof SoyUnexpectedStatements) {
       PsiElement parent = psiElement.getParent();
-      if (parent instanceof CallStatementBase) {
+      if (parent instanceof CallStatementElement) {
         annotationHolder.createErrorAnnotation(psiElement, "Expected a {param ...} tag.");
-      } else if (parent instanceof ChoiceStatementBaseElement) {
+      } else if (parent instanceof ChoiceStatementElement) {
         annotationHolder.createErrorAnnotation(
             psiElement, "Expected a {case ...} or {default ...} tag.");
       }

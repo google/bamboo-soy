@@ -14,29 +14,37 @@
 
 package com.google.bamboo.soy.elements;
 
-import com.google.bamboo.soy.parser.SoyAttributeKeyValuePair;
-import com.google.bamboo.soy.parser.SoyBeginMsg;
-import java.util.Optional;
+import com.google.bamboo.soy.elements.TagElement.TagName;
+import com.google.bamboo.soy.parser.SoyBeginCall;
+import com.google.bamboo.soy.parser.SoyParamListElement;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface MsgStatement extends TagBlockElement, StatementBase {
+public interface CallStatementElement extends TagBlockElement, StatementElement {
 
   @NotNull
-  SoyBeginMsg getBeginMsg();
+  List<SoyParamListElement> getParamListElementList();
+
+  @NotNull
+  SoyBeginCall getBeginCall();
+
+  @NotNull
+  default boolean isDelegate() {
+    return getTagName() == TagName.DELCALL;
+  }
 
   @Nullable
-  default String getDescription() {
-    Optional<SoyAttributeKeyValuePair> keyValuePair =
-        getBeginMsg()
-            .getAttributeKeyValuePairList()
-            .stream()
-            .filter(pair -> pair.getAttributeNameIdentifier().getText().equalsIgnoreCase("desc"))
-            .findFirst();
-    if (keyValuePair.isPresent()) {
-      return keyValuePair.get().getAnyStringLiteral().getText();
-    } else {
+  default String getTemplateName() {
+    try {
+      return getBeginCall().getTemplateReferenceIdentifier().getText();
+    } catch (NullPointerException e) {
       return null;
     }
   }
+/*
+  @Override
+  default boolean isIncomplete() {
+    return !getBeginParamTag().isSelfClosed() && !(getLastChild() instanceof SoyEndParamTag);
+  }*/
 }

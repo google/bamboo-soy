@@ -14,7 +14,7 @@
 
 package com.google.bamboo.soy.lang;
 
-import com.google.bamboo.soy.elements.CallStatementBase;
+import com.google.bamboo.soy.elements.CallStatementElement;
 import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -41,7 +41,7 @@ public class ParamUtils {
     return templateBlock.getParameters();
   }
 
-  public static Collection<String> getGivenParameters(CallStatementBase statement) {
+  public static Collection<String> getGivenParameters(CallStatementElement statement) {
     return statement
         .getParamListElementList()
         .stream()

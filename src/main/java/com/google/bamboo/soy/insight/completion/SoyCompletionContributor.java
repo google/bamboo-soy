@@ -16,7 +16,7 @@ package com.google.bamboo.soy.insight.completion;
 
 import static com.intellij.patterns.PlatformPatterns.psiElement;
 
-import com.google.bamboo.soy.elements.CallStatementBase;
+import com.google.bamboo.soy.elements.CallStatementElement;
 import com.google.bamboo.soy.lang.ParamUtils;
 import com.google.bamboo.soy.lang.Scope;
 import com.google.bamboo.soy.lang.TemplateNameUtils;
@@ -32,7 +32,6 @@ import com.google.bamboo.soy.parser.SoyBeginIf;
 import com.google.bamboo.soy.parser.SoyBeginLet;
 import com.google.bamboo.soy.parser.SoyBeginParamTag;
 import com.google.bamboo.soy.parser.SoyBeginTemplate;
-import com.google.bamboo.soy.parser.SoyElementType;
 import com.google.bamboo.soy.parser.SoyExpr;
 import com.google.bamboo.soy.parser.SoyListType;
 import com.google.bamboo.soy.parser.SoyMapType;
@@ -251,7 +250,7 @@ public class SoyCompletionContributor extends CompletionContributor {
 
             boolean isDelegate =
                 PsiTreeUtil.getParentOfType(
-                    identifierElement, CallStatementBase.class).isDelegate();
+                    identifierElement, CallStatementElement.class).isDelegate();
 
             String prefix = identifier.replaceFirst("IntellijIdeaRulezzz", "");
             Collection<TemplateNameUtils.Fragment> completions =
@@ -331,9 +330,9 @@ public class SoyCompletionContributor extends CompletionContributor {
               ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
             PsiElement position = completionParameters.getPosition();
-            CallStatementBase callStatement =
-                (CallStatementBase)
-                    PsiTreeUtil.findFirstParent(position, elt -> elt instanceof CallStatementBase);
+            CallStatementElement callStatement =
+                (CallStatementElement)
+                    PsiTreeUtil.findFirstParent(position, elt -> elt instanceof CallStatementElement);
 
             if (callStatement == null) {
               return;
