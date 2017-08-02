@@ -1,12 +1,22 @@
 # Release notes
 
 ## Release notes for 1.2
+### Features
 
- * Code style settings, better formatting and newline indentation.
- * Live templates for `{let}`.
- * Improved context triggering of variable auto-completion.
- * Improved insertion of matching closing quote and brace characters.
- * Minor bug fixes: empty `{literal}` statements, closing tag insertion, smart indent.
+ * Automatic insertion of closing characters for `"`, `'`, `(` and `[`,
+ * Code style settings are now available,
+   * Pressing enter after an open tag now places the cursor at the right indentation level,
+ * Formatting improvements:
+   * Continuation indent on multiline `alias`,
+   * Continuation indent on tag attributes,
+   * Improved frormatting for deeply nested tags,
+ * Live templates for `{let}` and `{let /}`,
+ * Autocompletion
+   * Add support for `stricthtml="true"` in template definition blocks,
+   * Better context-detection for where variable autocompletion should trigger,
+ 
+### Stability and bug fixes
+ * Fixed various NPEs and bugs that occured on partial/incomplete code constructs,
 
 ## Release notes for 1.1
 
