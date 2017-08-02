@@ -220,7 +220,7 @@ NamespaceDeclarationIdentifier ::= QualifiedIdentifier {
 
 NamespaceIdentifier ::= QualifiedIdentifier
 
-AliasIdentifier ::= QualifiedIdentifier
+AliasIdentifier ::= PlainIdentifier
 
 TypeIdentifier ::= PlainIdentifier (DOT PlainIdentifier)*
 
@@ -802,14 +802,16 @@ Expr ::= NullCheckTernaryExpr
   | AtomExpr
 
 private AtomExpr ::= VariableReferenceIdentifier
-  | LiteralExpr
   | FunctionCallExpr
   | FieldExpr
   | IndexExpr
   | ListExpr
   | ParenthesizedExpr
+  | LiteralExpr
 
-LiteralExpr ::= NumberLiteral | AnyStringLiteral
+
+LiteralExpr ::= NumberLiteral | AnyStringLiteral |  ProtobufEnum | BOOL_LITERAL
+ProtobufEnum ::= PlainIdentifier (DOT PlainIdentifier)+
 
 NullCheckTernaryExpr ::= Expr QUESTIONMARK Expr COLON Expr
 NullCheckBinExpr ::= Expr TERNARY_COALESCER Expr

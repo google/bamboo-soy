@@ -18,7 +18,7 @@ Closure Template File
       PsiElement(SoyTokenType.as)('as')
       PsiWhiteSpace(' ')
       SoyAliasIdentifierImpl(ALIAS_IDENTIFIER)
-        PsiElement(SoyTokenType.QUALIFIED_IDENTIFIER)('baz')
+        PsiElement(SoyTokenType.IDENTIFIER_WORD)('baz')
       PsiElement(SoyTokenType.})('}')
     PsiWhiteSpace('\n\n')
     SoyTemplateBlockImpl(TEMPLATE_BLOCK)
