@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 public class SoyTokenType extends IElementType {
+
   public SoyTokenType(@NotNull @NonNls String debugName) {
     super(debugName, SoyLanguage.INSTANCE);
   }

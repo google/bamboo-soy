@@ -15,6 +15,7 @@
 package com.google.bamboo.soy.insight.annotators;
 
 import com.google.bamboo.soy.elements.TagElement;
+import com.google.bamboo.soy.lexer.SoyTokenTypes;
 import com.google.bamboo.soy.parser.impl.SoyAliasBlockImpl;
 import com.google.bamboo.soy.parser.impl.SoyAtParamSingleImpl;
 import com.google.bamboo.soy.parser.impl.SoyBeginChoiceClauseImpl;
@@ -49,13 +50,12 @@ import com.google.bamboo.soy.parser.impl.SoyWhitespaceStatementImpl;
 import com.google.bamboo.soy.parser.impl.SoyXidStatementImpl;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.tree.IElementType;
-import java.util.Set;
+import com.intellij.psi.tree.TokenSet;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 
 public class ClosingBraceSanityAnnotator implements Annotator {
@@ -103,24 +103,23 @@ public class ClosingBraceSanityAnnotator implements Annotator {
     if (psiElement instanceof TagElement) {
       TagElement tagElement = (TagElement) psiElement;
 
-      Set<IElementType> allowedRBraces = TagElement.RIGHT_BRACES;
+      TokenSet allowedRBraces = SoyTokenTypes.RIGHT_BRACES;
       if (mustCloseRBraceTags.contains(tagElement.getClass())) {
-        allowedRBraces = Sets.difference(allowedRBraces, TagElement.SLASH_R_BRACES);
+        allowedRBraces = TokenSet.andNot(allowedRBraces, SoyTokenTypes.SLASH_R_BRACES);
       } else if (mustCloseSlashRBraceTags.contains(tagElement.getClass())) {
-        allowedRBraces = Sets.intersection(allowedRBraces, TagElement.SLASH_R_BRACES);
+        allowedRBraces = TokenSet.andSet(allowedRBraces, SoyTokenTypes.SLASH_R_BRACES);
       }
 
       if (tagElement.isDoubleBraced()) {
-        allowedRBraces = Sets.intersection(allowedRBraces, TagElement.DOUBLE_BRACES);
+        allowedRBraces = TokenSet.andSet(allowedRBraces, SoyTokenTypes.DOUBLE_BRACES);
       } else {
-        allowedRBraces = Sets.difference(allowedRBraces, TagElement.DOUBLE_BRACES);
+        allowedRBraces = TokenSet.andNot(allowedRBraces, SoyTokenTypes.DOUBLE_BRACES);
       }
 
       if (!allowedRBraces.contains(tagElement.getClosingBraceType())) {
         annotationHolder.createErrorAnnotation(tagElement, "Must close by " +
-            allowedRBraces
-                .stream()
-                .map(TagElement.BRACE_TYPE_TO_STRING::get)
+            Stream.of(allowedRBraces.getTypes())
+                .map(SoyTokenTypes.BRACE_TYPE_TO_STRING::get)
                 .sorted()
                 .collect(Collectors.joining(" or ")));
       }

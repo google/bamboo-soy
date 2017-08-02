@@ -16,6 +16,7 @@ package com.google.bamboo.soy.parser;
 
 import com.google.bamboo.soy.file.SoyFile;
 import com.google.bamboo.soy.lexer.SoyLexer;
+import com.google.bamboo.soy.lexer.SoyTokenTypes;
 import com.google.bamboo.soy.stubs.FileStub;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ParserDefinition;
@@ -25,18 +26,11 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IStubFileElementType;
 import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
 
 public class SoyParserDefinition implements ParserDefinition {
-  public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
-
-  private static final TokenSet COMMENTS =
-      TokenSet.create(SoyTypes.COMMENT_BLOCK, SoyTypes.DOC_COMMENT_BLOCK);
-
-  private static final TokenSet STRINGS = TokenSet.create(SoyTypes.OTHER);
 
   @NotNull
   @Override
@@ -46,17 +40,17 @@ public class SoyParserDefinition implements ParserDefinition {
 
   @NotNull
   public TokenSet getWhitespaceTokens() {
-    return WHITE_SPACES;
+    return SoyTokenTypes.WHITE_SPACES;
   }
 
   @NotNull
   public TokenSet getCommentTokens() {
-    return COMMENTS;
+    return SoyTokenTypes.COMMENTS;
   }
 
   @NotNull
   public TokenSet getStringLiteralElements() {
-    return STRINGS;
+    return SoyTokenTypes.STRINGS;
   }
 
   @NotNull

@@ -14,9 +14,7 @@
 
 package com.google.bamboo.soy.elements;
 
-import com.google.bamboo.soy.parser.SoyTypes;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
+import com.google.bamboo.soy.lexer.SoyTokenTypes;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.tree.IElementType;
@@ -25,32 +23,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface TagElement extends PsiElement {
-
-  ImmutableMap<IElementType, String> BRACE_TYPE_TO_STRING = ImmutableMap.<IElementType, String>builder()
-      .put(SoyTypes.LBRACE, "{")
-      .put(SoyTypes.LBRACE_LBRACE, "{{")
-      .put(SoyTypes.LBRACE_SLASH, "{/")
-      .put(SoyTypes.LBRACE_LBRACE_SLASH, "{{/")
-      .put(SoyTypes.RBRACE, "}")
-      .put(SoyTypes.RBRACE_RBRACE, "}}")
-      .put(SoyTypes.SLASH_RBRACE, "/}")
-      .put(SoyTypes.SLASH_RBRACE_RBRACE, "/}}")
-      .build();
-
-  ImmutableSet<IElementType> SLASH_R_BRACES =
-      ImmutableSet.of(SoyTypes.SLASH_RBRACE, SoyTypes.SLASH_RBRACE_RBRACE);
-  ImmutableSet<IElementType> DOUBLE_BRACES =
-      ImmutableSet.of(SoyTypes.LBRACE_LBRACE, SoyTypes.LBRACE_LBRACE_SLASH,
-          SoyTypes.RBRACE_RBRACE, SoyTypes.SLASH_RBRACE_RBRACE);
-  ImmutableSet<IElementType> LEFT_SLASH_BRACES = ImmutableSet.of(
-      SoyTypes.LBRACE_SLASH, SoyTypes.LBRACE_LBRACE_SLASH);
-  ImmutableSet<IElementType> RIGHT_BRACES =
-      ImmutableSet.of(SoyTypes.RBRACE, SoyTypes.RBRACE_RBRACE, SoyTypes.SLASH_RBRACE,
-          SoyTypes.SLASH_RBRACE_RBRACE);
-
-  static boolean isDoubleBrace(IElementType type) {
-    return DOUBLE_BRACES.contains(type);
-  }
 
   @NotNull
   default PsiElement getTagNameToken() {
@@ -75,19 +47,19 @@ public interface TagElement extends PsiElement {
   @Nullable
   default IElementType getClosingBraceType() {
     IElementType type = getLastChild().getNode().getElementType();
-    return RIGHT_BRACES.contains(type) ? type : null;
+    return SoyTokenTypes.RIGHT_BRACES.contains(type) ? type : null;
   }
 
   default boolean isDoubleBraced() {
-    return isDoubleBrace(getOpeningBraceType());
+    return SoyTokenTypes.DOUBLE_BRACES.contains(getOpeningBraceType());
   }
 
   default boolean isEndTag() {
-    return LEFT_SLASH_BRACES.contains(getOpeningBraceType());
+    return SoyTokenTypes.LEFT_SLASH_BRACES.contains(getOpeningBraceType());
   }
 
   default boolean isSelfClosed() {
-    return SLASH_R_BRACES.contains(getClosingBraceType());
+    return SoyTokenTypes.SLASH_R_BRACES.contains(getClosingBraceType());
   }
 
   default boolean isIncomplete() {
