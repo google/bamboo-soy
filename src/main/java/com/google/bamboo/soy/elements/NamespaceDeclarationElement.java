@@ -15,11 +15,17 @@
 package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.stubs.NamespaceDeclarationStub;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.StubBasedPsiElement;
+import com.intellij.util.IncorrectOperationException;
+import org.jetbrains.annotations.NotNull;
 
 /** The PSI element that represents the namespace name in a namespace definition. */
 public interface NamespaceDeclarationElement
     extends StubBasedPsiElement<NamespaceDeclarationStub>, PsiNamedElement {
-  String getName();
+  @Override
+  default PsiElement setName(@NotNull String s) throws IncorrectOperationException {
+    return null;
+  }
 }

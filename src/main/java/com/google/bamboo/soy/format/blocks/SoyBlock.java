@@ -14,8 +14,8 @@
 
 package com.google.bamboo.soy.format.blocks;
 
-import com.google.bamboo.soy.elements.ParamListElementBase;
-import com.google.bamboo.soy.elements.StatementBase;
+import com.google.bamboo.soy.elements.ParamElement;
+import com.google.bamboo.soy.elements.StatementElement;
 import com.google.bamboo.soy.elements.TagBlockElement;
 import com.google.bamboo.soy.elements.TagElement;
 import com.google.bamboo.soy.parser.SoyAtInjectSingle;
@@ -68,7 +68,7 @@ public class SoyBlock extends TemplateLanguageBlock {
   }
 
   private static boolean isAlwaysIndented(PsiElement element) {
-    return element instanceof ParamListElementBase
+    return element instanceof ParamElement
         || element instanceof SoyAtParamSingle
         || element instanceof SoyAtInjectSingle
         || element instanceof SoyChoiceClause
@@ -114,7 +114,7 @@ public class SoyBlock extends TemplateLanguageBlock {
    *
    * <pre>
    * OTHER
-   * MsgStatement
+   * MsgStatementElement
    * </pre>
    *
    * and this one is not:
@@ -122,7 +122,7 @@ public class SoyBlock extends TemplateLanguageBlock {
    * <pre>
    * Content
    * |- OTHER
-   * MsgStatement
+   * MsgStatementElement
    * </pre>
    *
    * <p>2. All HTML-content nodes must not be direct children of their parent logical blocks,
@@ -135,7 +135,7 @@ public class SoyBlock extends TemplateLanguageBlock {
    * ...
    * |- StatementList
    *    |- OTHER
-   *    |- MsgStatement
+   *    |- MsgStatementElement
    *    ...
    * </pre>
    *
@@ -287,7 +287,7 @@ public class SoyBlock extends TemplateLanguageBlock {
 
   private boolean isStatementOrStatementContainer() {
     return myNode.getPsi() instanceof SoyStatementList
-        || myNode.getPsi() instanceof StatementBase;
+        || myNode.getPsi() instanceof StatementElement;
   }
 
   private boolean isDirectTagChild() {

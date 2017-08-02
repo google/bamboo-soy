@@ -16,4 +16,4 @@ package com.google.bamboo.soy.elements;
 
 import com.intellij.psi.PsiElement;
 
-public interface StatementBase extends PsiElement {}
+public interface StatementElement extends PsiElement {}

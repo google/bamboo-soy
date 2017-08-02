@@ -41,6 +41,10 @@ public class SoyParserTest extends ParsingTestCase {
     doTest(true);
   }
 
+  public void testAttributes() throws Throwable {
+    doTest(true);
+  }
+
   public void testCallStatement() throws Throwable {
     doTest(true);
   }

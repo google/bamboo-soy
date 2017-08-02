@@ -14,7 +14,7 @@
 
 package com.google.bamboo.soy.elements.references;
 
-import com.google.bamboo.soy.elements.CallStatementBase;
+import com.google.bamboo.soy.elements.CallStatementElement;
 import com.google.bamboo.soy.lang.ParamUtils;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
@@ -37,9 +37,9 @@ public class ParameterDefinitionReference extends PsiReferenceBase<PsiElement>
   @Override
   public PsiElement resolve() {
     PsiElement element = this.getElement();
-    CallStatementBase callStatement =
-        (CallStatementBase) PsiTreeUtil
-            .findFirstParent(element, elt -> elt instanceof CallStatementBase);
+    CallStatementElement callStatement =
+        (CallStatementElement) PsiTreeUtil
+            .findFirstParent(element, elt -> elt instanceof CallStatementElement);
 
     if (callStatement != null) {
       PsiElement identifier = callStatement.getBeginCall().getTemplateReferenceIdentifier();

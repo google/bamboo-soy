@@ -15,6 +15,7 @@
 package com.google.bamboo.soy.insight.annotators;
 
 import com.google.bamboo.soy.elements.TagElement;
+import com.google.bamboo.soy.lexer.SoyTokenTypes;
 import com.google.bamboo.soy.parser.impl.SoyAliasBlockImpl;
 import com.google.bamboo.soy.parser.impl.SoyAtParamSingleImpl;
 import com.google.bamboo.soy.parser.impl.SoyBeginChoiceClauseImpl;
@@ -29,33 +30,21 @@ import com.google.bamboo.soy.parser.impl.SoyBeginTemplateImpl;
 import com.google.bamboo.soy.parser.impl.SoyCssStatementImpl;
 import com.google.bamboo.soy.parser.impl.SoyDelegatePackageBlockImpl;
 import com.google.bamboo.soy.parser.impl.SoyElseTagImpl;
-import com.google.bamboo.soy.parser.impl.SoyEndCallImpl;
-import com.google.bamboo.soy.parser.impl.SoyEndChoiceImpl;
-import com.google.bamboo.soy.parser.impl.SoyEndForTagImpl;
-import com.google.bamboo.soy.parser.impl.SoyEndForeachTagImpl;
-import com.google.bamboo.soy.parser.impl.SoyEndIfTagImpl;
-import com.google.bamboo.soy.parser.impl.SoyEndLetTagImpl;
-import com.google.bamboo.soy.parser.impl.SoyEndMsgTagImpl;
-import com.google.bamboo.soy.parser.impl.SoyEndTemplateImpl;
+import com.google.bamboo.soy.parser.impl.SoyEndTagImpl;
 import com.google.bamboo.soy.parser.impl.SoyFallbackMsgTagImpl;
-import com.google.bamboo.soy.parser.impl.SoyLbStatementImpl;
 import com.google.bamboo.soy.parser.impl.SoyLetSingleStatementImpl;
 import com.google.bamboo.soy.parser.impl.SoyNamespaceBlockImpl;
-import com.google.bamboo.soy.parser.impl.SoyNilStatementImpl;
 import com.google.bamboo.soy.parser.impl.SoyPrintStatementImpl;
-import com.google.bamboo.soy.parser.impl.SoyRbStatementImpl;
-import com.google.bamboo.soy.parser.impl.SoySpStatementImpl;
-import com.google.bamboo.soy.parser.impl.SoyWhitespaceStatementImpl;
+import com.google.bamboo.soy.parser.impl.SoySpecialCharacterStatementImpl;
 import com.google.bamboo.soy.parser.impl.SoyXidStatementImpl;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.tree.IElementType;
-import java.util.Set;
+import com.intellij.psi.tree.TokenSet;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 
 public class ClosingBraceSanityAnnotator implements Annotator {
@@ -77,24 +66,14 @@ public class ClosingBraceSanityAnnotator implements Annotator {
           .add(SoyCssStatementImpl.class)
           .add(SoyDelegatePackageBlockImpl.class)
           .add(SoyElseTagImpl.class)
-          .add(SoyEndCallImpl.class)
-          .add(SoyEndChoiceImpl.class)
-          .add(SoyEndTemplateImpl.class)
-          .add(SoyEndForTagImpl.class)
-          .add(SoyEndForeachTagImpl.class)
-          .add(SoyEndIfTagImpl.class)
-          .add(SoyEndLetTagImpl.class)
-          .add(SoyEndMsgTagImpl.class)
+          .add(SoyEndTagImpl.class)
           .add(SoyFallbackMsgTagImpl.class)
-          .add(SoyLbStatementImpl.class)
+          .add(SoySpecialCharacterStatementImpl.class)
           .add(SoyNamespaceBlockImpl.class)
-          .add(SoyNilStatementImpl.class)
           .add(SoyPrintStatementImpl.class)
-          .add(SoyRbStatementImpl.class)
-          .add(SoySpStatementImpl.class)
-          .add(SoyWhitespaceStatementImpl.class)
           .add(SoyXidStatementImpl.class)
           .build();
+  
   private static ImmutableSet<Class> mustCloseSlashRBraceTags =
       ImmutableSet.of(SoyLetSingleStatementImpl.class);
 
@@ -103,24 +82,23 @@ public class ClosingBraceSanityAnnotator implements Annotator {
     if (psiElement instanceof TagElement) {
       TagElement tagElement = (TagElement) psiElement;
 
-      Set<IElementType> allowedRBraces = TagElement.RIGHT_BRACES;
+      TokenSet allowedRBraces = SoyTokenTypes.RIGHT_BRACES;
       if (mustCloseRBraceTags.contains(tagElement.getClass())) {
-        allowedRBraces = Sets.difference(allowedRBraces, TagElement.SLASH_R_BRACES);
+        allowedRBraces = TokenSet.andNot(allowedRBraces, SoyTokenTypes.SLASH_R_BRACES);
       } else if (mustCloseSlashRBraceTags.contains(tagElement.getClass())) {
-        allowedRBraces = Sets.intersection(allowedRBraces, TagElement.SLASH_R_BRACES);
+        allowedRBraces = TokenSet.andSet(allowedRBraces, SoyTokenTypes.SLASH_R_BRACES);
       }
 
       if (tagElement.isDoubleBraced()) {
-        allowedRBraces = Sets.intersection(allowedRBraces, TagElement.DOUBLE_BRACES);
+        allowedRBraces = TokenSet.andSet(allowedRBraces, SoyTokenTypes.DOUBLE_BRACES);
       } else {
-        allowedRBraces = Sets.difference(allowedRBraces, TagElement.DOUBLE_BRACES);
+        allowedRBraces = TokenSet.andNot(allowedRBraces, SoyTokenTypes.DOUBLE_BRACES);
       }
 
       if (!allowedRBraces.contains(tagElement.getClosingBraceType())) {
         annotationHolder.createErrorAnnotation(tagElement, "Must close by " +
-            allowedRBraces
-                .stream()
-                .map(TagElement.BRACE_TYPE_TO_STRING::get)
+            Stream.of(allowedRBraces.getTypes())
+                .map(SoyTokenTypes.BRACE_TYPE_TO_STRING::get)
                 .sorted()
                 .collect(Collectors.joining(" or ")));
       }

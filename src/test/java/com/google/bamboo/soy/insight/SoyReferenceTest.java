@@ -15,7 +15,7 @@
 package com.google.bamboo.soy.insight;
 
 import com.google.bamboo.soy.SoyCodeInsightFixtureTestCase;
-import com.google.bamboo.soy.elements.CallStatementBase;
+import com.google.bamboo.soy.elements.CallStatementElement;
 import com.google.bamboo.soy.parser.SoyMsgStatement;
 import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyParamListElement;
@@ -73,8 +73,8 @@ public class SoyReferenceTest extends SoyCodeInsightFixtureTestCase {
 
   public void testTemplateReference() throws Throwable {
     myFixture.configureByFiles("ReferenceSource.soy", "CompletionSource.soy");
-    CallStatementBase element =
-        PsiTreeUtil.findChildOfType(myFixture.getFile(), CallStatementBase.class);
+    CallStatementElement element =
+        PsiTreeUtil.findChildOfType(myFixture.getFile(), CallStatementElement.class);
     PsiElement id =
         element.getBeginCall().getTemplateReferenceIdentifier().getReference().resolve();
     assertInstanceOf(id, SoyTemplateDefinitionIdentifier.class);
