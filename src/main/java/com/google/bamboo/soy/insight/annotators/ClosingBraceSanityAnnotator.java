@@ -32,14 +32,10 @@ import com.google.bamboo.soy.parser.impl.SoyDelegatePackageBlockImpl;
 import com.google.bamboo.soy.parser.impl.SoyElseTagImpl;
 import com.google.bamboo.soy.parser.impl.SoyEndTagImpl;
 import com.google.bamboo.soy.parser.impl.SoyFallbackMsgTagImpl;
-import com.google.bamboo.soy.parser.impl.SoyLbStatementImpl;
 import com.google.bamboo.soy.parser.impl.SoyLetSingleStatementImpl;
 import com.google.bamboo.soy.parser.impl.SoyNamespaceBlockImpl;
-import com.google.bamboo.soy.parser.impl.SoyNilStatementImpl;
 import com.google.bamboo.soy.parser.impl.SoyPrintStatementImpl;
-import com.google.bamboo.soy.parser.impl.SoyRbStatementImpl;
-import com.google.bamboo.soy.parser.impl.SoySpStatementImpl;
-import com.google.bamboo.soy.parser.impl.SoyWhitespaceStatementImpl;
+import com.google.bamboo.soy.parser.impl.SoySpecialCharacterStatementImpl;
 import com.google.bamboo.soy.parser.impl.SoyXidStatementImpl;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
@@ -72,15 +68,12 @@ public class ClosingBraceSanityAnnotator implements Annotator {
           .add(SoyElseTagImpl.class)
           .add(SoyEndTagImpl.class)
           .add(SoyFallbackMsgTagImpl.class)
-          .add(SoyLbStatementImpl.class)
+          .add(SoySpecialCharacterStatementImpl.class)
           .add(SoyNamespaceBlockImpl.class)
-          .add(SoyNilStatementImpl.class)
           .add(SoyPrintStatementImpl.class)
-          .add(SoyRbStatementImpl.class)
-          .add(SoySpStatementImpl.class)
-          .add(SoyWhitespaceStatementImpl.class)
           .add(SoyXidStatementImpl.class)
           .build();
+  
   private static ImmutableSet<Class> mustCloseSlashRBraceTags =
       ImmutableSet.of(SoyLetSingleStatementImpl.class);
 

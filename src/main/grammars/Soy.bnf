@@ -14,11 +14,11 @@
   elementTypeClass="com.google.bamboo.soy.parser.SoyElementType"
   tokenTypeClass="com.google.bamboo.soy.lexer.SoyTokenType"
 
-  implements("Begin.*|End.*|.*Tag")="com.google.bamboo.soy.elements.TagElement"
-  implements("AliasBlock|NamespaceBlock|DelegatePackageBlock")="com.google.bamboo.soy.elements.TagElement"
-  implements("(Css|Lb|LetSingle|Nil|Xid|Rb|Sp|Whitespace|Print)Statement")
+  implements("Begin.*|.*Tag|.*Block")="com.google.bamboo.soy.elements.TagElement"
+  implements("(Css|LetSingle|SpecialCharacter|Xid|Print)Statement")
       = ["com.google.bamboo.soy.elements.StatementElement" "com.google.bamboo.soy.elements.TagElement"]
-  implements(".*Statement")="com.google.bamboo.soy.elements.StatementElement"
+  implements(".*Statement")
+      = ["com.google.bamboo.soy.elements.StatementElement" "com.google.bamboo.soy.elements.TagBlockElement"]
 
   extends(".*Expr|VariableReferenceIdentifier")=Expr
   consumeTokenMethod(".*Expr")="consumeTokenFast"
@@ -184,31 +184,26 @@ TemplateDefinitionIdentifier ::= QualifiedIdentifier {
 TemplateReferenceIdentifier ::= QualifiedIdentifier {
   mixin="com.google.bamboo.soy.elements.impl.IdentifierMixin"
   implements="com.google.bamboo.soy.elements.IdentifierElement"
-  methods=[getReference]
 }
 
 VariableReferenceIdentifier ::= VariableIdentifier {
   mixin="com.google.bamboo.soy.elements.impl.IdentifierMixin"
   implements="com.google.bamboo.soy.elements.IdentifierElement"
-  methods=[getReference]
 }
 
 VariableDefinitionIdentifier ::= VariableIdentifier {
   mixin="com.google.bamboo.soy.elements.impl.VariableDefinitionMixin"
   implements="com.google.bamboo.soy.elements.VariableDefinitionElement"
-  methods=[setName getName]
 }
 
 ParamDefinitionIdentifier ::= PlainIdentifier {
   mixin="com.google.bamboo.soy.elements.impl.VariableDefinitionMixin"
   implements="com.google.bamboo.soy.elements.VariableDefinitionElement"
-  methods=[setName getName]
  }
 
 ParamSpecificationIdentifier ::= PlainIdentifier {
   mixin="com.google.bamboo.soy.elements.impl.ParamIdentifierMixin"
   implements="com.google.bamboo.soy.elements.ParamIdentifierElement"
-  methods=[getReference]
 }
 
 NamespaceDeclarationIdentifier ::= QualifiedIdentifier {
@@ -458,19 +453,11 @@ private Statement ::=
 private SingleTagStatement ::=
     CssStatement
   |
-    LbStatement
-  |
     LetSingleStatement
   |
-    NilStatement
+    SpecialCharacterStatement
   |
     XidStatement
-  |
-    RbStatement
-  |
-    SpStatement
-  |
-    WhitespaceStatement
   |
     PrintStatement
 
@@ -494,9 +481,6 @@ IfStatement
     [ElseTag <<StatementList !()>>]
     <<EndTag IF>> {
   pin = 1
-  implements = [
-    "com.google.bamboo.soy.elements.StatementElement"
-    "com.google.bamboo.soy.elements.TagBlockElement"]
 }
 
 BeginIf ::= <<BracedTag BeginIfTagBody>>
@@ -560,9 +544,6 @@ private BeginForeachTagBody ::= FOREACH VariableDefinitionIdentifier IN Expr {
 
 LetCompoundStatement ::= BeginLet <<StatementList !()>> <<EndTag LET>> {
   pin = 1
-  implements = [
-      "com.google.bamboo.soy.elements.StatementElement"
-      "com.google.bamboo.soy.elements.TagBlockElement"]
 }
 
 BeginLet ::= <<BracedTag BeginLetTagBody>>
@@ -728,19 +709,16 @@ private LetSingleTagBody ::= LET VariableDefinitionIdentifier COLON Expr {
   recoverWhile = "recoverEndOfTag"
 }
 
-// Lb, Nil, Rb and Sp
+// Special character statement.
 
-LbStatement ::= <<BracedTag LB>>
-
-NilStatement ::= <<BracedTag NIL>>
-
-RbStatement ::= <<BracedTag RB>>
-
-SpStatement ::= <<BracedTag SP>>
-
-// Whitespace statement
-
-WhitespaceStatement ::= <<BracedTag TAB>>|<<BracedTag NEWLINE_LITERAL>>|<<BracedTag CARRIAGE_RETURN>>
+SpecialCharacterStatement ::=
+    <<BracedTag LB>>
+  | <<BracedTag NIL>>
+  | <<BracedTag RB>>
+  | <<BracedTag SP>>
+  | <<BracedTag TAB>>
+  | <<BracedTag NEWLINE_LITERAL>>
+  | <<BracedTag CARRIAGE_RETURN>>
 
 // Xid statement
 
@@ -752,7 +730,6 @@ private XidStatementTagBody ::= XID XidIdentifier
 // Literal statement
 
 LiteralStatement ::= (LITERAL Content? END_LITERAL) | (LITERAL_DOUBLE Content? END_LITERAL_DOUBLE)
-
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
