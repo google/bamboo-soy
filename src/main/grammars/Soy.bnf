@@ -135,6 +135,8 @@
 
     OTHER = "regexp:."
   ]
+
+  extendedPin = false
 }
 
 
@@ -537,7 +539,6 @@ BeginForeach ::= <<BracedTag BeginForeachTagBody>>
 
 private BeginForeachTagBody ::= FOREACH VariableDefinitionIdentifier IN Expr {
   pin = 1
-  recoverWhile = "recoverEndOfTag"
 }
 
 // Let (compound)
@@ -550,7 +551,6 @@ BeginLet ::= <<BracedTag BeginLetTagBody>>
 
 private BeginLetTagBody ::= LET VariableDefinitionIdentifier [AttributeKeyValuePair] {
   pin = 1
-  recoverWhile = "recoverEndOfTag"
 }
 
 // Msg

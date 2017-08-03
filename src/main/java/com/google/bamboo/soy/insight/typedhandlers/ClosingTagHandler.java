@@ -22,6 +22,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.actionSystem.TypedActionHandler;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -78,7 +79,11 @@ public class ClosingTagHandler implements TypedActionHandler {
     myOriginalHandler.execute(editor, charTyped, dataContext);
     if (isMatchForClosingTag(editor, charTyped)) {
       int offset = editor.getCaretModel().getOffset();
-      PsiElement el = dataContext.getData(LangDataKeys.PSI_FILE).findElementAt(offset - 1);
+      PsiFile file = dataContext.getData(LangDataKeys.PSI_FILE);
+      if (file == null) {
+        return;
+      }
+      PsiElement el = file.findElementAt(offset - 1);
       String closingTag = generateClosingTag(el);
       if (closingTag != null) {
         insertClosingTag(editor, offset, closingTag);
