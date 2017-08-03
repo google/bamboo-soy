@@ -23,6 +23,7 @@ import com.intellij.openapi.editor.actionSystem.TypedActionHandler;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -61,18 +62,7 @@ public class ClosingTagHandler implements TypedActionHandler {
     }
     editor.getDocument().replaceString(startPosition, endPosition, tag);
     editor.getCaretModel().moveToOffset(startPosition + tag.length());
-    if (editor.getProject() != null) {
-      PsiDocumentManager.getInstance(editor.getProject()).commitDocument(document);
-    }
-  }
 
-  private static String generateClosingTag(PsiElement el) {
-    TagBlockElement block = (TagBlockElement) PsiTreeUtil
-        .findFirstParent(el, parent -> parent instanceof TagBlockElement);
-    if (block != null) {
-      return block.getOpeningTag().generateClosingTag();
-    }
-    return null;
   }
 
   public void execute(@NotNull Editor editor, char charTyped, @NotNull DataContext dataContext) {
@@ -84,10 +74,18 @@ public class ClosingTagHandler implements TypedActionHandler {
         return;
       }
       PsiElement el = file.findElementAt(offset - 1);
-      String closingTag = generateClosingTag(el);
-      if (closingTag != null) {
-        insertClosingTag(editor, offset, closingTag);
+      TagBlockElement block = (TagBlockElement) PsiTreeUtil
+          .findFirstParent(el, parent -> parent instanceof TagBlockElement);
+      if (block == null) {
+        return;
       }
+      String closingTag = block.getOpeningTag().generateClosingTag();
+      insertClosingTag(editor, offset, closingTag);
+      if (editor.getProject() != null) {
+        PsiDocumentManager.getInstance(editor.getProject()).commitDocument(editor.getDocument());
+        CodeStyleManager.getInstance(editor.getProject()).reformat(block);
+      }
+
     }
   }
 }
