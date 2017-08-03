@@ -24,6 +24,7 @@ import com.google.bamboo.soy.parser.SoyChoiceClause;
 import com.google.bamboo.soy.parser.SoyStatementList;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.intellij.formatting.Alignment;
+import com.intellij.formatting.Block;
 import com.intellij.formatting.Indent;
 import com.intellij.formatting.templateLanguages.BlockWithParent;
 import com.intellij.formatting.templateLanguages.DataLanguageBlockWrapper;
@@ -199,7 +200,7 @@ public class SoyBlock extends TemplateLanguageBlock {
     }
 
     if (isDirectXMLTagChild()) {
-      return Indent.getContinuationIndent();
+      return null;
     }
 
     if (hasIndentingForeignBlockParent()) {
@@ -256,7 +257,14 @@ public class SoyBlock extends TemplateLanguageBlock {
   }
 
   private boolean isDirectXMLTagChild() {
-    return isSynthetic(getParent()) && isXMLTagBlock(getParent().getParent());
+    BlockWithParent parent = getParent();
+    if (parent == null) {
+      return false;
+    }
+    BlockWithParent grandParent = getParent().getParent();
+    return isSynthetic(parent) && isXMLTagBlock(grandParent)
+        && ((Block) grandParent).getTextRange().getStartOffset() == ((Block) parent).getTextRange()
+        .getStartOffset();
   }
 
   private boolean hasIndentingForeignBlockParent() {
