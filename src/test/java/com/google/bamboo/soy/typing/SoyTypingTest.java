@@ -149,6 +149,10 @@ public class SoyTypingTest extends SoyCodeInsightFixtureTestCase {
           "{template .bar}{" + tag + "}{/" + tag + "}<caret>{/template}");
       doTypingTest(
           '/',
+          "{template .bar}\n{" + tag + "}\n{<caret>\n{/template}",
+          "{template .bar}\n    {" + tag + "}\n    {/" + tag + "}<caret>\n{/template}");
+      doTypingTest(
+          '/',
           "{template .bar}{{" + tag + "}} {<caret>} {/template}",
           "{template .bar}{{" + tag + "}} {{/" + tag + "}}<caret> {/template}");
     }
