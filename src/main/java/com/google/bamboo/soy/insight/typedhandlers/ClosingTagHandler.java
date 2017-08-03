@@ -85,7 +85,6 @@ public class ClosingTagHandler implements TypedActionHandler {
         PsiDocumentManager.getInstance(editor.getProject()).commitDocument(editor.getDocument());
         CodeStyleManager.getInstance(editor.getProject()).reformat(block);
       }
-
     }
   }
 }
