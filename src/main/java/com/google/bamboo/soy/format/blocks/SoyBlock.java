@@ -241,7 +241,7 @@ public class SoyBlock extends TemplateLanguageBlock {
     } else if (myNode.getPsi() instanceof TagElement) {
       return Indent.getContinuationWithoutFirstIndent();
     } else {
-      return null;
+      return Indent.getNoneIndent();
     }
   }
 
