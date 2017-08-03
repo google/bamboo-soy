@@ -189,6 +189,15 @@ public class SoyTypingTest extends SoyCodeInsightFixtureTestCase {
   }
 
   public void testNewlineIndent() throws Throwable {
+    List<String> topLevelTags =
+        Arrays.asList("namespace", "delpackage", "alias");
+    for (String tag : topLevelTags) {
+      doTypingTest(
+          '\n',
+          "{" + tag + "}<caret>\n{template}{/template}",
+          "{" + tag + "}\n<caret>\n{template}{/template}");
+    }
+
     List<String> simpleTags =
         Arrays.asList("if", "for", "foreach", "msg", "plural", "select", "switch", "call");
     for (String tag : simpleTags) {
