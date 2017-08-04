@@ -287,7 +287,7 @@ public class SoyCompletionContributor extends CompletionContributor {
   private void extendWithIdentifierFragmentsForAlias() {
     extend(
         CompletionType.BASIC,
-        psiElement().andOr(psiElement().inside(SoyAliasBlock.class)),
+        psiElement().inside(SoyAliasBlock.class),
         new CompletionProvider<CompletionParameters>() {
           @Override
           protected void addCompletions(

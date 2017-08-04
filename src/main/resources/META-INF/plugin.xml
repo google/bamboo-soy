@@ -209,6 +209,9 @@
       implementationClass="com.google.bamboo.soy.insight.annotators.DeltemplateIdentifierAnnotator"/>
     <annotator
       language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.insight.annotators.IncompleteBlockAnnotator"/>
+    <annotator
+      language="ClosureTemplate"
       implementationClass="com.google.bamboo.soy.insight.annotators.UnexpectedStatementsAnnotator"/>
     <annotator
       language="ClosureTemplate"

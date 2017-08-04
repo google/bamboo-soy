@@ -1,0 +1,11 @@
+{namespace space}
+
+{template .foo}
+  {call .foo}
+    <error descr="{param} is not closed.">{param a: 1}</error>
+
+{/template}
+
+{template .foo}
+    <error descr="{call} is not closed."{call .foo}</error>
+{/template}
