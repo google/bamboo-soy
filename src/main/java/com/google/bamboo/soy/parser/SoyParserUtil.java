@@ -33,6 +33,7 @@ import com.google.common.collect.ImmutableMap;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
 import com.intellij.lang.WhitespacesAndCommentsBinder;
+import com.intellij.lang.WhitespacesAndCommentsBinder.RecursiveBinder;
 import com.intellij.lang.parser.GeneratedParserUtilBase;
 import com.intellij.psi.tree.IElementType;
 import java.util.List;
@@ -47,7 +48,7 @@ public class SoyParserUtil extends GeneratedParserUtilBase {
    * Binds the last leading doc comment either on the same or previous line.
    */
   public static WhitespacesAndCommentsBinder LEADING_COMMENTS_BINDER =
-      new WhitespacesAndCommentsBinder() {
+      new WhitespacesAndCommentsBinder.RecursiveBinder() {
         @Override
         public int getEdgePosition(List<IElementType> tokens, boolean atStreamEdge,
             TokenTextGetter getter) {
@@ -69,7 +70,7 @@ public class SoyParserUtil extends GeneratedParserUtilBase {
    * Binds the trailing doc comments on the same line
    */
   public static WhitespacesAndCommentsBinder TRAILING_COMMENTS_BINDER =
-      new WhitespacesAndCommentsBinder() {
+      new WhitespacesAndCommentsBinder.RecursiveBinder() {
         @Override
         public int getEdgePosition(List<IElementType> tokens, boolean atStreamEdge,
             TokenTextGetter getter) {

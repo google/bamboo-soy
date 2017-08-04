@@ -350,7 +350,6 @@ TemplateBlock ::= LocalTemplateBlock | DelegateTemplateBlock {
   implements="com.google.bamboo.soy.elements.TemplateBlockElement"
   stubClass = "com.google.bamboo.soy.stubs.TemplateBlockStub"
   elementTypeFactory = "com.google.bamboo.soy.stubs.StubFactory.getType"
-  hooks=[leftBinder="LEADING_COMMENTS_BINDER"]
 }
 
 private LocalTemplateBlock ::= <<AbstractTemplateBlock TEMPLATE>>
@@ -365,7 +364,7 @@ private meta AbstractTemplateBlock ::=
 }
 
 meta BeginTemplate ::= <<BracedTag <<BeginTemplateBody<<p>>>>>> {
-  hooks=[leftBinder="LEADING_COMMENTS_BINDER" rightBinder="TRAILING_COMMENTS_BINDER"]
+  hooks = [wsBinders = "LEADING_COMMENTS_BINDER, TRAILING_COMMENTS_BINDER"]
 }
 
 private meta BeginTemplateBody ::= <<p>> (TemplateDefinitionIdentifier [AttributeList] | AttributeList) {
@@ -380,7 +379,7 @@ AtParamSingle ::= <<BracedTag AtParamBody>> {
   mixin = "com.google.bamboo.soy.elements.impl.AtParamMixin"
   stubClass = "com.google.bamboo.soy.stubs.AtParamStub"
   elementTypeFactory = "com.google.bamboo.soy.stubs.StubFactory.getType"
-  hooks=[leftBinder="LEADING_COMMENTS_BINDER" rightBinder="TRAILING_COMMENTS_BINDER"]
+  hooks = [wsBinders = "LEADING_COMMENTS_BINDER, TRAILING_COMMENTS_BINDER"]
 }
 
 DocComment ::= DOC_COMMENT_BLOCK
@@ -393,7 +392,7 @@ private AtParamBody ::= (AT_PARAM | AT_PARAM_OPT) ParamDefinitionIdentifier COLO
 AtInjectSingle ::= <<BracedTag AtInjectBody>> {
   implements = "com.google.bamboo.soy.elements.AtInjectElement"
   mixin = "com.google.bamboo.soy.elements.impl.AtInjectMixin"
-  hooks=[leftBinder="LEADING_COMMENTS_BINDER" rightBinder="TRAILING_COMMENTS_BINDER"]
+  hooks = [wsBinders = "LEADING_COMMENTS_BINDER, TRAILING_COMMENTS_BINDER"]
 }
 
 private AtInjectBody ::= (AT_INJECT | AT_INJECT_OPT) ParamDefinitionIdentifier COLON TypeExpression {
@@ -421,7 +420,7 @@ external endOfStatementBlock ::= parseEndOfStatementBlock
 meta StatementList ::= (Statement | !(<<p>> | endOfStatementBlock) CatchallBraces)* {
   recoverWhile = "!(<<p>> | endOfStatementBlock)"
   implements = "com.google.bamboo.soy.elements.StatementListElement"
-  hooks=[leftBinder="GREEDY_LEFT_BINDER" rightBinder="GREEDY_RIGHT_BINDER"]
+  hooks = [wsBinders = "GREEDY_LEFT_BINDER, GREEDY_RIGHT_BINDER"]
 }
 
 // ! It is very important to have the following structure
@@ -550,11 +549,10 @@ private BeginForeachTagBody ::= FOREACH VariableDefinitionIdentifier IN Expr {
 
 LetCompoundStatement ::= BeginLet <<StatementList !()>> <<EndTag LET>> {
   pin = 1
-  hooks=[leftBinder="LEADING_COMMENTS_BINDER"]
 }
 
 BeginLet ::= <<BracedTag BeginLetTagBody>> {
-  hooks=[leftBinder="LEADING_COMMENTS_BINDER" rightBinder="TRAILING_COMMENTS_BINDER"]
+  hooks=[wsBinders="LEADING_COMMENTS_BINDER, TRAILING_COMMENTS_BINDER"]
 }
 
 private BeginLetTagBody ::= LET VariableDefinitionIdentifier [AttributeKeyValuePair] {
@@ -711,7 +709,7 @@ private CssStatementTagBody ::= CSS CssIdentifier
 // Let statement
 
 LetSingleStatement ::= <<BracedTag LetSingleTagBody>> {
-  hooks=[leftBinder="LEADING_COMMENTS_BINDER" rightBinder="TRAILING_COMMENTS_BINDER"]
+  hooks = [wsBinders = "LEADING_COMMENTS_BINDER, TRAILING_COMMENTS_BINDER"]
 }
 
 private LetSingleTagBody ::= LET VariableDefinitionIdentifier COLON Expr {

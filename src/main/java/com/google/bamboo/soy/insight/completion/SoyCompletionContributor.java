@@ -17,6 +17,7 @@ package com.google.bamboo.soy.insight.completion;
 import static com.intellij.patterns.PlatformPatterns.psiElement;
 
 import com.google.bamboo.soy.elements.CallStatementElement;
+import com.google.bamboo.soy.elements.WhitespaceUtils;
 import com.google.bamboo.soy.lang.ParamUtils;
 import com.google.bamboo.soy.lang.Scope;
 import com.google.bamboo.soy.lang.TemplateNameUtils;
@@ -52,10 +53,10 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.Function;
 import com.intellij.util.ProcessingContext;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
@@ -221,8 +222,8 @@ public class SoyCompletionContributor extends CompletionContributor {
               ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
             if (
-            PsiTreeUtil.getParentOfType(
-                completionParameters.getPosition(), CallStatementElement.class).isDelegate()) {
+                PsiTreeUtil.getParentOfType(
+                    completionParameters.getPosition(), CallStatementElement.class).isDelegate()) {
               return;
             }
 
@@ -338,7 +339,8 @@ public class SoyCompletionContributor extends CompletionContributor {
             PsiElement position = completionParameters.getPosition();
             CallStatementElement callStatement =
                 (CallStatementElement)
-                    PsiTreeUtil.findFirstParent(position, elt -> elt instanceof CallStatementElement);
+                    PsiTreeUtil
+                        .findFirstParent(position, elt -> elt instanceof CallStatementElement);
 
             if (callStatement == null) {
               return;
@@ -407,16 +409,13 @@ public class SoyCompletionContributor extends CompletionContributor {
    * Whether the given element is directly preceded by an element matching the predicate (ignoring
    * whitespaces).
    */
-  private boolean isPrecededBy(PsiElement startElement, Function<PsiElement, Boolean> predicate) {
-    PsiElement prevSibling = startElement.getPrevSibling();
-    while (prevSibling != null) {
-      if (!(prevSibling instanceof PsiWhiteSpace)) {
-        return predicate.fun(prevSibling);
+  private boolean isPrecededBy(PsiElement startElement, Predicate<PsiElement> predicate) {
+    for (PsiElement element = WhitespaceUtils.getPrevMeaningSibling(startElement); element != null;
+        element = WhitespaceUtils.getPrevMeaningSibling(element)) {
+      if (predicate.test(element)) {
+        return true;
       }
-
-      prevSibling = prevSibling.getPrevSibling();
     }
-
     return false;
   }
 }
