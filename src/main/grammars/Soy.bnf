@@ -350,6 +350,7 @@ TemplateBlock ::= LocalTemplateBlock | DelegateTemplateBlock {
   implements="com.google.bamboo.soy.elements.TemplateBlockElement"
   stubClass = "com.google.bamboo.soy.stubs.TemplateBlockStub"
   elementTypeFactory = "com.google.bamboo.soy.stubs.StubFactory.getType"
+  hooks=[leftBinder="LEADING_COMMENTS_BINDER"]
 }
 
 private LocalTemplateBlock ::= <<AbstractTemplateBlock TEMPLATE>>
@@ -549,6 +550,7 @@ private BeginForeachTagBody ::= FOREACH VariableDefinitionIdentifier IN Expr {
 
 LetCompoundStatement ::= BeginLet <<StatementList !()>> <<EndTag LET>> {
   pin = 1
+  hooks=[leftBinder="LEADING_COMMENTS_BINDER"]
 }
 
 BeginLet ::= <<BracedTag BeginLetTagBody>> {
