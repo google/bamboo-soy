@@ -15,15 +15,8 @@
 package com.google.bamboo.soy.insight;
 
 import com.google.bamboo.soy.SoyCodeInsightFixtureTestCase;
-import com.google.bamboo.soy.file.SoyFileType;
 import com.google.bamboo.soy.insight.documentation.SoyDocumentationProvider;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiReference;
-import java.util.List;
-import java.util.Set;
 
 public class SoyDocumentationProviderTest extends SoyCodeInsightFixtureTestCase {
 
