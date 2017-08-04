@@ -363,7 +363,9 @@ private meta AbstractTemplateBlock ::=
   pin = 1
 }
 
-meta BeginTemplate ::= <<BracedTag <<BeginTemplateBody<<p>>>>>>
+meta BeginTemplate ::= <<BracedTag <<BeginTemplateBody<<p>>>>>> {
+  hooks=[leftBinder="LEADING_COMMENTS_BINDER" rightBinder="TRAILING_COMMENTS_BINDER"]
+}
 
 private meta BeginTemplateBody ::= <<p>> (TemplateDefinitionIdentifier [AttributeList] | AttributeList) {
   pin = 1
@@ -377,6 +379,7 @@ AtParamSingle ::= <<BracedTag AtParamBody>> {
   mixin = "com.google.bamboo.soy.elements.impl.AtParamMixin"
   stubClass = "com.google.bamboo.soy.stubs.AtParamStub"
   elementTypeFactory = "com.google.bamboo.soy.stubs.StubFactory.getType"
+  hooks=[leftBinder="LEADING_COMMENTS_BINDER" rightBinder="TRAILING_COMMENTS_BINDER"]
 }
 
 DocComment ::= DOC_COMMENT_BLOCK
@@ -389,6 +392,7 @@ private AtParamBody ::= (AT_PARAM | AT_PARAM_OPT) ParamDefinitionIdentifier COLO
 AtInjectSingle ::= <<BracedTag AtInjectBody>> {
   implements = "com.google.bamboo.soy.elements.AtInjectElement"
   mixin = "com.google.bamboo.soy.elements.impl.AtInjectMixin"
+  hooks=[leftBinder="LEADING_COMMENTS_BINDER" rightBinder="TRAILING_COMMENTS_BINDER"]
 }
 
 private AtInjectBody ::= (AT_INJECT | AT_INJECT_OPT) ParamDefinitionIdentifier COLON TypeExpression {
@@ -547,7 +551,9 @@ LetCompoundStatement ::= BeginLet <<StatementList !()>> <<EndTag LET>> {
   pin = 1
 }
 
-BeginLet ::= <<BracedTag BeginLetTagBody>>
+BeginLet ::= <<BracedTag BeginLetTagBody>> {
+  hooks=[leftBinder="LEADING_COMMENTS_BINDER" rightBinder="TRAILING_COMMENTS_BINDER"]
+}
 
 private BeginLetTagBody ::= LET VariableDefinitionIdentifier [AttributeKeyValuePair] {
   pin = 1
@@ -702,7 +708,9 @@ private CssStatementTagBody ::= CSS CssIdentifier
 
 // Let statement
 
-LetSingleStatement ::= <<BracedTag LetSingleTagBody>>
+LetSingleStatement ::= <<BracedTag LetSingleTagBody>> {
+  hooks=[leftBinder="LEADING_COMMENTS_BINDER" rightBinder="TRAILING_COMMENTS_BINDER"]
+}
 
 private LetSingleTagBody ::= LET VariableDefinitionIdentifier COLON Expr {
   pin = 3

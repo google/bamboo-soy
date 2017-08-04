@@ -15,6 +15,7 @@
 package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.lexer.SoyTokenTypes;
+import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.tree.IElementType;
@@ -26,7 +27,7 @@ public interface TagElement extends PsiElement {
 
   @NotNull
   default PsiElement getTagNameToken() {
-    return PsiTreeUtil.skipSiblingsForward(getFirstChild(), PsiWhiteSpace.class);
+    return WhitespaceUtils.getNextMeaningSibling(getOpeningBrace());
   }
 
   @NotNull
@@ -40,13 +41,18 @@ public interface TagElement extends PsiElement {
   }
 
   @NotNull
+  default PsiElement getOpeningBrace() {
+    return WhitespaceUtils.getFirstMeaningChild(this);
+  }
+
+  @NotNull
   default IElementType getOpeningBraceType() {
-    return getFirstChild().getNode().getElementType();
+    return getOpeningBrace().getNode().getElementType();
   }
 
   @Nullable
   default IElementType getClosingBraceType() {
-    IElementType type = getLastChild().getNode().getElementType();
+    IElementType type = WhitespaceUtils.getLastMeaningChild(this).getNode().getElementType();
     return SoyTokenTypes.RIGHT_BRACES.contains(type) ? type : null;
   }
 

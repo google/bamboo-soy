@@ -23,7 +23,7 @@ public interface TagBlockElement extends PsiElement {
 
   @NotNull
   default TagElement getOpeningTag() {
-    return (TagElement) getFirstChild();
+    return (TagElement) WhitespaceUtils.getFirstMeaningChild(this);
   }
 
   @NotNull
@@ -37,7 +37,7 @@ public interface TagBlockElement extends PsiElement {
   }
 
   default boolean isIncomplete() {
-    PsiElement lastChild = getLastChild();
+    PsiElement lastChild = WhitespaceUtils.getLastMeaningChild(this);
     return !(lastChild instanceof SoyEndTag);
   }
 }

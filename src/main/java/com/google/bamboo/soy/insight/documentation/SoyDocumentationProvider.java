@@ -14,23 +14,14 @@
 
 package com.google.bamboo.soy.insight.documentation;
 
-import com.google.bamboo.soy.parser.SoyAtInjectSingle;
-import com.google.bamboo.soy.parser.SoyAtParamSingle;
-import com.google.bamboo.soy.parser.SoyBeginLet;
-import com.google.bamboo.soy.parser.SoyLetCompoundStatement;
-import com.google.bamboo.soy.parser.SoyLetSingleStatement;
-import com.google.bamboo.soy.parser.SoyTemplateBlock;
+import com.google.bamboo.soy.elements.TagElement;
 import com.google.bamboo.soy.parser.SoyTypes;
-import com.google.common.collect.ImmutableList;
 import com.intellij.lang.documentation.AbstractDocumentationProvider;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.util.Condition;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jetbrains.annotations.Contract;
@@ -85,81 +76,21 @@ public class SoyDocumentationProvider extends AbstractDocumentationProvider {
     return preview;
   }
 
-  @Contract("null, _ -> null")
-  private static PsiElement firstParent(PsiElement element, Class... classes) {
-    return PsiTreeUtil.findFirstParent(
-        element, new PsiElementInstanceofSelector(ImmutableList.copyOf(classes)));
-  }
-
   @Contract("null -> false")
   private static boolean isDocComment(PsiElement element) {
     return element instanceof PsiComment
         && ((PsiComment) element).getTokenType().equals(SoyTypes.DOC_COMMENT_BLOCK);
   }
 
-  @NotNull
-  private static Optional<PsiElement> lookupCommentRecursivelyAfter(PsiElement element) {
-    while (element != null) {
-      PsiElement maybeComment = PsiTreeUtil.skipSiblingsForward(element, PsiWhiteSpace.class);
-      if (maybeComment == null) {
-        element = element.getParent();
-      } else if (isDocComment(maybeComment)) {
-        return Optional.of(maybeComment);
-      } else {
-        break;
-      }
-    }
-    return Optional.empty();
-  }
-
-  @NotNull
-  private static Optional<PsiElement> lookupCommentRecursivelyBefore(PsiElement element) {
-    while (element != null) {
-      PsiElement maybeComment = PsiTreeUtil.skipSiblingsBackward(element, PsiWhiteSpace.class);
-      if (maybeComment == null) {
-        element = element.getParent();
-      } else if (isDocComment(maybeComment)) {
-        return Optional.of(maybeComment);
-      } else {
-        break;
-      }
-    }
-    return Optional.empty();
-  }
-
   @Nullable
-  private static String getOptionalDocCommentBefore(PsiElement element) {
-    Optional<PsiElement> optComment =
-        lookupCommentRecursivelyBefore(
-            firstParent(
-                element,
-                SoyTemplateBlock.class,
-                SoyAtParamSingle.class,
-                SoyAtInjectSingle.class,
-                SoyLetSingleStatement.class,
-                SoyBeginLet.class));
-    return optComment.map(PsiElement::getText).orElse(null);
-  }
-
-  @Nullable
-  private static String getOptionalDocCommentAfter(PsiElement element) {
-    Optional<PsiElement> optComment =
-        lookupCommentRecursivelyAfter(
-            firstParent(
-                element,
-                SoyAtParamSingle.class,
-                SoyAtInjectSingle.class,
-                SoyLetCompoundStatement.class));
-    return optComment.map(PsiElement::getText).orElse(null);
-  }
-
-  @Nullable
-  private static String getDocNearElement(PsiElement element) {
-    String optComment = getOptionalDocCommentBefore(element);
-    if (optComment == null) {
-      optComment = getOptionalDocCommentAfter(element);
-    }
-    return optComment;
+  private static String getDocCommentForEnclosingTag(PsiElement element) {
+    PsiElement parentTag = PsiTreeUtil.findFirstParent(element, TagElement.class::isInstance);
+    return PsiTreeUtil.getChildrenOfTypeAsList(parentTag, PsiComment.class)
+        .stream()
+        .filter(SoyDocumentationProvider::isDocComment)
+        .findFirst()
+        .map(PsiElement::getText)
+        .orElse(null);
   }
 
   @Nullable
@@ -175,29 +106,11 @@ public class SoyDocumentationProvider extends AbstractDocumentationProvider {
     navigateInfo.append(path);
     navigateInfo.append(":");
     navigateInfo.append(lineNum);
-    String optDoc = getDocNearElement(element);
+    String optDoc = getDocCommentForEnclosingTag(element);
     if (optDoc != null) {
       navigateInfo.append("\n");
       navigateInfo.append(produceCommentPreview(optDoc));
     }
     return navigateInfo.toString();
-  }
-
-  private static class PsiElementInstanceofSelector implements Condition<PsiElement> {
-    private final ImmutableList<Class> acceptedClasses;
-
-    PsiElementInstanceofSelector(@NotNull ImmutableList<Class> acceptedParentClasses) {
-      this.acceptedClasses = acceptedParentClasses;
-    }
-
-    @Override
-    public boolean value(PsiElement element) {
-      for (Class c : acceptedClasses) {
-        if (c.isInstance(element)) {
-          return true;
-        }
-      }
-      return false;
-    }
   }
 }

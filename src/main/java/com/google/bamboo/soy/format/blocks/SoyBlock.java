@@ -18,6 +18,7 @@ import com.google.bamboo.soy.elements.ParamElement;
 import com.google.bamboo.soy.elements.StatementElement;
 import com.google.bamboo.soy.elements.TagBlockElement;
 import com.google.bamboo.soy.elements.TagElement;
+import com.google.bamboo.soy.elements.WhitespaceUtils;
 import com.google.bamboo.soy.parser.SoyAtInjectSingle;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.SoyChoiceClause;
@@ -299,6 +300,7 @@ public class SoyBlock extends TemplateLanguageBlock {
   }
 
   private boolean isDirectTagChild() {
-    return myNode.getPsi().getParent() instanceof TagElement;
+    return myNode.getPsi().getParent() instanceof TagElement
+        && WhitespaceUtils.getPrevMeaningSibling(myNode.getPsi()) != null;
   }
 }
