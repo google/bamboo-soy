@@ -220,6 +220,12 @@ public class SoyCompletionContributor extends CompletionContributor {
               @NotNull CompletionParameters completionParameters,
               ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
+            if (
+            PsiTreeUtil.getParentOfType(
+                completionParameters.getPosition(), CallStatementElement.class).isDelegate()) {
+              return;
+            }
+
             completionResultSet.addAllElements(
                 TemplateNameUtils.findLocalTemplateNames(completionParameters.getPosition())
                     .stream()

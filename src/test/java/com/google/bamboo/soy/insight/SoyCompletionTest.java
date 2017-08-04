@@ -14,15 +14,16 @@
 
 package com.google.bamboo.soy.insight;
 
+import com.google.bamboo.soy.SoyCodeInsightFixtureTestCase;
 import com.google.bamboo.soy.file.SoyFileType;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.bamboo.soy.SoyCodeInsightFixtureTestCase;
 import com.intellij.codeInsight.completion.CompletionType;
 import java.util.List;
 import java.util.Set;
 
 public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
+
   @Override
   protected String getBasePath() {
     return "/insight";
@@ -52,6 +53,17 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
   public void testTemplateLookup() throws Throwable {
     doTest("{template}{call o<caret>", "{template}{call outer");
     doTest("{template}{call outer.<caret>", ImmutableSet.of("outer.space", "outer.spaceship"));
+    doTest(
+        "{template}{call outer.space.m<caret>",
+        ImmutableSet.of("outer.space.mars", "outer.space.moon"));
+    doTest("{template}{delcall d<caret>", "{template}{delcall delegate");
+  }
+
+  public void testLocalTemplateLookup() throws Throwable {
+    doTest("{template .local}{/template}{template}{call .<caret>",
+        "{template .local}{/template}{template}{call .local");
+    doTest("{deltemplate local.template}{/deltemplate}{template}{delcall l<caret>",
+        ImmutableSet.of());
     doTest(
         "{template}{call outer.space.m<caret>",
         ImmutableSet.of("outer.space.mars", "outer.space.moon"));
