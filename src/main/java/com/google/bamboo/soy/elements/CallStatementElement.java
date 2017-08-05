@@ -15,6 +15,7 @@
 package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.parser.SoyBeginCall;
+import com.google.bamboo.soy.parser.SoyEndTag;
 import com.google.bamboo.soy.parser.SoyParamListElement;
 import com.google.bamboo.soy.parser.SoyTypes;
 import java.util.List;
@@ -42,9 +43,9 @@ public interface CallStatementElement extends TagBlockElement, StatementElement 
       return null;
     }
   }
-/*
+
   @Override
   default boolean isIncomplete() {
-    return !getBeginParamTag().isSelfClosed() && !(getLastChild() instanceof SoyEndParamTag);
-  }*/
+    return !getBeginCall().isSelfClosed() && !(getLastChild() instanceof SoyEndTag);
+  }
 }

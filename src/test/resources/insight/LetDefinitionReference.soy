@@ -1,7 +1,8 @@
 {namespace at.param.reference.test.file}
 
 {template .moon}
-  {let $planet : 'Earth' /}
+  /** Leading doc */
+  {let $planet : 'Earth' /} /** Same-line doc */
 
   Planet: {$pla<caret>net}
 {/template}

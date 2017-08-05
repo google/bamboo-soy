@@ -1,8 +1,9 @@
 {namespace at.param.reference.test.file}
 
 {template .moon}
-  /** Leading doc */
-  {@inject planet : string} /** Same-line doc */
+  {let $planet} /** Same-line doc */
+    Earth
+  {/let}
 
   Planet: {$pla<caret>net}
 {/template}

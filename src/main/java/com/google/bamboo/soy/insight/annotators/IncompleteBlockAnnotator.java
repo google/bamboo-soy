@@ -12,32 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.bamboo.soy.elements;
+package com.google.bamboo.soy.insight.annotators;
 
-import com.google.bamboo.soy.parser.SoyEndTag;
+import com.google.bamboo.soy.elements.TagBlockElement;
+import com.intellij.lang.annotation.AnnotationHolder;
+import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 
-public interface TagBlockElement extends PsiElement {
+public class IncompleteBlockAnnotator implements Annotator {
 
-  @NotNull
-  default TagElement getOpeningTag() {
-    return (TagElement) WhitespaceUtils.getFirstMeaningChild(this);
-  }
-
-  @NotNull
-  default IElementType getTagNameTokenType() {
-    return getOpeningTag().getTagNameTokenType();
-  }
-
-  @NotNull
-  default String getTagName() {
-    return getOpeningTag().getTagName();
-  }
-
-  default boolean isIncomplete() {
-    PsiElement lastChild = WhitespaceUtils.getLastMeaningChild(this);
-    return !(lastChild instanceof SoyEndTag);
+  @Override
+  public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
+    if (psiElement instanceof TagBlockElement) {
+      TagBlockElement block = (TagBlockElement) psiElement;
+      if (block.isIncomplete()) {
+        annotationHolder.createErrorAnnotation(block.getOpeningTag(),
+            "{" + block.getTagName() + "} is not closed.");
+      }
+    }
   }
 }
