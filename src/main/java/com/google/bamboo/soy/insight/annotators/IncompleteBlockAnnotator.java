@@ -14,6 +14,7 @@
 
 package com.google.bamboo.soy.insight.annotators;
 
+import com.google.bamboo.soy.elements.ChoiceClauseElement;
 import com.google.bamboo.soy.elements.TagBlockElement;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
@@ -26,7 +27,7 @@ public class IncompleteBlockAnnotator implements Annotator {
   public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
     if (psiElement instanceof TagBlockElement) {
       TagBlockElement block = (TagBlockElement) psiElement;
-      if (block.isIncomplete()) {
+      if (block.isIncomplete() && !(block instanceof ChoiceClauseElement)) {
         annotationHolder.createErrorAnnotation(block.getOpeningTag(),
             "{" + block.getTagName() + "} is not closed.");
       }
