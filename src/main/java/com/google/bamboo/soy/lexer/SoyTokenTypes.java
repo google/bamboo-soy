@@ -93,7 +93,7 @@ public class SoyTokenTypes {
           SoyTypes.JS,
           SoyTypes.LIST,
           SoyTypes.MAP,
-          SoyTypes.NULL,
+          SoyTypes.NULL_LITERAL,
           SoyTypes.NUMBER,
           SoyTypes.STRING,
           SoyTypes.URI);

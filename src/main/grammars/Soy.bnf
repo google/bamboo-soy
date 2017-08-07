@@ -33,6 +33,7 @@
     AT_INJECT = "@inject"
     AT_INJECT_OPT = "@inject?"
     BOOL_LITERAL = "regexp:false|true"
+    NULL_LITERAL = "null"
     CALL = "call"
     CARRIAGE_RETURN = "\\r"
     CASE = "case"
@@ -236,7 +237,7 @@ FunctionIdentifier ::= PlainIdentifier
 
 // Literals
 
-ValueLiteral ::= NumberLiteral | AnyStringLiteral | BOOL_LITERAL
+private ValueLiteral ::= NumberLiteral | AnyStringLiteral | ProtobufEnum | BOOL_LITERAL | NULL_LITERAL
 
 private NumberLiteral ::= INTEGER_LITERAL | FLOAT_LITERAL | DOT FLOAT_LITERAL
 
@@ -252,7 +253,7 @@ TypeExpression ::= UnionType | CompoundType | PrimitiveType
 
 PrimitiveType
   ::=
-    ANY | STRING | BOOL | INT | FLOAT | NUMBER | HTML | NULL | QUESTIONMARK |
+    ANY | STRING | BOOL | INT | FLOAT | NUMBER | HTML | NULL_LITERAL | QUESTIONMARK |
     URI | JS | ATTRIBUTES | TypeIdentifier
 
 CompoundType ::= ListType | MapType | RecordType
@@ -762,7 +763,7 @@ Directive
   ::=
     FunctionIdentifier
   |
-    FunctionIdentifier COLON ValueLiteral (COMMA ValueLiteral)*
+    FunctionIdentifier COLON LiteralExpr (COMMA LiteralExpr)*
 
 CommaSeparatedExpressionList ::= Expr (COMMA Expr)* COMMA?
 
@@ -795,7 +796,7 @@ private AtomExpr ::= VariableReferenceIdentifier
   | LiteralExpr
 
 
-LiteralExpr ::= NumberLiteral | AnyStringLiteral |  ProtobufEnum | BOOL_LITERAL
+LiteralExpr ::= ValueLiteral
 ProtobufEnum ::= PlainIdentifier (DOT PlainIdentifier)+
 
 NullCheckTernaryExpr ::= Expr QUESTIONMARK Expr COLON Expr

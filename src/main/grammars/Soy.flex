@@ -49,7 +49,7 @@ DecimalIntegerLiteral={DecimalDigits}
 SignedDecimalIntegerLiteral=("+"|"-")?{DecimalIntegerLiteral}
 HexNumeral=0x{HexDigit}+
 
-IntegerLiteral={HexNumeral}|{DecimalIntegerLiteral}
+IntegerLiteral={HexNumeral}|{SignedDecimalIntegerLiteral}
 
 ExponentPart="e"{SignedDecimalIntegerLiteral}
 
@@ -106,6 +106,8 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
 
   true { return SoyTypes.BOOL_LITERAL; }
   false { return SoyTypes.BOOL_LITERAL; }
+
+  null { return SoyTypes.NULL_LITERAL; }
 
   /* Tag names */
   "case" { return SoyTypes.CASE; }
