@@ -17,6 +17,7 @@ package com.google.bamboo.soy.format;
 import com.google.bamboo.soy.SoyLanguage;
 import com.intellij.application.options.IndentOptionsEditor;
 import com.intellij.application.options.SmartIndentOptionsEditor;
+import com.intellij.application.options.XmlLanguageCodeStyleSettingsProvider;
 import com.intellij.lang.Language;
 import com.intellij.lang.html.HTMLLanguage;
 import com.intellij.openapi.util.io.StreamUtil;
@@ -46,8 +47,7 @@ public class SoyLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSetti
 
   @Override
   public CommonCodeStyleSettings getDefaultCommonSettings() {
-    return CodeStyleSettingsManager.getInstance().getCurrentSettings()
-        .getCommonSettings(HTMLLanguage.INSTANCE);
+    return XmlLanguageCodeStyleSettingsProvider.getDefaultCommonSettings(HTMLLanguage.INSTANCE);
   }
 
   @Override

@@ -85,7 +85,8 @@ public class SoyTokenTypes {
       .create(SoyTypes.ANY,
           SoyTypes.ATTRIBUTES,
           SoyTypes.BOOL,
-          SoyTypes.CSS,
+          // To remove ambiguity CSS is only marked as keyword.
+          // SoyTypes.CSS,
           SoyTypes.FLOAT,
           SoyTypes.HTML,
           SoyTypes.INT,
