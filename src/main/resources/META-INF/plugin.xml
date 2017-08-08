@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.google.bamboo.id</id>
   <name>Bamboo Soy</name>
-  <version>1.2</version>
+  <version>1.2.1</version>
   <vendor>Google</vendor>
 
   <description><![CDATA[
