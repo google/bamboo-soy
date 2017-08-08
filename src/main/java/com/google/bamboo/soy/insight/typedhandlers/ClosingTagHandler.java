@@ -15,6 +15,7 @@
 package com.google.bamboo.soy.insight.typedhandlers;
 
 import com.google.bamboo.soy.elements.TagBlockElement;
+import com.google.bamboo.soy.parser.SoyChoiceClause;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.editor.Document;
@@ -75,7 +76,8 @@ public class ClosingTagHandler implements TypedActionHandler {
       }
       PsiElement el = file.findElementAt(offset - 1);
       TagBlockElement block = (TagBlockElement) PsiTreeUtil
-          .findFirstParent(el, parent -> parent instanceof TagBlockElement);
+          .findFirstParent(el,
+              parent -> parent instanceof TagBlockElement && !(parent instanceof SoyChoiceClause));
       if (block == null) {
         return;
       }
