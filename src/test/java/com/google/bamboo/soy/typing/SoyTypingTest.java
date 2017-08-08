@@ -157,6 +157,19 @@ public class SoyTypingTest extends SoyCodeInsightFixtureTestCase {
           "{template .bar}{{" + tag + "}} {{/" + tag + "}}<caret> {/template}");
     }
 
+    List<String> choiceTags =
+        Arrays.asList("plural", "select", "switch");
+    for (String tag : choiceTags) {
+      doTypingTest(
+          '/',
+          "{template .bar}{" + tag + "}{case}{<caret>{/template}",
+          "{template .bar}{" + tag + "}{case}{/" + tag + "}{/template}");
+      doTypingTest(
+          '/',
+          "{template .bar}{" + tag + "}{default}{<caret>{/template}",
+          "{template .bar}{" + tag + "}{default}{/" + tag + "}{/template}");
+    }
+
     // closing compound let
     doTypingTest(
         '/', "{template .bar}{let $var}{<caret>", "{template .bar}{let $var}{/let}<caret>");
