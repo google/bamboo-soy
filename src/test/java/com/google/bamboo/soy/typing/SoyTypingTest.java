@@ -14,8 +14,8 @@
 
 package com.google.bamboo.soy.typing;
 
-import com.google.bamboo.soy.file.SoyFileType;
 import com.google.bamboo.soy.SoyCodeInsightFixtureTestCase;
+import com.google.bamboo.soy.file.SoyFileType;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import java.util.Arrays;
 import java.util.List;
@@ -145,16 +145,12 @@ public class SoyTypingTest extends SoyCodeInsightFixtureTestCase {
     for (String tag : simpleTags) {
       doTypingTest(
           '/',
-          "{template .bar}{" + tag + "}{<caret>{/template}",
-          "{template .bar}{" + tag + "}{/" + tag + "}<caret>{/template}");
+          "{template .bar}{" + tag + "}{<caret>\n{/template}",
+          "{template .bar}\n    {" + tag + "}{/" + tag + "}\n{/template}");
       doTypingTest(
           '/',
-          "{template .bar}\n{" + tag + "}\n{<caret>\n{/template}",
-          "{template .bar}\n    {" + tag + "}\n    {/" + tag + "}<caret>\n{/template}");
-      doTypingTest(
-          '/',
-          "{template .bar}{{" + tag + "}} {<caret>} {/template}",
-          "{template .bar}{{" + tag + "}} {{/" + tag + "}}<caret> {/template}");
+          "{template .bar}{{" + tag + "}} {<caret>}\n{/template}",
+          "{template .bar}\n    {{" + tag + "}} {{/" + tag + "}}\n{/template}");
     }
 
     List<String> choiceTags =
@@ -162,46 +158,46 @@ public class SoyTypingTest extends SoyCodeInsightFixtureTestCase {
     for (String tag : choiceTags) {
       doTypingTest(
           '/',
-          "{template .bar}{" + tag + "}{case}{<caret>{/template}",
-          "{template .bar}{" + tag + "}{case}{/" + tag + "}{/template}");
+          "{template .bar}{" + tag + "}{case}{<caret>\n{/template}",
+          "{template .bar}\n    {" + tag + "}\n        {case}\n    {/" + tag + "}\n{/template}");
       doTypingTest(
           '/',
-          "{template .bar}{" + tag + "}{default}{<caret>{/template}",
-          "{template .bar}{" + tag + "}{default}{/" + tag + "}{/template}");
+          "{template .bar}{" + tag + "}{default}{<caret>\n{/template}",
+          "{template .bar}\n    {" + tag + "}\n        {default}\n    {/" + tag + "}\n{/template}");
     }
 
     // closing compound let
     doTypingTest(
-        '/', "{template .bar}{let $var}{<caret>", "{template .bar}{let $var}{/let}<caret>");
+        '/', "{template .bar}{let $var}{<caret>", "{template .bar}\n    {let $var}{/let}");
 
     // ignoring single let
     doTypingTest(
         '/',
-        "{template .bar}{let $var : 1}{<caret>",
-        "{template .bar}{let $var : 1}{/template}<caret>");
+        "{template .bar}{let $var: 1}{<caret>",
+        "{template .bar}\n    {let $var: 1}\n{/template}");
 
     List<String> callTags = Arrays.asList("call", "delcall");
     for (String tag : callTags) {
       // Inlined {call} should be ignored.
       doTypingTest(
           '/',
-          "{template .bar}{" + tag + "/} test {<caret>",
-          "{template .bar}{" + tag + "/} test {/template}<caret>");
+          "{template .bar}{" + tag + " /} test {<caret>",
+          "{template .bar}\n    {" + tag + " /} test\n{/template}");
       // Non-inlined {call} should be closed.
       doTypingTest(
           '/',
-          "{template .bar}{ " + tag + "} {param} test {/param} {<caret>",
-          "{template .bar}{ " + tag + "} {param} test {/param} {/" + tag + "}<caret>");
+          "{template .bar}{" + tag + "} {param} test {/param} {<caret>",
+          "{template .bar}\n    {" + tag + "}\n        {param} test {/param}\n    {/" + tag + "}");
       // {param/} should be ignored.
       doTypingTest(
           '/',
-          "{template .bar}{" + tag + "} {param/} {<caret>",
-          "{template .bar}{" + tag + "} {param/} {/" + tag + "}<caret>");
+          "{template .bar}{" + tag + "} {param /} {<caret>",
+          "{template .bar}\n    {" + tag + "}\n        {param /}\n    {/" + tag + "}");
       // {param} should be closed.
       doTypingTest(
           '/',
-          "{template .bar}{" + tag + "} {param} test {<caret>",
-          "{template .bar}{" + tag + "} {param} test {/param}<caret>");
+          "{template .bar}\n    {" + tag + "} {param} test {<caret>",
+          "{template .bar}\n    {" + tag + "}\n        {param} test {/param}");
     }
   }
 
@@ -233,7 +229,8 @@ public class SoyTypingTest extends SoyCodeInsightFixtureTestCase {
       doTypingTest(
           '\n',
           "{template .bar}\n    {" + tag + "}\n        {default}<caret>\n{/template}",
-          "{template .bar}\n    {" + tag + "}\n        {default}\n            <caret>\n{/template}");
+          "{template .bar}\n    {" + tag
+              + "}\n        {default}\n            <caret>\n{/template}");
     }
 
     List<String> callTags = Arrays.asList("call", "delcall");

@@ -373,7 +373,7 @@ private meta BeginTemplateBody ::= <<p>> (TemplateDefinitionIdentifier [Attribut
   recoverWhile = "recoverEndOfTag"
 }
 
-private AtParamList ::= (AtParamSingle [DocComment]| AtInjectSingle [DocComment])+
+private AtParamList ::= (AtParamSingle | AtInjectSingle)+
 
 AtParamSingle ::= <<BracedTag AtParamBody>> {
   implements = "com.google.bamboo.soy.elements.AtParamElement"
@@ -382,8 +382,6 @@ AtParamSingle ::= <<BracedTag AtParamBody>> {
   elementTypeFactory = "com.google.bamboo.soy.stubs.StubFactory.getType"
   hooks = [wsBinders = "LEADING_COMMENTS_BINDER, TRAILING_COMMENTS_BINDER"]
 }
-
-DocComment ::= DOC_COMMENT_BLOCK
 
 private AtParamBody ::= (AT_PARAM | AT_PARAM_OPT) ParamDefinitionIdentifier COLON TypeExpression {
   pin = 1
