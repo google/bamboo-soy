@@ -14,11 +14,13 @@
 
 package com.google.bamboo.soy.format.blocks;
 
+import com.google.bamboo.soy.SoyLanguage;
 import com.google.bamboo.soy.elements.ParamElement;
 import com.google.bamboo.soy.elements.StatementElement;
 import com.google.bamboo.soy.elements.TagBlockElement;
 import com.google.bamboo.soy.elements.TagElement;
 import com.google.bamboo.soy.elements.WhitespaceUtils;
+import com.google.bamboo.soy.format.SoySpacing;
 import com.google.bamboo.soy.parser.SoyAtInjectSingle;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.SoyChoiceClause;
@@ -27,15 +29,14 @@ import com.google.bamboo.soy.parser.SoyTypes;
 import com.intellij.formatting.Alignment;
 import com.intellij.formatting.Block;
 import com.intellij.formatting.Indent;
+import com.intellij.formatting.Spacing;
 import com.intellij.formatting.templateLanguages.BlockWithParent;
 import com.intellij.formatting.templateLanguages.DataLanguageBlockWrapper;
 import com.intellij.formatting.templateLanguages.TemplateLanguageBlock;
 import com.intellij.formatting.templateLanguages.TemplateLanguageBlockFactory;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.formatter.xml.HtmlPolicy;
 import com.intellij.psi.formatter.xml.SyntheticBlock;
@@ -232,6 +233,13 @@ public class SoyBlock extends TemplateLanguageBlock {
     } else {
       return Indent.getNoneIndent();
     }
+  }
+
+  @Override
+  public Spacing getSpacing(Block child1, Block child2) {
+    Spacing spacing = super.getSpacing(child1, child2);
+    return spacing != null ? spacing : SoySpacing.getSpacing(getSettings().getCommonSettings(
+        SoyLanguage.INSTANCE), this, child1, child2);
   }
 
   @Override

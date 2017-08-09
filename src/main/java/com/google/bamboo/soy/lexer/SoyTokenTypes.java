@@ -104,6 +104,30 @@ public class SoyTokenTypes {
   public static final TokenSet STRING_LITERALS = TokenSet
       .create(SoyTypes.STRING_LITERAL, SoyTypes.MULTI_LINE_STRING_LITERAL);
 
+  public static final TokenSet BINARY_OPERATORS = TokenSet.create(
+      SoyTypes.QUESTIONMARK,
+      SoyTypes.COLON,
+      SoyTypes.TERNARY_COALESCER,
+      SoyTypes.OR,
+      SoyTypes.AND,
+      SoyTypes.PIPE_PIPE,
+      SoyTypes.AMP_AMP,
+      SoyTypes.EQUAL_EQUAL,
+      SoyTypes.NOT_EQUAL,
+      SoyTypes.GREATER,
+      SoyTypes.GREATER_EQUAL,
+      SoyTypes.LESS,
+      SoyTypes.LESS_EQUAL,
+      SoyTypes.PLUS,
+      SoyTypes.MINUS,
+      SoyTypes.SLASH,
+      SoyTypes.PERCENT);
+
+  public static final TokenSet UNARY_OPERATORS = TokenSet.create(
+      SoyTypes.PLUS,
+      SoyTypes.MINUS,
+      SoyTypes.EXCLAMATION);
+
   public static ImmutableMap<IElementType, String> BRACE_TYPE_TO_STRING = ImmutableMap.<IElementType, String>builder()
       .put(SoyTypes.LBRACE, "{")
       .put(SoyTypes.LBRACE_LBRACE, "{{")
@@ -124,6 +148,9 @@ public class SoyTokenTypes {
 
   public static TokenSet SLASH_R_BRACES =
       TokenSet.create(SoyTypes.SLASH_RBRACE, SoyTypes.SLASH_RBRACE_RBRACE);
+
+  public static TokenSet LEFT_BRACES = TokenSet.create(
+      SoyTypes.LBRACE, SoyTypes.LBRACE_LBRACE, SoyTypes.LBRACE_SLASH, SoyTypes.LBRACE_LBRACE_SLASH);
 
   public static TokenSet RIGHT_BRACES =
       TokenSet.create(SoyTypes.RBRACE, SoyTypes.RBRACE_RBRACE, SoyTypes.SLASH_RBRACE,
