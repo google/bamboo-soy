@@ -60,7 +60,7 @@ public class SoySpacing {
         .aroundInside(SoyTypes.LESS, TokenSet.create(SoyTypes.MAP_TYPE, SoyTypes.LIST_TYPE)).spaces(0)
         .beforeInside(SoyTypes.GREATER, TokenSet.create(SoyTypes.MAP_TYPE, SoyTypes.LIST_TYPE)).spaces(0)
         .around(SoyTypes.PIPE).spaces(0)
-        .after(SoyTokenTypes.UNARY_OPERATORS).spaces(0)
+        .afterInside(SoyTokenTypes.UNARY_OPERATORS, SoyTypes.UNARY_EXPR).spaces(0)
         .around(SoyTokenTypes.BINARY_OPERATORS).spaces(1)
         .around(TokenSet.create(SoyTypes.DOT, SoyTypes.DOT_NULL_CHECK)).spaces(0)
         .around(

@@ -51,4 +51,8 @@ public class SoyFormatterTest extends SoyCodeInsightFixtureTestCase {
   public void testNestedBlocks() throws Throwable {
     doTest();
   }
+
+  public void testSpacing() throws Throwable {
+    doTest();
+  }
 }

@@ -120,6 +120,7 @@ public class SoyTokenTypes {
       SoyTypes.LESS_EQUAL,
       SoyTypes.PLUS,
       SoyTypes.MINUS,
+      SoyTypes.STAR,
       SoyTypes.SLASH,
       SoyTypes.PERCENT);
 
