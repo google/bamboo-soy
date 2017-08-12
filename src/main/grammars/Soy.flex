@@ -241,7 +241,7 @@ NonSemantical=({WhiteSpace}|{DoubleSlashComment}|{DocComment}|{Comment})*
   {IdentifierWord} { yybegin(TAG); return SoyTypes.IDENTIFIER_WORD; }
 }
 
-// Only IdentifierWord expected (ensured by look-ahead).
+// Only CssXidIdentifier expected (ensured by look-ahead).
 <TAG_CSS_XID> {
   {CssXidIdentifier} { yybegin(TAG); return SoyTypes.CSS_XID_IDENTIFIER; }
 }
