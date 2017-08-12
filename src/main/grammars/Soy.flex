@@ -49,7 +49,7 @@ DecimalIntegerLiteral={DecimalDigits}
 SignedDecimalIntegerLiteral=("+"|"-")?{DecimalIntegerLiteral}
 HexNumeral=0x{HexDigit}+
 
-IntegerLiteral={HexNumeral}|{SignedDecimalIntegerLiteral}
+IntegerLiteral={HexNumeral}|{DecimalIntegerLiteral}
 
 ExponentPart="e"{SignedDecimalIntegerLiteral}
 
