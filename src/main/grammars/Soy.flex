@@ -62,22 +62,17 @@ SingleQuotedStringLiteral='([^\r\n'\\]|\\.)*'
 MultiLineDoubleQuotedStringLiteral=\"([^\"\\]|\\([^]))*\"
 MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
 
+NonSemantical=({WhiteSpace}|{DoubleSlashComment}|{DocComment}|{Comment})*
+
 /* Lexer states */
 %state TAG
 %state LITERAL
-%state TAG_NO_KEYWORD
+%state TAG_IDENTIFIER_WORD
 %state TAG_QUALIFIED_IDENTIFIER
 
 %%
 
-<YYINITIAL,TAG,TAG_QUALIFIED_IDENTIFIER,LITERAL> {
-  {WhiteSpace}  { return TokenType.WHITE_SPACE; }
-}
-
-<TAG_NO_KEYWORD> {
-  {WhiteSpace}  { yybegin(TAG); return TokenType.WHITE_SPACE; }
-}
-
+{WhiteSpace}  { return TokenType.WHITE_SPACE; }
 
 /* Comments */
 ^{DoubleSlashComment} { return SoyTypes.COMMENT_BLOCK; }
@@ -93,31 +88,35 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
 
 
 // Anywhere inside a tag.
-<TAG,TAG_NO_KEYWORD,TAG_QUALIFIED_IDENTIFIER> {
+<TAG> {
   /* Tag closing */
   "/}" { yybegin(YYINITIAL); return SoyTypes.SLASH_RBRACE; }
   "}" { yybegin(YYINITIAL); return SoyTypes.RBRACE; }
   "}}" { yybegin(YYINITIAL); return SoyTypes.RBRACE_RBRACE; }
   "/}}" { yybegin(YYINITIAL); return SoyTypes.SLASH_RBRACE_RBRACE; }
-}
 
-// Inside a tag, not after "." or "$". Keywords can only be here.
-<TAG> {
-  /* Tag names only followed by a qualified identifier */
-  "alias" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.ALIAS; }
-  "call" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.CALL; }
-  "delcall" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELCALL; }
-  "delpackage" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELPACKAGE; }
-  "deltemplate" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELTEMPLATE; }
-  "namespace" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.NAMESPACE; }
-  "template" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.TEMPLATE; }
+  /* Tag names that may be followed by a qualified identifier */
+  "alias"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.ALIAS; }
+  "call"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.CALL; }
+  "delcall"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELCALL; }
+  "delpackage"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELPACKAGE; }
+  "deltemplate"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELTEMPLATE; }
+  "namespace"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.NAMESPACE; }
+  "template"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.TEMPLATE; }
 
-  true { return SoyTypes.BOOL_LITERAL; }
-  false { return SoyTypes.BOOL_LITERAL; }
+  "alias" { return SoyTypes.ALIAS; }
+  "call" { return SoyTypes.CALL; }
+  "delcall" { return SoyTypes.DELCALL; }
+  "delpackage" { return SoyTypes.DELPACKAGE; }
+  "deltemplate" { return SoyTypes.DELTEMPLATE; }
+  "namespace" { return SoyTypes.NAMESPACE; }
+  "template" { return SoyTypes.TEMPLATE; }
 
-  null { return SoyTypes.NULL_LITERAL; }
-
-  /* Tag names */
+  /* Other tag names */
+  "@inject" { return SoyTypes.AT_INJECT; }
+  "@inject?" { return SoyTypes.AT_INJECT_OPT; }
+  "@param" { return SoyTypes.AT_PARAM; }
+  "@param?" { return SoyTypes.AT_PARAM_OPT; }
   "case" { return SoyTypes.CASE; }
   "css" { return SoyTypes.CSS; }
   "default" { return SoyTypes.DEFAULT; }
@@ -167,19 +166,18 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
 
   /* Other verbal tokens */
   "as" { return SoyTypes.AS; }
-}
+  true { return SoyTypes.BOOL_LITERAL; }
+  false { return SoyTypes.BOOL_LITERAL; }
+  null { return SoyTypes.NULL_LITERAL; }
 
-// Inside a declaration or call tag. Only "as" and identifiers expected.
-<TAG_QUALIFIED_IDENTIFIER> {
-  {QualifiedIdentifier} { yybegin(TAG); return SoyTypes.QUALIFIED_IDENTIFIER; }
-}
+  /* Maybe followed by IdentifierWord, a special state to not trigger keyword rules. */
+  "."/{NonSemantical}{IdentifierWord} { yybegin(TAG_IDENTIFIER_WORD); return SoyTypes.DOT; }
+  "?."/{NonSemantical}{IdentifierWord} { yybegin(TAG_IDENTIFIER_WORD); return SoyTypes.DOT_NULL_CHECK; }
+  "$"/{NonSemantical}{IdentifierWord} { yybegin(TAG_IDENTIFIER_WORD); return SoyTypes.DOLLAR; }
 
-// Anywhere inside normal (not declaration/call) tag.
-<TAG,TAG_NO_KEYWORD> {
-  /* Cannot be followed by a tag name. */
-  "." { yybegin(TAG_NO_KEYWORD); return SoyTypes.DOT; }
-  "?." { yybegin(TAG_NO_KEYWORD); return SoyTypes.DOT_NULL_CHECK; }
-  "$" { yybegin(TAG_NO_KEYWORD); return SoyTypes.DOLLAR; }
+  "." { return SoyTypes.DOT; }
+  "?." { return SoyTypes.DOT_NULL_CHECK; }
+  "$" { return SoyTypes.DOLLAR; }
 
   /* Literals */
   {DoubleQuotedStringLiteral} { return SoyTypes.STRING_LITERAL; }
@@ -189,11 +187,6 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   {IntegerLiteral} { return SoyTypes.INTEGER_LITERAL; }
   {FloatingPointLiteral} { return SoyTypes.FLOAT_LITERAL; }
 
-  /* Tag names */
-  "@inject" { return SoyTypes.AT_INJECT; }
-  "@inject?" { return SoyTypes.AT_INJECT_OPT; }
-  "@param" { return SoyTypes.AT_PARAM; }
-  "@param?" { return SoyTypes.AT_PARAM_OPT; }
   "\\r" { return SoyTypes.CARRIAGE_RETURN; }
   "\\n" { return SoyTypes.NEWLINE_LITERAL; }
   "\\t" { return SoyTypes.TAB; }
@@ -231,6 +224,16 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
 
   {IdentifierWord} { return SoyTypes.IDENTIFIER_WORD; }
   {CssIdentifierLiteral} { return SoyTypes.CSS_IDENTIFIER_LITERAL; }
+}
+
+// Only QualifiedIdentifier expected (ensured by look-ahead).
+<TAG_QUALIFIED_IDENTIFIER> {
+  {QualifiedIdentifier} { yybegin(TAG); return SoyTypes.QUALIFIED_IDENTIFIER; }
+}
+
+// Only IdentifierWord expected (ensured by look-ahead).
+<TAG_IDENTIFIER_WORD> {
+  {IdentifierWord} { yybegin(TAG); return SoyTypes.IDENTIFIER_WORD; }
 }
 
 <LITERAL> {
