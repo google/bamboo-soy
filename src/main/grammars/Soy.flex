@@ -21,11 +21,11 @@ Alpha=[a-zA-Z]
 
 IdentifierChar={Alpha}|"_"
 Digit=[0-9]
-CssIdentifierChar={IdentifierChar}|"-"
+CssXidIdentifierChar={IdentifierChar}|"-"|"."
 
 IdentifierWord={IdentifierChar}({IdentifierChar}|{Digit})*
 QualifiedIdentifier="."?{IdentifierWord}("."{IdentifierWord})*
-CssIdentifierLiteral="%"?{CssIdentifierChar}({CssIdentifierChar}|{Digit})*
+CssXidIdentifier="%"?{CssXidIdentifierChar}({CssXidIdentifierChar}|{Digit})*
 
 /* Line terminators, white space, and comments */
 LineTerminator=\r|\n|\r\n
@@ -67,6 +67,7 @@ NonSemantical=({WhiteSpace}|{DoubleSlashComment}|{DocComment}|{Comment})*
 /* Lexer states */
 %state TAG
 %state LITERAL
+%state TAG_CSS_XID
 %state TAG_IDENTIFIER_WORD
 %state TAG_QUALIFIED_IDENTIFIER
 
@@ -112,13 +113,19 @@ NonSemantical=({WhiteSpace}|{DoubleSlashComment}|{DocComment}|{Comment})*
   "namespace" { return SoyTypes.NAMESPACE; }
   "template" { return SoyTypes.TEMPLATE; }
 
+  /* Tag names that may be followed by CSS or Xid identifier */
+  "css"/{NonSemantical}{CssXidIdentifier} { yybegin(TAG_CSS_XID); return SoyTypes.CSS; }
+  "xid"/{NonSemantical}{CssXidIdentifier} { yybegin(TAG_CSS_XID); return SoyTypes.XID; }
+
+  "css" { return SoyTypes.CSS; }
+  "xid" { return SoyTypes.XID; }
+
   /* Other tag names */
   "@inject" { return SoyTypes.AT_INJECT; }
   "@inject?" { return SoyTypes.AT_INJECT_OPT; }
   "@param" { return SoyTypes.AT_PARAM; }
   "@param?" { return SoyTypes.AT_PARAM_OPT; }
   "case" { return SoyTypes.CASE; }
-  "css" { return SoyTypes.CSS; }
   "default" { return SoyTypes.DEFAULT; }
 
   "else" { return SoyTypes.ELSE; }
@@ -140,7 +147,6 @@ NonSemantical=({WhiteSpace}|{DoubleSlashComment}|{DocComment}|{Comment})*
   "select" { return SoyTypes.SELECT; }
   "sp" { return SoyTypes.SP; }
   "switch" { return SoyTypes.SWITCH; }
-  "xid" { return SoyTypes.XID; }
   "msg" { return SoyTypes.MSG; }
 
   /* Types */
@@ -223,7 +229,6 @@ NonSemantical=({WhiteSpace}|{DoubleSlashComment}|{DocComment}|{Comment})*
   "!=" { return SoyTypes.NOT_EQUAL; }
 
   {IdentifierWord} { return SoyTypes.IDENTIFIER_WORD; }
-  {CssIdentifierLiteral} { return SoyTypes.CSS_IDENTIFIER_LITERAL; }
 }
 
 // Only QualifiedIdentifier expected (ensured by look-ahead).
@@ -234,6 +239,11 @@ NonSemantical=({WhiteSpace}|{DoubleSlashComment}|{DocComment}|{Comment})*
 // Only IdentifierWord expected (ensured by look-ahead).
 <TAG_IDENTIFIER_WORD> {
   {IdentifierWord} { yybegin(TAG); return SoyTypes.IDENTIFIER_WORD; }
+}
+
+// Only IdentifierWord expected (ensured by look-ahead).
+<TAG_CSS_XID> {
+  {CssXidIdentifier} { yybegin(TAG); return SoyTypes.CSS_XID_IDENTIFIER; }
 }
 
 <LITERAL> {

@@ -126,7 +126,7 @@
 
     IDENTIFIER_WORD = "regexp:[a-zA-Z_]([a-zA-Z_0-9])*"
     QUALIFIED_IDENTIFIER = "regexp:\.?[a-zA-Z_]([a-zA-Z_0-9])(\.[a-zA-Z_]([a-zA-Z_0-9]))*"
-    CSS_IDENTIFIER_LITERAL = "regexp:%?[a-zA-Z_-]([a-zA-Z_0-9-])*"
+    CSS_XID_IDENTIFIER = "regexp:%?[a-zA-Z_.-]([a-zA-Z_0-9.-])*"
 
     STRING_LITERAL = "regexp:'([^\r\n'\\]|\\.)*'"
     MULTI_LINE_STRING_LITERAL = "regexp:'([^'\\]|\\([^]))*'"
@@ -169,13 +169,6 @@ private FieldAccess ::= (DOT | DOT_NULL_CHECK) IDENTIFIER_WORD {
 
 // A sequence of tokens representing namespace, template or function id: my.name.space, .template
 private QualifiedIdentifier ::= QUALIFIED_IDENTIFIER
-
-// A valid css identifier: dashes are allowed, dots are not: -foo-bar, %foo-bar, foo
-CssIdentifier ::= CSS_IDENTIFIER_LITERAL | PlainIdentifier
-
-// A lax rule for xid identifier: dashes are allowed, dots are allowed: %-foo.bar, %foo-bar, foo
-// Should be caught by annotation.
-XidIdentifier ::= (DOT? (CSS_IDENTIFIER_LITERAL | PlainIdentifier))+
 
 TemplateDefinitionIdentifier ::= QualifiedIdentifier {
   mixin="com.google.bamboo.soy.elements.impl.TemplateDefinitionMixin"
@@ -703,7 +696,7 @@ private BeginCaseClauseTagBody ::= CASE CommaSeparatedExpressionList {
 
 CssStatement ::= <<BracedTag CssStatementTagBody>>
 
-private CssStatementTagBody ::= CSS CssIdentifier
+private CssStatementTagBody ::= CSS CSS_XID_IDENTIFIER
 
 // Let statement
 
@@ -731,7 +724,7 @@ SpecialCharacterStatement ::=
 
 XidStatement ::= <<BracedTag XidStatementTagBody>>
 
-private XidStatementTagBody ::= XID XidIdentifier
+private XidStatementTagBody ::= XID CSS_XID_IDENTIFIER
 
 
 // Literal statement
