@@ -14,7 +14,8 @@
 
 package com.google.bamboo.soy.insight.annotators;
 
-import com.google.bamboo.soy.parser.SoyXidIdentifier;
+import com.google.bamboo.soy.parser.SoyCssStatement;
+import com.google.bamboo.soy.parser.SoyXidStatement;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
@@ -23,9 +24,14 @@ public class IdentifierSanityAnnotator implements Annotator {
 
   @Override
   public void annotate(PsiElement element, AnnotationHolder holder) {
-    if (element instanceof SoyXidIdentifier) {
-      if (element.getText().startsWith("%")) {
+    if (element instanceof SoyXidStatement) {
+      if (((SoyXidStatement) element).getCssXidIdentifier().getText().startsWith("%")) {
         holder.createErrorAnnotation(element, "Xid identifiers cannot start with '%'.");
+      }
+    }
+    if (element instanceof SoyCssStatement) {
+      if (((SoyCssStatement) element).getCssXidIdentifier().getText().contains(".")) {
+        holder.createErrorAnnotation(element, "CSS identifiers cannot contain '.'.");
       }
     }
   }

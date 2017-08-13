@@ -21,11 +21,11 @@ Alpha=[a-zA-Z]
 
 IdentifierChar={Alpha}|"_"
 Digit=[0-9]
-CssIdentifierChar={IdentifierChar}|"-"
+CssXidIdentifierChar={IdentifierChar}|"-"|"."
 
 IdentifierWord={IdentifierChar}({IdentifierChar}|{Digit})*
 QualifiedIdentifier="."?{IdentifierWord}("."{IdentifierWord})*
-CssIdentifierLiteral="%"?{CssIdentifierChar}({CssIdentifierChar}|{Digit})*
+CssXidIdentifier="%"?{CssXidIdentifierChar}({CssXidIdentifierChar}|{Digit})*
 
 /* Line terminators, white space, and comments */
 LineTerminator=\r|\n|\r\n
@@ -49,7 +49,7 @@ DecimalIntegerLiteral={DecimalDigits}
 SignedDecimalIntegerLiteral=("+"|"-")?{DecimalIntegerLiteral}
 HexNumeral=0x{HexDigit}+
 
-IntegerLiteral={HexNumeral}|{SignedDecimalIntegerLiteral}
+IntegerLiteral={HexNumeral}|{DecimalIntegerLiteral}
 
 ExponentPart="e"{SignedDecimalIntegerLiteral}
 
@@ -62,56 +62,70 @@ SingleQuotedStringLiteral='([^\r\n'\\]|\\.)*'
 MultiLineDoubleQuotedStringLiteral=\"([^\"\\]|\\([^]))*\"
 MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
 
+NonSemantical=({WhiteSpace}|{DoubleSlashComment}|{DocComment}|{Comment})*
+
 /* Lexer states */
 %state TAG
 %state LITERAL
-%state TAG_NO_KEYWORD
+%state TAG_CSS_XID
+%state TAG_IDENTIFIER_WORD
 %state TAG_QUALIFIED_IDENTIFIER
 
 %%
 
-<YYINITIAL,TAG,TAG_QUALIFIED_IDENTIFIER,LITERAL> {
-  {WhiteSpace}  { return TokenType.WHITE_SPACE; }
-}
+{WhiteSpace}  { return TokenType.WHITE_SPACE; }
 
-<TAG_NO_KEYWORD> {
-  {WhiteSpace}  { yybegin(TAG); return TokenType.WHITE_SPACE; }
-}
+/* Comments */
+^{DoubleSlashComment} { return SoyTypes.COMMENT_BLOCK; }
+{DocComment} { return SoyTypes.DOC_COMMENT_BLOCK; }
+{Comment} { return SoyTypes.COMMENT_BLOCK; }
+
+"{literal}" { yybegin(LITERAL); return SoyTypes.LITERAL; }
+"{{literal}}" { yybegin(LITERAL); return SoyTypes.LITERAL_DOUBLE; }
+"{" { yybegin(TAG); return SoyTypes.LBRACE; }
+"{{" { yybegin(TAG); return SoyTypes.LBRACE_LBRACE; }
+"{/" { yybegin(TAG); return SoyTypes.LBRACE_SLASH; }
+"{{/" { yybegin(TAG); return SoyTypes.LBRACE_LBRACE_SLASH; }
 
 
-<YYINITIAL,TAG,TAG_QUALIFIED_IDENTIFIER,TAG_NO_KEYWORD,LITERAL> {
-  /* Comments */
-  ^{DoubleSlashComment} { return SoyTypes.COMMENT_BLOCK; }
-  {DocComment} { return SoyTypes.DOC_COMMENT_BLOCK; }
-  {Comment} { return SoyTypes.COMMENT_BLOCK; }
-
-  "{literal}" { yybegin(LITERAL); return SoyTypes.LITERAL; }
-  "{{literal}}" { yybegin(LITERAL); return SoyTypes.LITERAL_DOUBLE; }
-  "{" { yybegin(TAG); return SoyTypes.LBRACE; }
-  "{{" { yybegin(TAG); return SoyTypes.LBRACE_LBRACE; }
-  "{/" { yybegin(TAG); return SoyTypes.LBRACE_SLASH; }
-  "{{/" { yybegin(TAG); return SoyTypes.LBRACE_LBRACE_SLASH; }
-}
-
-// Inside a tag, not after "." or "$". Keywords can only be here.
+// Anywhere inside a tag.
 <TAG> {
-  /* Tag names only followed by a qualified identifier */
-  "alias" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.ALIAS; }
-  "call" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.CALL; }
-  "delcall" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELCALL; }
-  "delpackage" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELPACKAGE; }
-  "deltemplate" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELTEMPLATE; }
-  "namespace" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.NAMESPACE; }
-  "template" { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.TEMPLATE; }
+  /* Tag closing */
+  "/}" { yybegin(YYINITIAL); return SoyTypes.SLASH_RBRACE; }
+  "}" { yybegin(YYINITIAL); return SoyTypes.RBRACE; }
+  "}}" { yybegin(YYINITIAL); return SoyTypes.RBRACE_RBRACE; }
+  "/}}" { yybegin(YYINITIAL); return SoyTypes.SLASH_RBRACE_RBRACE; }
 
-  true { return SoyTypes.BOOL_LITERAL; }
-  false { return SoyTypes.BOOL_LITERAL; }
+  /* Tag names that may be followed by a qualified identifier */
+  "alias"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.ALIAS; }
+  "call"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.CALL; }
+  "delcall"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELCALL; }
+  "delpackage"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELPACKAGE; }
+  "deltemplate"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELTEMPLATE; }
+  "namespace"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.NAMESPACE; }
+  "template"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.TEMPLATE; }
 
-  null { return SoyTypes.NULL_LITERAL; }
+  "alias" { return SoyTypes.ALIAS; }
+  "call" { return SoyTypes.CALL; }
+  "delcall" { return SoyTypes.DELCALL; }
+  "delpackage" { return SoyTypes.DELPACKAGE; }
+  "deltemplate" { return SoyTypes.DELTEMPLATE; }
+  "namespace" { return SoyTypes.NAMESPACE; }
+  "template" { return SoyTypes.TEMPLATE; }
 
-  /* Tag names */
-  "case" { return SoyTypes.CASE; }
+  /* Tag names that may be followed by CSS or Xid identifier */
+  "css"/{NonSemantical}{CssXidIdentifier} { yybegin(TAG_CSS_XID); return SoyTypes.CSS; }
+  "xid"/{NonSemantical}{CssXidIdentifier} { yybegin(TAG_CSS_XID); return SoyTypes.XID; }
+
   "css" { return SoyTypes.CSS; }
+  "xid" { return SoyTypes.XID; }
+
+  /* Other tag names */
+  "@inject" { return SoyTypes.AT_INJECT; }
+  "@inject?" { return SoyTypes.AT_INJECT_OPT; }
+  "@param" { return SoyTypes.AT_PARAM; }
+  "@param?" { return SoyTypes.AT_PARAM_OPT; }
+  "case" { return SoyTypes.CASE; }
   "default" { return SoyTypes.DEFAULT; }
 
   "else" { return SoyTypes.ELSE; }
@@ -133,7 +147,6 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   "select" { return SoyTypes.SELECT; }
   "sp" { return SoyTypes.SP; }
   "switch" { return SoyTypes.SWITCH; }
-  "xid" { return SoyTypes.XID; }
   "msg" { return SoyTypes.MSG; }
 
   /* Types */
@@ -159,19 +172,18 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
 
   /* Other verbal tokens */
   "as" { return SoyTypes.AS; }
-}
+  true { return SoyTypes.BOOL_LITERAL; }
+  false { return SoyTypes.BOOL_LITERAL; }
+  null { return SoyTypes.NULL_LITERAL; }
 
-// Inside a declaration or call tag. Only "as" and identifiers expected.
-<TAG_QUALIFIED_IDENTIFIER> {
-  {QualifiedIdentifier} { yybegin(TAG); return SoyTypes.QUALIFIED_IDENTIFIER; }
-}
+  /* Maybe followed by IdentifierWord, a special state to not trigger keyword rules. */
+  "."/{NonSemantical}{IdentifierWord} { yybegin(TAG_IDENTIFIER_WORD); return SoyTypes.DOT; }
+  "?."/{NonSemantical}{IdentifierWord} { yybegin(TAG_IDENTIFIER_WORD); return SoyTypes.DOT_NULL_CHECK; }
+  "$"/{NonSemantical}{IdentifierWord} { yybegin(TAG_IDENTIFIER_WORD); return SoyTypes.DOLLAR; }
 
-// Anywhere inside normal (not declaration/call) tag.
-<TAG,TAG_NO_KEYWORD> {
-  /* Cannot be followed by a tag name. */
-  "." { yybegin(TAG_NO_KEYWORD); return SoyTypes.DOT; }
-  "?." { yybegin(TAG_NO_KEYWORD); return SoyTypes.DOT_NULL_CHECK; }
-  "$" { yybegin(TAG_NO_KEYWORD); return SoyTypes.DOLLAR; }
+  "." { return SoyTypes.DOT; }
+  "?." { return SoyTypes.DOT_NULL_CHECK; }
+  "$" { return SoyTypes.DOLLAR; }
 
   /* Literals */
   {DoubleQuotedStringLiteral} { return SoyTypes.STRING_LITERAL; }
@@ -181,29 +193,10 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   {IntegerLiteral} { return SoyTypes.INTEGER_LITERAL; }
   {FloatingPointLiteral} { return SoyTypes.FLOAT_LITERAL; }
 
-  /* Tag names */
-  "@inject" { return SoyTypes.AT_INJECT; }
-  "@inject?" { return SoyTypes.AT_INJECT_OPT; }
-  "@param" { return SoyTypes.AT_PARAM; }
-  "@param?" { return SoyTypes.AT_PARAM_OPT; }
   "\\r" { return SoyTypes.CARRIAGE_RETURN; }
   "\\n" { return SoyTypes.NEWLINE_LITERAL; }
   "\\t" { return SoyTypes.TAB; }
-/*
-  "/call" { return SoyTypes.END_CALL; }
-  "/delcall" { return SoyTypes.END_DELCALL; }
-  "/deltemplate" { return SoyTypes.END_DELTEMPLATE; }
-  "/foreach" { return SoyTypes.END_FOREACH; }
-  "/for" { return SoyTypes.END_FOR; }
-  "/if" { return SoyTypes.END_IF; }
-  "/let" { return SoyTypes.END_LET; }
-  "/msg" { return SoyTypes.END_MSG; }
-  "/param" { return SoyTypes.END_PARAM; }
-  "/plural" { return SoyTypes.END_PLURAL; }
-  "/select" { return SoyTypes.END_SELECT; }
-  "/switch" { return SoyTypes.END_SWITCH; }
-  "/template" { return SoyTypes.END_TEMPLATE; }
-*/
+
   "=" { return SoyTypes.EQUAL; }
   ":" { return SoyTypes.COLON; }
   "?" { return SoyTypes.QUESTIONMARK; }
@@ -236,16 +229,21 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
   "!=" { return SoyTypes.NOT_EQUAL; }
 
   {IdentifierWord} { return SoyTypes.IDENTIFIER_WORD; }
-  {CssIdentifierLiteral} { return SoyTypes.CSS_IDENTIFIER_LITERAL; }
 }
 
-// Anywhere inside a tag.
-<TAG,TAG_NO_KEYWORD,TAG_QUALIFIED_IDENTIFIER> {
-  /* Tag closing */
-  "/}" { yybegin(YYINITIAL); return SoyTypes.SLASH_RBRACE; }
-  "}" { yybegin(YYINITIAL); return SoyTypes.RBRACE; }
-  "}}" { yybegin(YYINITIAL); return SoyTypes.RBRACE_RBRACE; }
-  "/}}" { yybegin(YYINITIAL); return SoyTypes.SLASH_RBRACE_RBRACE; }
+// Only QualifiedIdentifier expected (ensured by look-ahead).
+<TAG_QUALIFIED_IDENTIFIER> {
+  {QualifiedIdentifier} { yybegin(TAG); return SoyTypes.QUALIFIED_IDENTIFIER; }
+}
+
+// Only IdentifierWord expected (ensured by look-ahead).
+<TAG_IDENTIFIER_WORD> {
+  {IdentifierWord} { yybegin(TAG); return SoyTypes.IDENTIFIER_WORD; }
+}
+
+// Only CssXidIdentifier expected (ensured by look-ahead).
+<TAG_CSS_XID> {
+  {CssXidIdentifier} { yybegin(TAG); return SoyTypes.CSS_XID_IDENTIFIER; }
 }
 
 <LITERAL> {
