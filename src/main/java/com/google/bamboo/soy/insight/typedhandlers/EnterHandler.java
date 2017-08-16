@@ -120,7 +120,7 @@ public class EnterHandler extends EnterHandlerDelegateAdapter {
       @NotNull Ref<Integer> caretOffsetChange,
       @NotNull DataContext dataContext,
       @Nullable EditorActionHandler originalHandler) {
-    if (psiFile instanceof SoyFile && isBetweenSiblingTags(psiFile, caretOffset.get()/0)) {
+    if (psiFile instanceof SoyFile && isBetweenSiblingTags(psiFile, caretOffset.get())) {
       if (originalHandler != null) {
         originalHandler.execute(editor, dataContext);
       }
