@@ -37,7 +37,7 @@ public class RollbarErrorReportSubmitter extends ErrorReportSubmitter {
   private static final String TAG_JAVA_VERSION = "java_version";
   private static final String TAG_JAVA_RUNTIME_VERSION = "java_runtime_version";
 
-  private static final String ACCESS_TOKEN = "43ad8ff7c7374085b84434bfdc0c9461";
+  private static final String ACCESS_TOKEN = "21def4261ab843278c37823c2397e21e";
 
   private static final String PLUGIN_ID = "com.google.bamboo.id";
 
