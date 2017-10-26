@@ -14,9 +14,9 @@
 
 package com.google.bamboo.soy.elements;
 
+import com.google.bamboo.soy.parser.SoyAnyStringLiteral;
 import com.google.bamboo.soy.parser.SoyAttributeKeyValuePair;
 import com.google.bamboo.soy.parser.SoyBeginMsg;
-import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,16 +27,13 @@ public interface MsgStatementElement extends TagBlockElement, StatementElement {
 
   @Nullable
   default String getDescription() {
-    Optional<SoyAttributeKeyValuePair> keyValuePair =
-        getBeginMsg()
-            .getAttributeKeyValuePairList()
-            .stream()
-            .filter(pair -> pair.getAttributeNameIdentifier().getText().equalsIgnoreCase("desc"))
-            .findFirst();
-    if (keyValuePair.isPresent()) {
-      return keyValuePair.get().getAnyStringLiteral().getText();
-    } else {
-      return null;
-    }
+    return getBeginMsg()
+        .getAttributeKeyValuePairList()
+        .stream()
+        .filter(pair -> pair.getAttributeNameIdentifier().getText().equalsIgnoreCase("desc"))
+        .findFirst()
+        .map(SoyAttributeKeyValuePair::getAnyStringLiteral)
+        .map(SoyAnyStringLiteral::getText)
+        .orElse(null);
   }
 }
