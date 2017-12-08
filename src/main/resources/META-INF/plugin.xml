@@ -11,6 +11,17 @@
 
   <change-notes><![CDATA[
       <p>
+        <b>Release notes for 1.3</b>
+
+        <ul>
+          <li>Formatter: Better support for spacing in and around expressions,</li>
+          <li>General stability and robustness improvements,</li>
+          <li>Fixed ClassCastException occurring when jumping to definitions,</li>
+          <li>More consistent handling of CSS literals,</li>
+       </ul>
+     </p>
+
+      <p>
         <b>Release notes for 1.2</b>
 
         <ul>
