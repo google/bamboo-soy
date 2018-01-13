@@ -78,15 +78,10 @@ public class SoyBlock extends TemplateLanguageBlock {
   }
 
   private static <T> T findLastDescendantOfType(PsiElement el, Class<T> clazz) {
-    while (el != null) {
-      if (clazz.isInstance(el)) {
-        return (T) el;
-      }
-
+    while (el != null && !clazz.isInstance(el)) {
       el = el.getLastChild();
     }
-
-    return null;
+    return clazz.cast(el);
   }
 
   /**
