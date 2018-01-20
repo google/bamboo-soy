@@ -24,9 +24,11 @@ import com.intellij.psi.PsiReference;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.ResolveResult;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 
 public class VariableReference extends PsiReferenceBase<PsiElement> implements PsiReference {
@@ -41,45 +43,32 @@ public class VariableReference extends PsiReferenceBase<PsiElement> implements P
   }
 
   @NotNull
-  private ResolveResult[] multiResolve() {
-    final Collection<Variable> definitions =
-        Scope.getScopeOrEmpty(this.getElement()).getVariables();
-    List<ResolveResult> results = new ArrayList<>();
-    for (Variable definition : definitions) {
-      if (definition.name.equals(this.identifier)) {
-        results.add(new PsiElementResolveResult(definition.element));
-      }
-    }
-
-    return results.toArray(new ResolveResult[results.size()]);
+  private Stream<ResolveResult> multiResolve() {
+    return Scope.getScopeOrEmpty(getElement())
+        .getVariables()
+        .stream()
+        .filter(definition -> definition.name.equals(identifier))
+        .map(definition -> new PsiElementResolveResult(definition.element));
   }
 
   @Override
   public PsiElement resolve() {
-    ResolveResult[] resolveResults = multiResolve();
-    return resolveResults.length >= 1 ? resolveResults[0].getElement() : null;
+    return multiResolve().findFirst().map(ResolveResult::getElement).orElse(null);
   }
 
   @Override
   public boolean isReferenceTo(PsiElement element) {
-    ResolveResult[] results = multiResolve();
-    for (ResolveResult result : results) {
-      if (this.getElement().getManager().areElementsEquivalent(result.getElement(), element)) {
-        return true;
-      }
-    }
-    return false;
+    return multiResolve().anyMatch(result ->
+        getElement().getManager().areElementsEquivalent(result.getElement(), element));
   }
 
   @Override
   @NotNull
   public Object[] getVariants() {
-    return Scope.getScopeOrEmpty(this.getElement())
+    return Scope.getScopeOrEmpty(getElement())
         .getVariables()
         .stream()
-        .map(v -> v.name)
-        .map(LookupElementBuilder::create)
-        .collect(Collectors.toList())
+        .map(v -> LookupElementBuilder.create(v.name))
         .toArray();
   }
 
