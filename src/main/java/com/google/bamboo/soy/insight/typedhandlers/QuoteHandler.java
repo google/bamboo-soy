@@ -14,22 +14,14 @@
 
 package com.google.bamboo.soy.insight.typedhandlers;
 
-import com.google.bamboo.soy.file.SoyFileType;
 import com.google.common.collect.ImmutableSet;
-import com.intellij.codeInsight.editorActions.TypedHandlerDelegate;
-import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate;
-import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate.Result;
-import com.intellij.ide.highlighter.HtmlFileType;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.actionSystem.TypedActionHandler;
-import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiFile;
 import java.util.Set;
 import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Inserts a matching closing character (quote, parenthesis, bracket) when typing one.
  */
-public class QuoteHandler extends TypedHandlerDelegate {
+public class QuoteHandler implements TypedActionHandler {
 
   private final Set<Pair<Character, Character>> matchingCharacters = ImmutableSet
       .of(Pair.create('"', '"'), Pair.create('\'', '\''), Pair.create('(', ')'),
@@ -46,13 +38,13 @@ public class QuoteHandler extends TypedHandlerDelegate {
   private final Set<String> allowedPreviousCharacters = ImmutableSet
       .of("\n", " ", "[", "(", "=");
   private final Set<String> allowedNextCharacters = ImmutableSet.of("\n", " ", "]", ")", "}");
+  private final TypedActionHandler myOriginalHandler;
 
-  @Override
-  public Result beforeCharTyped(char charTyped, final Project project, final Editor editor, final PsiFile file, final FileType fileType) {
-    if (file.getFileType() != SoyFileType.INSTANCE && file.getFileType() != HtmlFileType.INSTANCE) {
-      return Result.CONTINUE;
-    }
+  public QuoteHandler(TypedActionHandler originalHandler) {
+    myOriginalHandler = originalHandler;
+  }
 
+  public void execute(@NotNull Editor editor, char charTyped, @NotNull DataContext dataContext) {
     Document document = editor.getDocument();
     int caretOffset = editor.getCaretModel().getOffset();
 
@@ -93,15 +85,15 @@ public class QuoteHandler extends TypedHandlerDelegate {
 
       if (countLeft <= countRight) {
         editor.getCaretModel().moveToOffset(caretOffset + 1);
-        return Result.STOP;
+        return;
       }
     } else {
       Pair<Character, Character> matchingPair = getMatchingPair(charTyped,
           p -> p.getFirst());
       if (matchingPair != null) {
-        if ((alwaysCloseCharacters.contains(matchingPair.first) || (allowedPreviousCharacters
+        if ((alwaysCloseCharacters.contains(matchingPair.first) || allowedPreviousCharacters
             .contains(prevChar)) && allowedNextCharacters.contains(nextChar)
-            && !nextChar.equals(matchingPair.second + ""))) {
+            && !nextChar.equals(matchingPair.second + "")) {
           document.insertString(editor.getCaretModel().getOffset(), matchingPair.second + "");
 
           if (editor.getProject() != null) {
@@ -111,7 +103,7 @@ public class QuoteHandler extends TypedHandlerDelegate {
       }
     }
 
-    return Result.CONTINUE;
+    myOriginalHandler.execute(editor, charTyped, dataContext);
   }
 
   private Pair<Character, Character> getMatchingPair(Character charTyped,
