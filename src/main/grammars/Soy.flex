@@ -114,8 +114,8 @@ NonSemantical=({WhiteSpace}|{DoubleSlashComment}|{DocComment}|{Comment})*
   "template" { return SoyTypes.TEMPLATE; }
 
   /* Tag names that may be followed by CSS or Xid identifier */
-  "css"/{NonSemantical}{CssXidIdentifier} { yybegin(TAG_CSS_XID); return SoyTypes.CSS; }
-  "xid"/{NonSemantical}{CssXidIdentifier} { yybegin(TAG_CSS_XID); return SoyTypes.XID; }
+  "css"/{NonSemantical}{WhiteSpace}{CssXidIdentifier} { yybegin(TAG_CSS_XID); return SoyTypes.CSS; }
+  "xid"/{NonSemantical}{WhiteSpace}{CssXidIdentifier} { yybegin(TAG_CSS_XID); return SoyTypes.XID; }
 
   "css" { return SoyTypes.CSS; }
   "xid" { return SoyTypes.XID; }
