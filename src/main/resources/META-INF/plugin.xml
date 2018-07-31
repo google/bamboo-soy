@@ -185,8 +185,8 @@
       implementation="com.google.bamboo.soy.insight.typedhandlers.EnterHandler"/>
     <editorTypedHandler
       implementationClass="com.google.bamboo.soy.insight.typedhandlers.ClosingTagHandler"/>
-    <editorTypedHandler
-      implementationClass="com.google.bamboo.soy.insight.typedhandlers.QuoteHandler"/>
+    <typedHandler
+      implementation="com.google.bamboo.soy.insight.typedhandlers.QuoteHandler"/>
     <liveTemplateContext implementation="com.google.bamboo.soy.templates.TopLevelContext"/>
     <liveTemplateContext implementation="com.google.bamboo.soy.templates.CallBlockContext"/>
     <liveTemplateContext implementation="com.google.bamboo.soy.templates.TemplateBlockContext"/>
