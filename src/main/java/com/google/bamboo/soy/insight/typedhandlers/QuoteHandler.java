@@ -48,7 +48,8 @@ public class QuoteHandler extends TypedHandlerDelegate {
   private final Set<String> allowedNextCharacters = ImmutableSet.of("\n", " ", "]", ")", "}");
 
   @Override
-  public Result beforeCharTyped(char charTyped, final Project project, final Editor editor, final PsiFile file, final FileType fileType) {
+  public Result beforeCharTyped(char charTyped, final Project project, final Editor editor,
+      final PsiFile file, final FileType fileType) {
     if (file.getFileType() != SoyFileType.INSTANCE && file.getFileType() != HtmlFileType.INSTANCE) {
       return Result.CONTINUE;
     }
@@ -70,28 +71,21 @@ public class QuoteHandler extends TypedHandlerDelegate {
     Pair<Character, Character> matchingPairReverse = getMatchingPair(charTyped,
         p -> p.getSecond());
     if (matchingPairReverse != null && nextChar.equals(charTyped + "")) {
-      int countLeft = 0;
-      int countRight = 0;
+      boolean pairOfEqualChars = (matchingPairReverse.first == matchingPairReverse.second);
 
-      // Number of opens on the left
-      for (String c : textBeforeCaret.split("")) {
-        if (c.equals(matchingPairReverse.first + "")) {
-          countLeft++;
-        } else if (c.equals(matchingPairReverse.second + "") && countLeft > 0) {
-          countLeft--;
-        }
-      }
+      // Number of opens on the left of the caret.
+      int countLeft = computeCount(textBeforeCaret, matchingPairReverse.first,
+          matchingPairReverse.second);
 
-      // Number of closes on the right
-      for (String c : textAfterCaret.split("")) {
-        if (c.equals(matchingPairReverse.second + "")) {
-          countRight++;
-        } else if (c.equals(matchingPairReverse.first + "") && countRight > 0) {
-          countRight--;
-        }
-      }
+      // Number of closes on the right of the caret.
+      int countRight = computeCount(textAfterCaret, matchingPairReverse.second,
+          matchingPairReverse.first);
 
-      if (countLeft <= countRight) {
+      // When the pair is made of equal characters (like quotes) then only trigger if there is
+      // a balance of 1-1 around the caret, which means that the quote is already closed and
+      // inserting a new quote would create an imbalance.
+      if (((!pairOfEqualChars && countLeft <= countRight) || (pairOfEqualChars
+          && countLeft == countRight)) && countRight > 0) {
         editor.getCaretModel().moveToOffset(caretOffset + 1);
         return Result.STOP;
       }
@@ -112,6 +106,27 @@ public class QuoteHandler extends TypedHandlerDelegate {
     }
 
     return Result.CONTINUE;
+  }
+
+  /**
+   * Returns the count of the number of opens or closes in the given {@code text}.
+   */
+  private int computeCount(String text, char first, char second) {
+    boolean pairOfEqualChars = (first == second);
+
+    int count = 0;
+    for (String c : text.split("")) {
+      if (c.equals(first + "")) {
+        if (pairOfEqualChars && count > 0) {
+          count--;
+        } else {
+          count++;
+        }
+      } else if (c.equals(second + "") && count > 0) {
+        count--;
+      }
+    }
+    return count;
   }
 
   private Pair<Character, Character> getMatchingPair(Character charTyped,
