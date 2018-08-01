@@ -759,6 +759,9 @@ Directive
 
 CommaSeparatedExpressionList ::= Expr (COMMA Expr)* COMMA?
 
+KeyValue ::= (Expr COLON Expr)
+CommaSeparatedKeyValueList ::= KeyValue (COMMA KeyValue)* COMMA?
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Expressions
@@ -783,6 +786,7 @@ private AtomExpr ::= VariableReferenceIdentifier
   | FunctionCallExpr
   | FieldExpr
   | IndexExpr
+  | MapExpr
   | ListExpr
   | ParenthesizedExpr
   | LiteralExpr
@@ -806,5 +810,6 @@ UnaryExpr ::= (PLUS | MINUS | NOT | EXCLAMATION) Expr
 FunctionCallExpr ::= FunctionIdentifier PARENS_OPEN [CommaSeparatedExpressionList] PARENS_CLOSE
 FieldExpr ::= Expr FieldAccess
 IndexExpr ::= Expr (SQUARE_OPEN | INDEX_NULL_CHECK) [CommaSeparatedExpressionList] SQUARE_CLOSE
+MapExpr ::= SQUARE_OPEN [CommaSeparatedKeyValueList] SQUARE_CLOSE
 ListExpr ::= SQUARE_OPEN [CommaSeparatedExpressionList] SQUARE_CLOSE
 ParenthesizedExpr ::= PARENS_OPEN Expr PARENS_CLOSE
