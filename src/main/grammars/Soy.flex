@@ -73,6 +73,17 @@ NonSemantical=({WhiteSpace}|{DoubleSlashComment}|{DocComment}|{Comment})*
 
 %%
 
+// -- Literal tags: ensure we parse literal tags and eat their whole content first without matching
+// anything within the literal body.
+"{literal}" { yybegin(LITERAL); return SoyTypes.LITERAL; }
+"{{literal}}" { yybegin(LITERAL); return SoyTypes.LITERAL_DOUBLE; }
+<LITERAL> {
+  . { return SoyTypes.OTHER; }
+  "{/literal}" { yybegin(YYINITIAL); return SoyTypes.END_LITERAL; }
+  "{{/literal}}" { yybegin(YYINITIAL); return SoyTypes.END_LITERAL_DOUBLE; }
+}
+
+// -- Rest
 {WhiteSpace}  { return TokenType.WHITE_SPACE; }
 
 /* Comments */
@@ -80,13 +91,10 @@ NonSemantical=({WhiteSpace}|{DoubleSlashComment}|{DocComment}|{Comment})*
 {DocComment} { return SoyTypes.DOC_COMMENT_BLOCK; }
 {Comment} { return SoyTypes.COMMENT_BLOCK; }
 
-"{literal}" { yybegin(LITERAL); return SoyTypes.LITERAL; }
-"{{literal}}" { yybegin(LITERAL); return SoyTypes.LITERAL_DOUBLE; }
 "{" { yybegin(TAG); return SoyTypes.LBRACE; }
 "{{" { yybegin(TAG); return SoyTypes.LBRACE_LBRACE; }
 "{/" { yybegin(TAG); return SoyTypes.LBRACE_SLASH; }
 "{{/" { yybegin(TAG); return SoyTypes.LBRACE_LBRACE_SLASH; }
-
 
 // Anywhere inside a tag.
 <TAG> {
@@ -244,11 +252,6 @@ NonSemantical=({WhiteSpace}|{DoubleSlashComment}|{DocComment}|{Comment})*
 // Only CssXidIdentifier expected (ensured by look-ahead).
 <TAG_CSS_XID> {
   {CssXidIdentifier} { yybegin(TAG); return SoyTypes.CSS_XID_IDENTIFIER; }
-}
-
-<LITERAL> {
-  "{/literal}" { yybegin(YYINITIAL); return SoyTypes.END_LITERAL; }
-  "{{/literal}}" { yybegin(YYINITIAL); return SoyTypes.END_LITERAL_DOUBLE; }
 }
 
 . { return SoyTypes.OTHER; }
