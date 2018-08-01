@@ -123,7 +123,7 @@
 
     DOC_COMMENT_BLOCK = "regexp:(/\**([^*]|(\*+[^*/]))*(\*+/))"
     COMMENT_BLOCK = "regexp:(/\*([^*]|(\*+[^*/]))*(\*+/))"
-    HTML_COMMENT ="regexp:<!--([^\r\n]|(\r|\n|\r\n))*-->"
+    HTML_COMMENT ="regexp:<!--([^\r\n]|(\r|\n|\r\n))*?-->"
 
     IDENTIFIER_WORD = "regexp:[a-zA-Z_]([a-zA-Z_0-9])*"
     QUALIFIED_IDENTIFIER = "regexp:\.?[a-zA-Z_]([a-zA-Z_0-9])(\.[a-zA-Z_]([a-zA-Z_0-9]))*"

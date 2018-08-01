@@ -37,7 +37,7 @@ CommentContent=([^*]|("*"+[^/*]))*
 DocComment="/**"{CommentContent}"*"+"/"
 TraditionalComment="/*"{CommentContent}"*"+"/"
 DoubleSlashComment="//"{InputCharacter}*{LineTerminator}
-HtmlComment="<!--"({InputCharacter}|{LineTerminator})*"-->"
+HtmlComment="<!--([^-]|-[^-]|--+[^->])*-*-->"
 Comment=({WhiteSpace}{DoubleSlashComment})|{TraditionalComment}|{HtmlComment}
 
 /* Integer literal */
