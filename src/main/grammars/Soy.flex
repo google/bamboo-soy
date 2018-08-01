@@ -78,9 +78,12 @@ NonSemantical=({WhiteSpace}|{DoubleSlashComment}|{DocComment}|{Comment})*
 "{literal}" { yybegin(LITERAL); return SoyTypes.LITERAL; }
 "{{literal}}" { yybegin(LITERAL); return SoyTypes.LITERAL_DOUBLE; }
 <LITERAL> {
-  . { return SoyTypes.OTHER; }
   "{/literal}" { yybegin(YYINITIAL); return SoyTypes.END_LITERAL; }
   "{{/literal}}" { yybegin(YYINITIAL); return SoyTypes.END_LITERAL_DOUBLE; }
+  .|{WhiteSpace}|"{{"|"{/"|"{{/" { return SoyTypes.OTHER; }
+  ^{DoubleSlashComment} { return SoyTypes.OTHER; }
+  {DocComment} { return SoyTypes.OTHER; }
+  {Comment} { return SoyTypes.OTHER; }
 }
 
 // -- Rest
