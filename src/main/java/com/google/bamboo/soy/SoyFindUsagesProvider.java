@@ -15,7 +15,15 @@
 package com.google.bamboo.soy;
 
 import com.google.bamboo.soy.lexer.SoyLexer;
+import com.google.bamboo.soy.parser.SoyAtInjectSingle;
+import com.google.bamboo.soy.parser.SoyAtParamSingle;
+import com.google.bamboo.soy.parser.SoyAtStateSingle;
+import com.google.bamboo.soy.parser.SoyBeginLet;
+import com.google.bamboo.soy.parser.SoyBeginTemplate;
+import com.google.bamboo.soy.parser.SoyLetSingleStatement;
+import com.google.bamboo.soy.parser.SoyNamespaceDeclarationIdentifier;
 import com.google.bamboo.soy.parser.SoyTypes;
+import com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier;
 import com.intellij.lang.cacheBuilder.DefaultWordsScanner;
 import com.intellij.lang.cacheBuilder.WordsScanner;
 import com.intellij.lang.findUsages.FindUsagesProvider;
@@ -26,6 +34,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SoyFindUsagesProvider implements FindUsagesProvider {
+
   @Nullable
   @Override
   public WordsScanner getWordsScanner() {
@@ -50,6 +59,26 @@ public class SoyFindUsagesProvider implements FindUsagesProvider {
   @NotNull
   @Override
   public String getType(@NotNull PsiElement psiElement) {
+    if (psiElement instanceof SoyVariableDefinitionIdentifier) {
+      return "Variable"; // for/foreach/let
+    }
+    PsiElement parent = psiElement.getParent();
+    if (parent instanceof SoyAtParamSingle) {
+      return "Parameter";
+    }
+    if (parent instanceof SoyAtStateSingle) {
+      return "State param";
+    }
+    if (parent instanceof SoyAtInjectSingle) {
+      return "Injected param";
+    }
+    if (parent instanceof SoyNamespaceDeclarationIdentifier) {
+      return "Namespace";
+    }
+    if (parent instanceof SoyBeginTemplate) {
+      return ((SoyBeginTemplate) parent).getTagNameTokenType() == SoyTypes.ELEMENT
+          ? "Element" : "Template";
+    }
     return "";
   }
 
@@ -62,6 +91,6 @@ public class SoyFindUsagesProvider implements FindUsagesProvider {
   @NotNull
   @Override
   public String getNodeText(@NotNull PsiElement psiElement, boolean useFullName) {
-    return "";
+    return psiElement.getText();
   }
 }

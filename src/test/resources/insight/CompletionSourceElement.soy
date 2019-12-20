@@ -1,0 +1,22 @@
+{namespace outer.space}
+
+{element .star}
+  {@param planet : string}
+  {@state isLoaded := false}
+  {@inject probe : string}
+  {let $shape: 'sphere' /}
+
+  {msg desc="-"}
+    Planet: {$planet}
+    Probe: {$probe}
+    Shape: {$shape}
+    Loaded: {$isLoaded}
+  {/msg}
+{/element}
+
+{template .earth}{/template}
+{template .mars}{/template}
+{template .moose_ visibility="private"}{/template}
+
+{deltemplate delegate.template}
+{/deltemplate}

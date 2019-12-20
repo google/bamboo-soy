@@ -13,6 +13,13 @@
       <option name="CLOSURE_TEMPLATE_TOP_LEVEL" value="true"/>
     </context>
   </template>
+  <template name="{element" value="{element $NAME$}$END${/element}"
+      description="Element definition" toReformat="false" toShortenFQNames="true">
+    <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="CLOSURE_TEMPLATE_TOP_LEVEL" value="true"/>
+    </context>
+  </template>
   <template name="{template" value="{template $NAME$}$END${/template}"
       description="Template definition" toReformat="false" toShortenFQNames="true">
     <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true"/>
@@ -65,6 +72,14 @@
       toReformat="false" toShortenFQNames="true">
     <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true"/>
     <variable name="TYPE" expression="" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="CLOSURE_TEMPLATE_TEMPLATE_BLOCK" value="true"/>
+    </context>
+  </template>
+  <template name="{@state" value="{@state $NAME$ := $VALUE$}$END$" description="State property definition"
+      toReformat="false" toShortenFQNames="true">
+    <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true"/>
+    <variable name="VALUE" expression="" defaultValue="" alwaysStopAt="true"/>
     <context>
       <option name="CLOSURE_TEMPLATE_TEMPLATE_BLOCK" value="true"/>
     </context>

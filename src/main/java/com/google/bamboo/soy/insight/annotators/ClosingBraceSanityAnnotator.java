@@ -18,6 +18,7 @@ import com.google.bamboo.soy.elements.TagElement;
 import com.google.bamboo.soy.lexer.SoyTokenTypes;
 import com.google.bamboo.soy.parser.impl.SoyAliasBlockImpl;
 import com.google.bamboo.soy.parser.impl.SoyAtParamSingleImpl;
+import com.google.bamboo.soy.parser.impl.SoyAtStateSingleImpl;
 import com.google.bamboo.soy.parser.impl.SoyBeginChoiceClauseImpl;
 import com.google.bamboo.soy.parser.impl.SoyBeginChoiceImpl;
 import com.google.bamboo.soy.parser.impl.SoyBeginElseIfImpl;
@@ -54,6 +55,7 @@ public class ClosingBraceSanityAnnotator implements Annotator {
       ImmutableSet.<Class>builder()
           .add(SoyAliasBlockImpl.class)
           .add(SoyAtParamSingleImpl.class)
+          .add(SoyAtStateSingleImpl.class)
           .add(SoyBeginChoiceClauseImpl.class)
           .add(SoyBeginElseIfImpl.class)
           .add(SoyBeginForImpl.class)
@@ -73,7 +75,7 @@ public class ClosingBraceSanityAnnotator implements Annotator {
           .add(SoyPrintStatementImpl.class)
           .add(SoyXidStatementImpl.class)
           .build();
-  
+
   private static ImmutableSet<Class> mustCloseSlashRBraceTags =
       ImmutableSet.of(SoyLetSingleStatementImpl.class);
 

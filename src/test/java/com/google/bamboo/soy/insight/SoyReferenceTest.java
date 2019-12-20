@@ -37,6 +37,11 @@ public class SoyReferenceTest extends SoyCodeInsightFixtureTestCase {
     Assert.assertEquals(name, target.getText());
   }
 
+  private static void assertIsAtState(PsiElement target, String name) {
+    Assert.assertTrue(target instanceof SoyParamDefinitionIdentifier);
+    Assert.assertEquals(name, target.getText());
+  }
+
   private static void assertIsAtInject(PsiElement target, String name) {
     Assert.assertTrue(target instanceof SoyParamDefinitionIdentifier);
     Assert.assertEquals(name, target.getText());
@@ -52,27 +57,31 @@ public class SoyReferenceTest extends SoyCodeInsightFixtureTestCase {
     return "/insight";
   }
 
-  private PsiElement resolve() throws Exception {
+  private PsiElement resolve() {
     String filename = getTestName(false) + ".soy";
     PsiReference ref = myFixture.getReferenceAtCaretPosition(filename);
     assertNotNull(ref);
     return ref.resolve();
   }
 
-  public void testAtParamReference() throws Exception {
+  public void testAtParamReference() {
     assertIsAtParam(resolve(), "planet");
   }
 
-  public void testAtInjectReference() throws Exception {
+  public void testAtStateReference() {
+    assertIsAtState(resolve(), "planet");
+  }
+
+  public void testAtInjectReference() {
     assertIsAtInject(resolve(), "planet");
   }
 
-  public void testLetDefinitionReference() throws Exception {
+  public void testLetDefinitionReference() {
     assertIsVariableDefinition(resolve(), "$planet");
   }
 
-  public void testTemplateReference() throws Throwable {
-    myFixture.configureByFiles("ReferenceSource.soy", "CompletionSource.soy");
+  public void testTemplateReference() {
+    myFixture.configureByFiles("ReferenceSource.soy", "CompletionSourceTemplate.soy");
     CallStatementElement element =
         PsiTreeUtil.findChildOfType(myFixture.getFile(), CallStatementElement.class);
     PsiElement id =
@@ -81,8 +90,8 @@ public class SoyReferenceTest extends SoyCodeInsightFixtureTestCase {
     assertEquals(".moon", ((SoyTemplateDefinitionIdentifier) id).getName());
   }
 
-  public void testParamReference() throws Throwable {
-    myFixture.configureByFiles("ReferenceSource.soy", "CompletionSource.soy");
+  public void testParamReference() {
+    myFixture.configureByFiles("ReferenceSource.soy", "CompletionSourceTemplate.soy");
     SoyParamListElement element =
         PsiTreeUtil.findChildOfType(myFixture.getFile(), SoyParamListElement.class);
     PsiElement id =
@@ -91,34 +100,82 @@ public class SoyReferenceTest extends SoyCodeInsightFixtureTestCase {
     assertEquals("planet", ((SoyParamDefinitionIdentifier) id).getName());
   }
 
-  public void testVariableReferences() throws Throwable {
-    myFixture.configureByFiles("CompletionSource.soy");
+  public void testVariableReferencesInTemplate() {
+    myFixture.configureByFiles("CompletionSourceTemplate.soy");
     PsiElement container = PsiTreeUtil.findChildOfType(myFixture.getFile(), SoyMsgStatement.class);
     Collection<SoyVariableReferenceIdentifier> vars =
-        PsiTreeUtil.findChildrenOfType(container, SoyVariableReferenceIdentifier.class);
+        PsiTreeUtil
+            .findChildrenOfType(container, SoyVariableReferenceIdentifier.class);
     assertSize(3, vars);
     for (SoyVariableReferenceIdentifier var : vars) {
-      Class expectedClass;
-      if (var.getText().equals("$planet")) {
-        // @param
-        expectedClass = SoyParamDefinitionIdentifier.class;
-      } else if (var.getText().equals("$probe")) {
-        // @inject
-        expectedClass = SoyParamDefinitionIdentifier.class;
-      } else {
-        // {let}
-        expectedClass = SoyVariableDefinitionIdentifier.class;
+      switch (var.getText()) {
+        case "$planet": // @param
+          assertInstanceOf(var.getReference().resolve(), SoyParamDefinitionIdentifier.class);
+          break;
+        case "$probe": // @inject
+          assertInstanceOf(var.getReference().resolve(), SoyParamDefinitionIdentifier.class);
+          break;
+        case "$shape": // {let}
+          assertInstanceOf(var.getReference().resolve(), SoyVariableDefinitionIdentifier.class);
+          break;
+        case "$isLoaded": // @state
+          Assert.fail("isLoaded is a @state property, should not be valid inside {template}");
+          break;
       }
-      PsiElement id = var.getReference().resolve();
-      assertInstanceOf(id, expectedClass);
     }
   }
 
-  public void testFindVariableUsages() throws Throwable {
-    myFixture.configureByFile("CompletionSource.soy");
-    // 1 @param and 1 @inject
+  public void testVariableReferencesInElement() {
+    myFixture.configureByFiles("CompletionSourceElement.soy");
+    PsiElement container = PsiTreeUtil.findChildOfType(myFixture.getFile(), SoyMsgStatement.class);
+    Collection<SoyVariableReferenceIdentifier> vars =
+        PsiTreeUtil
+            .findChildrenOfType(container, SoyVariableReferenceIdentifier.class);
+    assertSize(4, vars);
+    for (SoyVariableReferenceIdentifier var : vars) {
+      switch (var.getText()) {
+        case "$planet": // @param
+          assertInstanceOf(var.getReference().resolve(), SoyParamDefinitionIdentifier.class);
+          break;
+        case "$probe": // @inject
+          assertInstanceOf(var.getReference().resolve(), SoyParamDefinitionIdentifier.class);
+          break;
+        case "$isLoaded": // @state
+          assertInstanceOf(var.getReference().resolve(), SoyParamDefinitionIdentifier.class);
+          break;
+        case "$shape": // {let}
+          assertInstanceOf(var.getReference().resolve(), SoyVariableDefinitionIdentifier.class);
+          break;
+      }
+    }
+  }
+
+  public void testFindVariableUsagesInTemplate() {
+    myFixture.configureByFile("CompletionSourceTemplate.soy");
     Collection<SoyParamDefinitionIdentifier> params =
         PsiTreeUtil.findChildrenOfType(myFixture.getFile(), SoyParamDefinitionIdentifier.class);
+    assertSize(2, params); // 1 @param and 1 @inject
+    for (SoyParamDefinitionIdentifier param : params) {
+      Collection<UsageInfo> usages = myFixture.findUsages(param);
+      assertSize(1, usages);
+      assertInstanceOf(
+          Iterables.getOnlyElement(usages).getElement(), SoyVariableReferenceIdentifier.class);
+    }
+
+    // {let}
+    SoyVariableDefinitionIdentifier var =
+        PsiTreeUtil.findChildOfType(myFixture.getFile(), SoyVariableDefinitionIdentifier.class);
+    Collection<UsageInfo> usages = myFixture.findUsages(var);
+    assertSize(1, usages);
+    assertInstanceOf(
+        Iterables.getOnlyElement(usages).getElement(), SoyVariableReferenceIdentifier.class);
+  }
+
+  public void testFindVariableUsagesInElement() {
+    myFixture.configureByFile("CompletionSourceElement.soy");
+    Collection<SoyParamDefinitionIdentifier> params =
+        PsiTreeUtil.findChildrenOfType(myFixture.getFile(), SoyParamDefinitionIdentifier.class);
+    assertSize(3, params); // 1 @param, 1 @state and 1 @inject
     for (SoyParamDefinitionIdentifier param : params) {
       Collection<UsageInfo> usages = myFixture.findUsages(param);
       assertSize(1, usages);

@@ -43,6 +43,11 @@ public class SoyDocumentationProviderTest extends SoyCodeInsightFixtureTestCase 
         + "Leading doc");
   }
 
+  public void testAtStateReference() {
+    doTest("Defined at AtStateReference.soy:5\n"
+        + "Leading doc");
+  }
+
   public void testLetDefinitionReference() {
     doTest("Defined at LetDefinitionReference.soy:5\n"
         + "Leading doc");
@@ -55,6 +60,11 @@ public class SoyDocumentationProviderTest extends SoyCodeInsightFixtureTestCase 
 
   public void testAtParamReferenceTrailingDoc() {
     doTest("Defined at AtParamReferenceTrailingDoc.soy:4\n"
+        + "Same-line doc");
+  }
+
+  public void testAtStateReferenceTrailingDoc() {
+    doTest("Defined at AtStateReferenceTrailingDoc.soy:4\n"
         + "Same-line doc");
   }
 

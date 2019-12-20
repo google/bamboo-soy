@@ -35,24 +35,22 @@ public class SoyFormatterTest extends SoyCodeInsightFixtureTestCase {
     return "/format";
   }
 
-  protected void doTest() throws Throwable {
+  protected void doTest() {
     myFixture.configureByFiles(getTestName(false) + ".soy");
-    new WriteCommandAction.Simple(getProject()) {
-      @Override
-      protected void run() throws Throwable {
-        CodeStyleManager.getInstance(getProject()).reformatText(myFixture.getFile(),
-            ContainerUtil.newArrayList(myFixture.getFile().getTextRange()));
-      }
-    }.execute();
+    WriteCommandAction.writeCommandAction(getProject()).compute(() -> {
+      CodeStyleManager.getInstance(getProject()).reformatText(myFixture.getFile(),
+          ContainerUtil.newArrayList(myFixture.getFile().getTextRange()));
+      return null;
+    });
     myFixture.checkResultByFile(getTestName(false) + "_after.soy");
   }
 
 
-  public void testNestedBlocks() throws Throwable {
+  public void testNestedBlocks() {
     doTest();
   }
 
-  public void testSpacing() throws Throwable {
+  public void testSpacing() {
     doTest();
   }
 }

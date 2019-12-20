@@ -25,6 +25,7 @@ import com.google.bamboo.soy.lang.Variable;
 import com.google.bamboo.soy.parser.SoyAliasBlock;
 import com.google.bamboo.soy.parser.SoyAtInjectSingle;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
+import com.google.bamboo.soy.parser.SoyAtStateSingle;
 import com.google.bamboo.soy.parser.SoyBeginCall;
 import com.google.bamboo.soy.parser.SoyBeginElseIf;
 import com.google.bamboo.soy.parser.SoyBeginFor;
@@ -382,6 +383,7 @@ public class SoyCompletionContributor extends CompletionContributor {
             .andOr(
                 psiElement().inside(SoyAtParamSingle.class).afterLeaf(":"),
                 psiElement().inside(SoyAtInjectSingle.class).afterLeaf(":"),
+                psiElement().inside(SoyAtStateSingle.class).afterLeaf(":"),
 
                 // List type literal.
                 psiElement().inside(SoyListType.class).afterLeaf("<"),
