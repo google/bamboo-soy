@@ -3,8 +3,15 @@ branches:
     - master
 
 language: java
-jdk: oraclejdk8
-  
+jdk: oraclejdk11
+
+before_install:
+  - wget http://services.gradle.org/distributions/gradle-5.3-bin.zip
+  - unzip -qq gradle-5.3-bin.zip
+  - export GRADLE_HOME=$PWD/gradle-5.3
+  - export PATH=$GRADLE_HOME/bin:$PATH
+  - gradle -v
+
 # https://docs.travis-ci.com/user/languages/java/#Caching
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
