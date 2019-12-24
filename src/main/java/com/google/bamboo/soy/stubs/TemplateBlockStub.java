@@ -16,6 +16,7 @@ package com.google.bamboo.soy.stubs;
 
 import com.google.bamboo.soy.lang.Parameter;
 import com.google.bamboo.soy.SoyLanguage;
+import com.google.bamboo.soy.lang.StateVariable;
 import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.google.bamboo.soy.parser.impl.SoyTemplateBlockImpl;
 import com.google.bamboo.soy.stubs.index.TemplateBlockIndex;
@@ -58,8 +59,18 @@ public class TemplateBlockStub extends StubBase<SoyTemplateBlock> {
   public List<Parameter> getParameters() {
     return getChildrenStubs()
         .stream()
-        .filter((stub) -> stub instanceof AtParamStub)
-        .map((stub) -> ((AtParamStub) stub).getPsi().toParameter())
+        .filter(stub -> stub instanceof AtParamStub)
+        .map(stub -> ((AtParamStub) stub).getPsi().toParameter())
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
+  }
+
+  // May only be called when the stub tree is fully constructed.
+  public List<StateVariable> getStates() {
+    return getChildrenStubs()
+        .stream()
+        .filter(stub -> stub instanceof AtStateStub)
+        .map(stub -> ((AtStateStub) stub).getPsi().toStateVariable())
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }

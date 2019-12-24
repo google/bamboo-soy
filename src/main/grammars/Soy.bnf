@@ -391,7 +391,7 @@ AtParamSingle ::= <<BracedTag AtParamBody>> {
   hooks = [wsBinders = "LEADING_COMMENTS_BINDER, TRAILING_COMMENTS_BINDER"]
 }
 
-private AtParamBody ::= (AT_PARAM | AT_PARAM_OPT) ParamDefinitionIdentifier COLON TypeExpression {
+private AtParamBody ::= (AT_PARAM | AT_PARAM_OPT) ParamDefinitionIdentifier ((COLON TypeExpression [EQUAL Expr]) | COLON_EQUAL Expr) {
   pin = 1
   recoverWhile = "recoverEndOfTag"
 }

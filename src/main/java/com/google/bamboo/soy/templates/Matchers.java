@@ -17,14 +17,14 @@ package com.google.bamboo.soy.templates;
 import static com.intellij.patterns.PlatformPatterns.psiElement;
 
 import com.google.bamboo.soy.elements.CallStatementElement;
-import com.google.bamboo.soy.parser.SoyTemplateBlock;
+import com.google.bamboo.soy.parser.SoyTypes;
 import com.intellij.patterns.PsiElementPattern;
 import com.intellij.psi.PsiElement;
 
 class Matchers {
 
   static PsiElementPattern.Capture<PsiElement> templateBlockMatcher =
-      psiElement().andOr(psiElement(SoyTemplateBlock.class));
+      psiElement(SoyTypes.TEMPLATE_BLOCK);
 
   static PsiElementPattern.Capture<PsiElement> templateCallStatementMatcher =
       psiElement().inside(CallStatementElement.class);

@@ -1,0 +1,22 @@
+{namespace space}
+
+{element .foo}
+  {@param myParam := false}
+  {@param myOtherParam: string = false}
+  {@state myState := false}
+  {@state myOtherState: bool = false}
+
+  {@param param1 := <error descr="Default initializers cannot depend on other parameters or state">$myParam</error>}
+  {@param param2 := <error descr="Default initializers cannot depend on other parameters or state">$myState</error>}
+  {@param param3: bool = <error descr="Default initializers cannot depend on other parameters or state">$myParam</error>}
+  {@param param4: bool = <error descr="Default initializers cannot depend on other parameters or state">$myState</error>}
+  {@param param5 := <error descr="Default initializers cannot depend on other parameters or state">$myParam</error> || <error descr="Default initializers cannot depend on other parameters or state">$myOtherParam</error>}
+  {@param param6 := <error descr="Default initializers cannot depend on other parameters or state">$myState</error> || <error descr="Default initializers cannot depend on other parameters or state">$myOtherState</error>}
+  {@param param7: bool = <error descr="Default initializers cannot depend on other parameters or state">$myParam</error> || <error descr="Default initializers cannot depend on other parameters or state">$myOtherParam</error>}
+  {@param param8: bool = <error descr="Default initializers cannot depend on other parameters or state">$myState</error> || <error descr="Default initializers cannot depend on other parameters or state">$myOtherState</error>}
+
+  {@state state1 := $myParam}
+  {@state state2 := <error descr="State cannot be referenced in default initializers">$myState</error>}
+  {@state state3 := <error descr="State cannot be referenced in default initializers">$myState</error> || <error descr="State cannot be referenced in default initializers">$myOtherState</error>}
+  {@state state4 := <error descr="State cannot be referenced in default initializers">$myState</error> || $myParam}
+{/element}

@@ -21,12 +21,19 @@ import com.intellij.psi.util.PsiTreeUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ParamUtils {
+
   public static List<Parameter> getParamDefinitions(PsiElement element) {
     SoyTemplateBlock templateBlock = getParentTemplateBlock(element);
     return templateBlock != null ? templateBlock.getParameters() : new ArrayList<>();
+  }
+
+  public static List<StateVariable> getStateDefinitions(PsiElement element) {
+    SoyTemplateBlock templateBlock = getParentTemplateBlock(element);
+    return templateBlock != null ? templateBlock.getStates() : new ArrayList<>();
   }
 
   /* Only uses stub tree. */
@@ -46,7 +53,7 @@ public class ParamUtils {
         .getParamListElementList()
         .stream()
         .map(param -> param.getBeginParamTag().getParamSpecificationIdentifier())
-        .filter(param -> param != null)
+        .filter(Objects::nonNull)
         .map(PsiElement::getText)
         .collect(Collectors.toList());
   }

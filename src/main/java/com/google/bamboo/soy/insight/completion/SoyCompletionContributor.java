@@ -15,11 +15,15 @@
 package com.google.bamboo.soy.insight.completion;
 
 import static com.intellij.patterns.PlatformPatterns.psiElement;
+import static com.intellij.patterns.StandardPatterns.instanceOf;
+import static com.intellij.patterns.StandardPatterns.or;
 
 import com.google.bamboo.soy.elements.CallStatementElement;
+import com.google.bamboo.soy.elements.DefaultInitializerAware;
 import com.google.bamboo.soy.elements.WhitespaceUtils;
 import com.google.bamboo.soy.lang.ParamUtils;
 import com.google.bamboo.soy.lang.Scope;
+import com.google.bamboo.soy.lang.StateVariable;
 import com.google.bamboo.soy.lang.TemplateNameUtils;
 import com.google.bamboo.soy.lang.Variable;
 import com.google.bamboo.soy.parser.SoyAliasBlock;
@@ -44,6 +48,8 @@ import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyTemplateReferenceIdentifier;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
@@ -53,6 +59,7 @@ import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
 import java.util.Collection;
@@ -64,11 +71,13 @@ import org.jetbrains.annotations.NotNull;
 
 public class SoyCompletionContributor extends CompletionContributor {
 
-  private static LookupElement soyListTypeLiteral =
+  private static final LookupElement SOY_LIST_TYPE_LITERAL =
       LookupElementBuilder.create("list").withInsertHandler(new PostfixInsertHandler("<", ">"));
-  private static LookupElement soyMapTypeLiteral =
+
+  private static final LookupElement SOY_MAP_TYPE_LITERAL =
       LookupElementBuilder.create("map").withInsertHandler(new PostfixInsertHandler("<", ",>"));
-  private static List<LookupElement> soyTypeLiterals =
+
+  private static final ImmutableList<LookupElement> SOY_TYPE_LITERALS =
       Stream.concat(
           Stream.of(
               "any",
@@ -85,12 +94,16 @@ public class SoyCompletionContributor extends CompletionContributor {
               "css",
               "attributes")
               .map(LookupElementBuilder::create),
-          Stream.of(soyListTypeLiteral, soyMapTypeLiteral))
-          .collect(Collectors.toList());
-  private static List<LookupElement> kindLiterals =
+          Stream.of(SOY_LIST_TYPE_LITERAL, SOY_MAP_TYPE_LITERAL))
+          .collect(ImmutableList.toImmutableList());
+
+  private static final ImmutableList<LookupElement> KIND_LITERALS =
       Stream.of("text", "html", "attributes", "uri", "css", "js")
           .map(LookupElementBuilder::create)
-          .collect(Collectors.toList());
+          .collect(ImmutableList.toImmutableList());
+
+  private static final ImmutableSet<IElementType> DEFAULT_INITIALIZER_DELIMITERS =
+      ImmutableSet.of(SoyTypes.EQUAL, SoyTypes.COLON_EQUAL);
 
   SoyCompletionContributor() {
     extendWithTemplateDefinitionLevelKeywords();
@@ -167,13 +180,13 @@ public class SoyCompletionContributor extends CompletionContributor {
               @NotNull CompletionParameters completionParameters,
               ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
-            completionResultSet.addAllElements(kindLiterals);
+            completionResultSet.addAllElements(KIND_LITERALS);
           }
         });
   }
 
   /**
-   * Complete variable names that are in lang when in an expression.
+   * Complete variable names that are in scope when in an expression.
    */
   private void extendWithVariableNamesInScope() {
     extend(
@@ -187,24 +200,67 @@ public class SoyCompletionContributor extends CompletionContributor {
             psiElement().inside(SoyPrintStatement.class),
             psiElement().inside(SoyBeginParamTag.class).and(
                 psiElement().afterLeafSkipping(psiElement(PsiWhiteSpace.class),
-                    psiElement(SoyTypes.COLON)))
-        ),
+                    psiElement(SoyTypes.COLON))),
+            psiElement()
+                .inside(or(instanceOf(SoyAtParamSingle.class), instanceOf(SoyAtStateSingle.class)))
+                .and(
+                    psiElement().afterLeafSkipping(psiElement(PsiWhiteSpace.class),
+                        or(psiElement(SoyTypes.EQUAL), psiElement(SoyTypes.COLON_EQUAL))
+                    ))),
         new CompletionProvider<CompletionParameters>() {
           @Override
           protected void addCompletions(
               @NotNull CompletionParameters completionParameters,
-              ProcessingContext processingContext,
+              @NotNull ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
+            PsiElement currentElement = completionParameters.getPosition();
+
             Collection<Variable> params =
-                Scope.getScopeOrEmpty(completionParameters.getPosition()).getVariables();
+                Scope.getScopeOrEmpty(currentElement).getVariables();
+            boolean isInsideDefaultInitializer = isInsideDefaultInitializer(currentElement);
+            if (isInsideDefaultInitializer && PsiTreeUtil
+                .getParentOfType(currentElement, SoyAtParamSingle.class) != null) {
+              // Default parameters cannot depend on other parameters or state.
+              return;
+            }
+
             completionResultSet.addAllElements(
                 params
                     .stream()
+                    .filter(variable -> !isInsideDefaultInitializer
+                        // State cannot be referenced in default initializers.
+                        || !(variable instanceof StateVariable))
                     .map(param -> "$" + param.name)
                     .map(LookupElementBuilder::create)
                     .collect(Collectors.toList()));
           }
         });
+
+  }
+
+  private boolean isInsideDefaultInitializer(PsiElement currentElement) {
+    DefaultInitializerAware atParamOrState = PsiTreeUtil
+        .getParentOfType(currentElement, DefaultInitializerAware.class);
+    if (atParamOrState == null) {
+      return false;
+    }
+
+    if (atParamOrState.getLastChild() != null && PsiTreeUtil
+        .findSiblingBackward(atParamOrState.getLastChild(),
+            currentElement.getNode().getElementType(), false, null)
+        == currentElement) {
+      // currentElement is an immediate child of a SoyAt[State|Param]Single that does not have
+      // a valid default initializer Expr (due to malformed source code during typing).
+      return true;
+    }
+    SoyExpr atDefaultInitializer = atParamOrState.getDefaultInitializerExpr();
+    if (atDefaultInitializer == null) {
+      return false;
+    }
+
+    // currentElement is a child of a SoyAt[State|Param]Single's default initializer Expr.
+    return PsiTreeUtil.findFirstParent(
+        currentElement, element -> element == atDefaultInitializer) != null;
   }
 
   /**
@@ -397,7 +453,7 @@ public class SoyCompletionContributor extends CompletionContributor {
               @NotNull CompletionParameters completionParameters,
               ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
-            completionResultSet.addAllElements(soyTypeLiterals);
+            completionResultSet.addAllElements(SOY_TYPE_LITERALS);
           }
         });
   }

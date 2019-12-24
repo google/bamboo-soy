@@ -14,12 +14,10 @@
 
 package com.google.bamboo.soy.elements;
 
-import com.google.bamboo.soy.lang.Parameter;
 import com.google.bamboo.soy.lang.StateVariable;
+import com.google.bamboo.soy.parser.SoyExpr;
 import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyTypeExpression;
-import com.google.bamboo.soy.parser.SoyTypes;
-import com.google.bamboo.soy.stubs.AtParamStub;
 import com.google.bamboo.soy.stubs.AtStateStub;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
@@ -29,13 +27,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface AtStateElement extends StubBasedPsiElement<AtStateStub>, PsiNamedElement,
-    TagElement {
+    TagElement, DefaultInitializerAware {
 
   @Nullable
   SoyParamDefinitionIdentifier getParamDefinitionIdentifier();
 
   @Nullable
   SoyTypeExpression getTypeExpression();
+
+  @Nullable
+  SoyExpr getExpr();
 
   default PsiElement setName(@NotNull String s) throws IncorrectOperationException {
     return null;
@@ -50,6 +51,10 @@ public interface AtStateElement extends StubBasedPsiElement<AtStateStub>, PsiNam
       return getTypeExpression().getText();
     }
     return "";
+  }
+
+  default SoyExpr getDefaultInitializerExpr() {
+    return getExpr();
   }
 
   default StateVariable toStateVariable() {

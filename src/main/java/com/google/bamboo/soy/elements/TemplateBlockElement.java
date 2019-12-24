@@ -16,6 +16,7 @@ package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.lang.Parameter;
 import com.google.bamboo.soy.lang.Scope;
+import com.google.bamboo.soy.lang.StateVariable;
 import com.google.bamboo.soy.lang.Variable;
 import com.google.bamboo.soy.parser.SoyAtInjectSingle;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
@@ -72,6 +73,18 @@ public interface TemplateBlockElement
     return getAtParamSingleList()
         .stream()
         .map(SoyAtParamSingle::toParameter)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
+  }
+
+  @NotNull
+  default List<StateVariable> getStates() {
+    if (getStub() != null) {
+      return getStub().getStates();
+    }
+    return getAtStateSingleList()
+        .stream()
+        .map(SoyAtStateSingle::toStateVariable)
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }

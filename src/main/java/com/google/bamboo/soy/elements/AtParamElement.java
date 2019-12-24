@@ -15,6 +15,7 @@
 package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.lang.Parameter;
+import com.google.bamboo.soy.parser.SoyExpr;
 import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyTypeExpression;
 import com.google.bamboo.soy.parser.SoyTypes;
@@ -27,13 +28,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface AtParamElement extends StubBasedPsiElement<AtParamStub>, PsiNamedElement,
-    TagElement {
+    TagElement, DefaultInitializerAware {
 
   @Nullable
   SoyParamDefinitionIdentifier getParamDefinitionIdentifier();
 
   @Nullable
   SoyTypeExpression getTypeExpression();
+
+  @Nullable
+  SoyExpr getExpr();
 
   default PsiElement setName(@NotNull String s) throws IncorrectOperationException {
     return null;
@@ -55,6 +59,10 @@ public interface AtParamElement extends StubBasedPsiElement<AtParamStub>, PsiNam
       return getStub().isOptional;
     }
     return getTagNameTokenType() == SoyTypes.AT_PARAM_OPT;
+  }
+
+  default SoyExpr getDefaultInitializerExpr() {
+    return getExpr();
   }
 
   default Parameter toParameter() {
