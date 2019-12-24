@@ -61,7 +61,7 @@ Closure Template File
               PsiElement(SoyTokenType.param)('param')
               PsiWhiteSpace(' ')
               SoyParamSpecificationIdentifierImpl(PARAM_SPECIFICATION_IDENTIFIER)
-                PsiElement(SoyTokenType.attributes)('attributes')
+                PsiElement(SoyTokenType.IDENTIFIER_WORD)('attributes')
               PsiWhiteSpace(' ')
               SoyAttributeKeyValuePairImpl(ATTRIBUTE_KEY_VALUE_PAIR)
                 SoyAttributeNameIdentifierImpl(ATTRIBUTE_NAME_IDENTIFIER)
