@@ -95,6 +95,7 @@
     RB = "rb"
     RBRACE = "}"
     RBRACE_RBRACE = "}}"
+    RECORD = "record"
     SELECT = "select"
     SLASH = "/"
     SLASH_RBRACE = "/}"
@@ -780,9 +781,11 @@ Directive
 
 CommaSeparatedExpressionList ::= Expr (COMMA Expr)* COMMA?
 
-KeyValue ::= (Expr COLON Expr)
+KeyValue ::= Expr COLON Expr
 CommaSeparatedKeyValueList ::= KeyValue (COMMA KeyValue)* COMMA?
 
+RecordFieldValue ::= FieldIdentifier COLON Expr
+CommaSeparatedRecordFieldValueList ::= RecordFieldValue (COMMA RecordFieldValue)* COMMA?
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Expressions
@@ -805,6 +808,7 @@ Expr ::= NullCheckTernaryExpr
 
 private AtomExpr ::= VariableReferenceIdentifier
   | FunctionCallExpr
+  | RecordExpr
   | FieldExpr
   | IndexExpr
   | MapExpr
@@ -833,4 +837,5 @@ FieldExpr ::= Expr FieldAccess
 IndexExpr ::= Expr (SQUARE_OPEN | INDEX_NULL_CHECK) [CommaSeparatedExpressionList] SQUARE_CLOSE
 MapExpr ::= SQUARE_OPEN [CommaSeparatedKeyValueList] SQUARE_CLOSE
 ListExpr ::= SQUARE_OPEN [CommaSeparatedExpressionList] SQUARE_CLOSE
+RecordExpr ::= RECORD PARENS_OPEN [CommaSeparatedRecordFieldValueList] PARENS_CLOSE
 ParenthesizedExpr ::= PARENS_OPEN Expr PARENS_CLOSE
