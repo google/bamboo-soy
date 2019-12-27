@@ -132,31 +132,29 @@ public class SoyTokenTypes {
       SoyTypes.MINUS,
       SoyTypes.EXCLAMATION);
 
-  public static ImmutableMap<IElementType, String> BRACE_TYPE_TO_STRING = ImmutableMap.<IElementType, String>builder()
-      .put(SoyTypes.LBRACE, "{")
-      .put(SoyTypes.LBRACE_LBRACE, "{{")
-      .put(SoyTypes.LBRACE_SLASH, "{/")
-      .put(SoyTypes.LBRACE_LBRACE_SLASH, "{{/")
-      .put(SoyTypes.RBRACE, "}")
-      .put(SoyTypes.RBRACE_RBRACE, "}}")
-      .put(SoyTypes.SLASH_RBRACE, "/}")
-      .put(SoyTypes.SLASH_RBRACE_RBRACE, "/}}")
-      .build();
+  public static final ImmutableMap<IElementType, String> BRACE_TYPE_TO_STRING =
+      ImmutableMap.<IElementType, String>builder()
+          .put(SoyTypes.LBRACE, "{")
+          .put(SoyTypes.LBRACE_LBRACE, "{{")
+          .put(SoyTypes.LBRACE_SLASH, "{/")
+          .put(SoyTypes.LBRACE_LBRACE_SLASH, "{{/")
+          .put(SoyTypes.RBRACE, "}")
+          .put(SoyTypes.RBRACE_RBRACE, "}}")
+          .put(SoyTypes.SLASH_RBRACE, "/}")
+          .put(SoyTypes.SLASH_RBRACE_RBRACE, "/}}")
+          .build();
 
-  public static TokenSet DOUBLE_BRACES =
+  public static final TokenSet DOUBLE_BRACES =
       TokenSet.create(SoyTypes.LBRACE_LBRACE, SoyTypes.LBRACE_LBRACE_SLASH,
           SoyTypes.RBRACE_RBRACE, SoyTypes.SLASH_RBRACE_RBRACE);
 
-  public static TokenSet LEFT_SLASH_BRACES = TokenSet.create(
-      SoyTypes.LBRACE_SLASH, SoyTypes.LBRACE_LBRACE_SLASH);
-
-  public static TokenSet SLASH_R_BRACES =
+  public static final TokenSet SLASH_R_BRACES =
       TokenSet.create(SoyTypes.SLASH_RBRACE, SoyTypes.SLASH_RBRACE_RBRACE);
 
-  public static TokenSet LEFT_BRACES = TokenSet.create(
+  public static final TokenSet LEFT_BRACES = TokenSet.create(
       SoyTypes.LBRACE, SoyTypes.LBRACE_LBRACE, SoyTypes.LBRACE_SLASH, SoyTypes.LBRACE_LBRACE_SLASH);
 
-  public static TokenSet RIGHT_BRACES =
+  public static final TokenSet RIGHT_BRACES =
       TokenSet.create(SoyTypes.RBRACE, SoyTypes.RBRACE_RBRACE, SoyTypes.SLASH_RBRACE,
           SoyTypes.SLASH_RBRACE_RBRACE);
 }

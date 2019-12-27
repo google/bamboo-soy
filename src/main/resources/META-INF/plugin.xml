@@ -232,6 +232,9 @@
       implementationClass="com.google.bamboo.soy.insight.annotators.IdentifierSanityAnnotator"/>
     <annotator
       language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.insight.annotators.VariableHighlightAnnotator"/>
+    <annotator
+      language="ClosureTemplate"
       implementationClass="com.google.bamboo.soy.insight.annotators.DoubleQuotedStringAnnotator"/>
     <annotator
       language="ClosureTemplate"
