@@ -22,6 +22,13 @@ import org.jetbrains.annotations.Nullable;
 
 public class WhitespaceUtils {
 
+  public static PsiElement getFirstNonWhitespaceChild(PsiElement element) {
+    PsiElement first = element.getFirstChild();
+    return first instanceof PsiWhiteSpace
+        ? getNextNonWhitespaceSibling(first)
+        : first;
+  }
+
   @Nullable
   public static PsiElement getFirstMeaningChild(PsiElement element) {
     PsiElement first = element.getFirstChild();
@@ -36,6 +43,11 @@ public class WhitespaceUtils {
     return last instanceof PsiWhiteSpace || last instanceof PsiComment
         ? getPrevMeaningSibling(last)
         : last;
+  }
+
+  @Nullable
+  public static PsiElement getNextNonWhitespaceSibling(PsiElement element) {
+    return PsiTreeUtil.skipSiblingsForward(element, PsiWhiteSpace.class);
   }
 
   @Nullable
