@@ -14,28 +14,32 @@
 
 package com.google.bamboo.soy.elements.impl;
 
-import com.google.bamboo.soy.elements.VariableDefinitionElement;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import com.google.bamboo.soy.lang.Scope;
+import com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.search.LocalSearchScope;
+import com.intellij.psi.search.SearchScope;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public abstract class VariableDefinitionMixin extends ASTWrapperPsiElement
-    implements VariableDefinitionElement {
+public abstract class VariableDefinitionMixin extends IdentifierDefinitionMixin
+    implements SoyVariableDefinitionIdentifier {
 
   public VariableDefinitionMixin(@NotNull ASTNode node) {
     super(node);
   }
 
-  @NotNull
+  @Nullable
   @Override
-  public String getName() {
-    return getIdentifierWord() == null ? "" : getIdentifierWord().getText();
+  public PsiElement getNameIdentifier() {
+    return getIdentifierWord();
   }
 
+  @NotNull
   @Override
-  public int getTextOffset() {
-    return getIdentifierWord() == null
-        ? super.getTextOffset()
-        : getIdentifierWord().getTextOffset();
+  public SearchScope getUseScope() {
+    PsiElement scopeElement = Scope.getFirstScopeParent(this);
+    return scopeElement == null ? super.getUseScope() : new LocalSearchScope(scopeElement);
   }
 }

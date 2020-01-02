@@ -161,7 +161,9 @@ private KeywordsAllowedInIdentifiers ::=
     MAP | MSG | NIL | NUMBER | PLURAL | RB | SP | STRING | URI | XID
 
 // A single identifier token: foo, bar, any, int
-private PlainIdentifier ::= IDENTIFIER_WORD | KeywordsAllowedInIdentifiers
+private PlainIdentifier ::= IDENTIFIER_WORD | KeywordsAllowedInIdentifiers {
+  mixin = "com.google.bamboo.soy.elements.impl.SoyIdentifierMixin"
+}
 
 // A variable reference: $foo, $bar, $template
 private VariableIdentifier ::= DOLLAR IDENTIFIER_WORD {
@@ -188,7 +190,7 @@ TemplateReferenceIdentifier ::= QualifiedIdentifier {
 }
 
 VariableReferenceIdentifier ::= VariableIdentifier {
-  mixin="com.google.bamboo.soy.elements.impl.IdentifierMixin"
+  mixin="com.google.bamboo.soy.elements.impl.SoyIdentifierMixin"
   implements="com.google.bamboo.soy.elements.IdentifierElement"
 }
 
@@ -198,7 +200,7 @@ VariableDefinitionIdentifier ::= VariableIdentifier {
 }
 
 ParamDefinitionIdentifier ::= PlainIdentifier {
-  mixin="com.google.bamboo.soy.elements.impl.VariableDefinitionMixin"
+  mixin="com.google.bamboo.soy.elements.impl.ParamDefinitionMixin"
   implements="com.google.bamboo.soy.elements.VariableDefinitionElement"
  }
 

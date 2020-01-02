@@ -14,10 +14,10 @@
 
 package com.google.bamboo.soy;
 
-import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
+import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 
-public abstract class SoyCodeInsightFixtureTestCase
-    extends LightPlatformCodeInsightFixtureTestCase {
+public abstract class SoyCodeInsightFixtureTestCase extends BasePlatformTestCase {
+
   protected void setUp() throws Exception {
     super.setUp();
   }

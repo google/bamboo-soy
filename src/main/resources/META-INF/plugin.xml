@@ -202,6 +202,18 @@
     <stubIndex implementation="com.google.bamboo.soy.stubs.index.NamespaceDeclarationIndex"/>
     <stubIndex implementation="com.google.bamboo.soy.stubs.index.TemplateBlockIndex"/>
 
+    <!-- Refactoring -->
+    <psi.referenceContributor
+        implementation="com.google.bamboo.soy.refactoring.SoyReferenceContributor"/>
+    <lang.refactoringSupport language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.refactoring.SoyRefactoringSupportProvider"/>
+    <lang.elementManipulator
+        forClass="com.google.bamboo.soy.elements.impl.SoyIdentifierMixin"
+        implementationClass="com.google.bamboo.soy.refactoring.SoyIdentifierManipulator"/>
+    <lang.elementManipulator
+        forClass="com.google.bamboo.soy.elements.impl.SoyIdentifierOwnerMixin"
+        implementationClass="com.google.bamboo.soy.refactoring.SoyIdentifierManipulator"/>
+
     <!-- Annotators -->
     <annotator
       language="ClosureTemplate"

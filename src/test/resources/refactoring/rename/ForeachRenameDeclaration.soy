@@ -1,0 +1,8 @@
+{template .test}
+  {@param lines: list<string>}
+  {foreach $s<caret> in $lines}
+    {$s}
+  {ifempty}
+    EMPTY
+  {/foreach}
+{/template}

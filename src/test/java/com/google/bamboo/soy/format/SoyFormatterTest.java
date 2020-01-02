@@ -15,18 +15,9 @@
 package com.google.bamboo.soy.format;
 
 import com.google.bamboo.soy.SoyCodeInsightFixtureTestCase;
-import com.google.bamboo.soy.SoyLanguage;
 import com.intellij.openapi.command.WriteCommandAction;
-import com.intellij.openapi.fileTypes.LanguageFileType;
-import com.intellij.openapi.util.TextRange;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
 import com.intellij.psi.codeStyle.CodeStyleManager;
-import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
-import com.intellij.psi.templateLanguages.TemplateDataLanguageMappings;
 import com.intellij.util.containers.ContainerUtil;
-import org.jetbrains.annotations.NotNull;
 
 public class SoyFormatterTest extends SoyCodeInsightFixtureTestCase {
 
@@ -44,7 +35,6 @@ public class SoyFormatterTest extends SoyCodeInsightFixtureTestCase {
     });
     myFixture.checkResultByFile(getTestName(false) + "_after.soy");
   }
-
 
   public void testNestedBlocks() {
     doTest();

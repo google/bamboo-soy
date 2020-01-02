@@ -5,6 +5,7 @@ import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,10 +20,11 @@ import org.jetbrains.annotations.Nullable;
  * <p>2. Ignorance of the statement order inside a single StatementList.
  */
 public interface Scope {
+
   Scope EMPTY =
       new Scope() {
         public List<Variable> getLocalVariables() {
-          return new ArrayList<>();
+          return Collections.emptyList();
         }
 
         public Scope getParentScope() {
@@ -30,35 +32,46 @@ public interface Scope {
         }
       };
 
-  /** The most concrete scope containing the given [element] or null if none found. */
+  @Nullable
+  static PsiElement getFirstScopeParent(PsiElement element) {
+    return PsiTreeUtil.findFirstParent(element, true, psiElement -> psiElement instanceof Scope);
+  }
+
+  /**
+   * The most concrete scope containing the given [element] or null if none found.
+   */
   @Nullable
   static Scope getScope(PsiElement element) {
-    PsiElement scope =
-        PsiTreeUtil.findFirstParent(element, true, psiElement -> psiElement instanceof Scope);
+    PsiElement scope = getFirstScopeParent(element);
     // If the first scope is not a StatementList or a TemplateBlock, we must be in
     // a statement opening tag.
     if (!(scope instanceof SoyStatementList) && !(scope instanceof SoyTemplateBlock)) {
-      scope = PsiTreeUtil.findFirstParent(element, true, psiElement -> psiElement instanceof Scope);
+      scope = getFirstScopeParent(element);
     }
     return (Scope) scope;
   }
 
-  /** The most concrete scope containing the given [element] or Scope.EMPTY if none found. */
+  /**
+   * The most concrete scope containing the given [element] or Scope.EMPTY if none found.
+   */
   @NotNull
   static Scope getScopeOrEmpty(PsiElement element) {
     Scope scope = getScope(element);
     return scope != null ? scope : EMPTY;
   }
 
-  /** Variables defined in the Scope (not in one of its parents). */
+  /**
+   * Variables defined in the Scope (not in one of its parents).
+   */
   @NotNull
   List<Variable> getLocalVariables();
 
-  /** All variables visible in the Scope. */
+  /**
+   * All variables visible in the Scope.
+   */
   @NotNull
   default List<Variable> getVariables() {
-    List<Variable> variables = new ArrayList<>();
-    variables.addAll(getLocalVariables());
+    List<Variable> variables = new ArrayList<>(getLocalVariables());
     Scope parent = getParentScope();
     if (parent != null) {
       variables.addAll(parent.getVariables());

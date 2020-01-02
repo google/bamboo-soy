@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,15 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.bamboo.soy.elements;
+package com.google.bamboo.soy.elements.impl;
 
-import com.google.bamboo.soy.lang.Variable;
-import com.intellij.psi.PsiNameIdentifierOwner;
+import com.intellij.lang.ASTNode;
 import org.jetbrains.annotations.NotNull;
 
-public interface VariableDefinitionElement extends PsiNameIdentifierOwner {
+import java.util.regex.Pattern;
+
+public abstract class IdentifierDefinitionMixin extends SoyIdentifierOwnerMixin {
+  IdentifierDefinitionMixin(@NotNull ASTNode node) {
+    super(node);
+  }
+
   @NotNull
-  default Variable toVariable() {
-    return new Variable(getName(), "", this);
+  @Override
+  public String getName() {
+    if (getNameIdentifier() == null) {
+      return "";
+    }
+    String name = getNameIdentifier().getText();
+    return name.startsWith("$") ? name.substring(1) : name;
   }
 }

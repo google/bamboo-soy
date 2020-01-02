@@ -58,12 +58,7 @@ public class ParameterDefinitionReference extends PsiReferenceBase<PsiElement>
     return null;
   }
 
-  @Override
   @NotNull
-  public Object[] getVariants() {
-    return new Object[0];
-  }
-
   @Override
   public TextRange getRangeInElement() {
     return new TextRange(0, this.getElement().getNode().getTextLength());

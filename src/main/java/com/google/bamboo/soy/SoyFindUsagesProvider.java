@@ -24,6 +24,7 @@ import com.google.bamboo.soy.parser.SoyLetSingleStatement;
 import com.google.bamboo.soy.parser.SoyNamespaceDeclarationIdentifier;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier;
+import com.google.common.base.Strings;
 import com.intellij.lang.cacheBuilder.DefaultWordsScanner;
 import com.intellij.lang.cacheBuilder.WordsScanner;
 import com.intellij.lang.findUsages.FindUsagesProvider;
@@ -77,7 +78,8 @@ public class SoyFindUsagesProvider implements FindUsagesProvider {
     }
     if (parent instanceof SoyBeginTemplate) {
       return ((SoyBeginTemplate) parent).getTagNameTokenType() == SoyTypes.ELEMENT
-          ? "Element" : "Template";
+          ? "Element"
+          : "Template";
     }
     return "";
   }
@@ -85,7 +87,10 @@ public class SoyFindUsagesProvider implements FindUsagesProvider {
   @NotNull
   @Override
   public String getDescriptiveName(@NotNull PsiElement psiElement) {
-    return "";
+    if (!(psiElement instanceof PsiNamedElement)) {
+      return "";
+    }
+    return Strings.nullToEmpty(((PsiNamedElement) psiElement).getName());
   }
 
   @NotNull
