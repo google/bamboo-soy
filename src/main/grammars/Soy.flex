@@ -36,7 +36,7 @@ WhiteSpace={LineTerminator}|{HorizontalSpace}
 CommentContent=([^*]|("*"+[^/*]))*
 DocComment="/**"{CommentContent}"*"+"/"
 TraditionalComment="/*"{CommentContent}"*"+"/"
-DoubleSlashComment="//"{InputCharacter}*{LineTerminator}
+DoubleSlashComment="//"{InputCharacter}*{LineTerminator}?
 HtmlComment="<!--([^-]|-[^-]|--+[^->])*-*-->"
 Comment=({WhiteSpace}{DoubleSlashComment})|{TraditionalComment}|{HtmlComment}
 

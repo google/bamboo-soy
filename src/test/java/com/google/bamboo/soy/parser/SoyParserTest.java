@@ -69,6 +69,10 @@ public class SoyParserTest extends ParsingTestCase {
     doTest(true);
   }
 
+  public void testLineCommentNoNewlineAtEof() {
+    doTest(true);
+  }
+
   public void testSimpleStatements() {
     doTest(true);
   }
