@@ -16,6 +16,7 @@ package com.google.bamboo.soy.elements.impl;
 
 import com.google.bamboo.soy.elements.TemplateBlockElement;
 import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
+import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.bamboo.soy.stubs.TemplateBlockStub;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.stubs.IStubElementType;
@@ -35,6 +36,10 @@ public abstract class TemplateBlockMixin extends SoyStubBasedPsiElementBase<Temp
 
   public TemplateBlockMixin(TemplateBlockStub stub, IElementType type, ASTNode node) {
     super(stub, type, node);
+  }
+
+  public boolean isElementBlock() {
+    return getTagNameTokenType() == SoyTypes.ELEMENT;
   }
 
   @NotNull

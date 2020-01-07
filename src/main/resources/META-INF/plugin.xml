@@ -239,6 +239,9 @@
     <annotator
       language="ClosureTemplate"
       implementationClass="com.google.bamboo.soy.insight.annotators.DefaultInitializerRefsAnnotator"/>
+    <annotator
+      language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.insight.annotators.StateInTemplateAnnotator"/>
 
     <errorHandler implementation="com.google.bamboo.soy.RollbarErrorReportSubmitter"/>
   </extensions>

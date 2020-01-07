@@ -1,0 +1,5 @@
+{namespace space}
+
+{template .foo}
+  {<error descr="@state is only allowed inside an {element} block.">@state</error> myState:= 'test'}
+{/template}

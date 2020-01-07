@@ -350,19 +350,11 @@ TemplateBlock ::= LocalTemplateBlock | DelegateTemplateBlock | LocalElementBlock
   elementTypeFactory = "com.google.bamboo.soy.stubs.StubFactory.getType"
 }
 
-private LocalElementBlock ::= <<AbstractElementBlock ELEMENT>>
+private LocalElementBlock ::= <<AbstractTemplateBlock ELEMENT>>
 private LocalTemplateBlock ::= <<AbstractTemplateBlock TEMPLATE>>
 private DelegateTemplateBlock ::= <<AbstractTemplateBlock DELTEMPLATE>>
 
 private meta AbstractTemplateBlock ::=
-    <<BeginTemplate <<p>>>>
-    [AtParamList]
-    [<<StatementList !()>>]
-    <<EndTag <<p>>>> {
-  pin = 1
-}
-
-private meta AbstractElementBlock ::=
     <<BeginTemplate <<p>>>>
     [AtParamOrStateList]
     [<<StatementList !()>>]
@@ -378,8 +370,6 @@ private meta BeginTemplateBody ::= <<p>> (TemplateDefinitionIdentifier [Attribut
   pin = 1
   recoverWhile = "recoverEndOfTag"
 }
-
-private AtParamList ::= (AtParamSingle | AtInjectSingle)+
 
 private AtParamOrStateList ::= (AtParamSingle | AtInjectSingle | AtStateSingle)+
 
