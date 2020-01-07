@@ -1,0 +1,9 @@
+{namespace space}
+
+{template .foo}
+  <error descr="Default initializers are not supported on optional parameters. Did you mean '{@param optParam1 ...}'?">{@param? optParam1:= 'test'}</error>
+  <error descr="Default initializers are not supported on optional parameters. Did you mean '{@param optParam2 ...}'?">{@param? optParam2: string = 'test'}</error>
+
+  {@param param1 := 'test'}
+  {@param param2: string = 'test'}
+{/template}

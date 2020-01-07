@@ -29,51 +29,55 @@ public class SoyParserTest extends ParsingTestCase {
     return SoyTestUtils.getTestDataFolder();
   }
 
-  public void testAlias() throws Throwable {
+  public void testAlias() {
     doTest(true);
   }
 
-  public void testAllBlockTypes() throws Throwable {
+  public void testAllBlockTypes() {
     doTest(true);
   }
 
-  public void testAtParamList() throws Throwable {
+  public void testAtParamList() {
     doTest(true);
   }
 
-  public void testAttributes() throws Throwable {
+  public void testAttributes() {
     doTest(true);
   }
 
-  public void testCallStatement() throws Throwable {
+  public void testCallStatement() {
     doTest(true);
   }
 
-  public void testEmptyFile() throws Throwable {
+  public void testEmptyFile() {
     doTest(true);
   }
 
-  public void testExpression() throws Throwable {
+  public void testExpression() {
     doTest(true);
   }
 
-  public void testForStatement() throws Throwable {
+  public void testForStatement() {
     doTest(true);
   }
 
-  public void testIncompleteTree() throws Throwable {
+  public void testIncompleteTree() {
     doTest(true);
   }
 
-  public void testIfStatement() throws Throwable {
+  public void testIfStatement() {
     doTest(true);
   }
 
-  public void testSimpleStatements() throws Throwable {
+  public void testLineCommentNoNewlineAtEof() {
     doTest(true);
   }
 
-  public void testTypeExpression() throws Throwable {
+  public void testSimpleStatements() {
+    doTest(true);
+  }
+
+  public void testTypeExpression() {
     doTest(true);
   }
 

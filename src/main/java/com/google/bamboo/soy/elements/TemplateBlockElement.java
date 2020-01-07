@@ -16,9 +16,11 @@ package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.lang.Parameter;
 import com.google.bamboo.soy.lang.Scope;
+import com.google.bamboo.soy.lang.StateVariable;
 import com.google.bamboo.soy.lang.Variable;
 import com.google.bamboo.soy.parser.SoyAtInjectSingle;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
+import com.google.bamboo.soy.parser.SoyAtStateSingle;
 import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.bamboo.soy.stubs.TemplateBlockStub;
@@ -46,6 +48,9 @@ public interface TemplateBlockElement
   @NotNull
   List<SoyAtParamSingle> getAtParamSingleList();
 
+  @NotNull
+  List<SoyAtStateSingle> getAtStateSingleList();
+
   @Override
   default PsiElement setName(@NotNull String s) throws IncorrectOperationException {
     return null;
@@ -72,6 +77,18 @@ public interface TemplateBlockElement
         .collect(Collectors.toList());
   }
 
+  @NotNull
+  default List<StateVariable> getStates() {
+    if (getStub() != null) {
+      return getStub().getStates();
+    }
+    return getAtStateSingleList()
+        .stream()
+        .map(SoyAtStateSingle::toStateVariable)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
+  }
+
   @Nullable
   @Override
   default Scope getParentScope() {
@@ -84,6 +101,7 @@ public interface TemplateBlockElement
     List<Variable> variables = new ArrayList<>();
     variables.addAll(getParameters());
     variables.addAll(getInjectedVariables());
+    variables.addAll(getStateVariables());
     return variables;
   }
 
@@ -91,6 +109,14 @@ public interface TemplateBlockElement
     return getAtInjectSingleList()
         .stream()
         .map(SoyAtInjectSingle::toVariable)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
+  }
+
+  default List<Variable> getStateVariables() {
+    return getAtStateSingleList()
+        .stream()
+        .map(SoyAtStateSingle::toStateVariable)
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }

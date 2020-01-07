@@ -6,6 +6,7 @@ import static com.google.bamboo.soy.parser.SoyTypes.DELTEMPLATE;
 import static com.google.bamboo.soy.parser.SoyTypes.DEL_CALL_STATEMENT;
 import static com.google.bamboo.soy.parser.SoyTypes.DIRECT_CALL_STATEMENT;
 import static com.google.bamboo.soy.parser.SoyTypes.DOC_COMMENT_BLOCK;
+import static com.google.bamboo.soy.parser.SoyTypes.ELEMENT;
 import static com.google.bamboo.soy.parser.SoyTypes.FOR;
 import static com.google.bamboo.soy.parser.SoyTypes.FOREACH;
 import static com.google.bamboo.soy.parser.SoyTypes.FOREACH_STATEMENT;
@@ -91,6 +92,7 @@ public class SoyParserUtil extends GeneratedParserUtilBase {
           .put(CALL, DIRECT_CALL_STATEMENT)
           .put(DELCALL, DEL_CALL_STATEMENT)
           .put(DELTEMPLATE, TEMPLATE_BLOCK)
+          .put(ELEMENT, TEMPLATE_BLOCK)
           .put(FOREACH, FOREACH_STATEMENT)
           .put(FOR, FOR_STATEMENT)
           .put(IF, IF_STATEMENT)

@@ -14,11 +14,11 @@
   elementTypeClass="com.google.bamboo.soy.parser.SoyElementType"
   tokenTypeClass="com.google.bamboo.soy.lexer.SoyTokenType"
 
-  implements("Begin.*|.*Tag|.*Block")="com.google.bamboo.soy.elements.TagElement"
+  implements("Begin.*|.*Tag|(Namespace|Alias|DelegatePackage)Block")="com.google.bamboo.soy.elements.TagElement"
   implements("(Css|LetSingle|SpecialCharacter|Xid|Print)Statement")
       = ["com.google.bamboo.soy.elements.StatementElement" "com.google.bamboo.soy.elements.TagElement"]
   implements("LiteralStatement") = ["com.google.bamboo.soy.elements.StatementElement"]
-  implements(".*Statement")
+  implements("(Call|Choice|For|Foreach|If|LetCompound|Literal|Msg)Statement")
       = ["com.google.bamboo.soy.elements.StatementElement" "com.google.bamboo.soy.elements.TagBlockElement"]
 
   extends(".*Expr|VariableReferenceIdentifier")=Expr
@@ -31,6 +31,7 @@
     AS = "as"
     AT_PARAM = "@param"
     AT_PARAM_OPT = "@param?"
+    AT_STATE = "@state"
     AT_INJECT = "@inject"
     AT_INJECT_OPT = "@inject?"
     BOOL_LITERAL = "regexp:false|true"
@@ -39,6 +40,7 @@
     CARRIAGE_RETURN = "\\r"
     CASE = "case"
     COLON = ":"
+    COLON_EQUAL = ":="
     COMMA = ","
     CSS="css"
     DEFAULT = "default"
@@ -48,6 +50,7 @@
     DOLLAR = "$"
     DOT = "."
     DOT_NULL_CHECK = "?."
+    ELEMENT = "element"
     ELSE = "else"
     ELSEIF = "elseif"
     EQUAL = "="
@@ -340,19 +343,20 @@ private AliasBody ::= ALIAS NamespaceIdentifier [AS AliasIdentifier] {
 
 // Template block
 
-TemplateBlock ::= LocalTemplateBlock | DelegateTemplateBlock {
+TemplateBlock ::= LocalTemplateBlock | DelegateTemplateBlock | LocalElementBlock {
   mixin="com.google.bamboo.soy.elements.impl.TemplateBlockMixin"
   implements="com.google.bamboo.soy.elements.TemplateBlockElement"
   stubClass = "com.google.bamboo.soy.stubs.TemplateBlockStub"
   elementTypeFactory = "com.google.bamboo.soy.stubs.StubFactory.getType"
 }
 
+private LocalElementBlock ::= <<AbstractTemplateBlock ELEMENT>>
 private LocalTemplateBlock ::= <<AbstractTemplateBlock TEMPLATE>>
 private DelegateTemplateBlock ::= <<AbstractTemplateBlock DELTEMPLATE>>
 
 private meta AbstractTemplateBlock ::=
     <<BeginTemplate <<p>>>>
-    [AtParamList]
+    [AtParamOrStateList]
     [<<StatementList !()>>]
     <<EndTag <<p>>>> {
   pin = 1
@@ -367,7 +371,7 @@ private meta BeginTemplateBody ::= <<p>> (TemplateDefinitionIdentifier [Attribut
   recoverWhile = "recoverEndOfTag"
 }
 
-private AtParamList ::= (AtParamSingle | AtInjectSingle)+
+private AtParamOrStateList ::= (AtParamSingle | AtInjectSingle | AtStateSingle)+
 
 AtParamSingle ::= <<BracedTag AtParamBody>> {
   implements = "com.google.bamboo.soy.elements.AtParamElement"
@@ -377,7 +381,20 @@ AtParamSingle ::= <<BracedTag AtParamBody>> {
   hooks = [wsBinders = "LEADING_COMMENTS_BINDER, TRAILING_COMMENTS_BINDER"]
 }
 
-private AtParamBody ::= (AT_PARAM | AT_PARAM_OPT) ParamDefinitionIdentifier COLON TypeExpression {
+private AtParamBody ::= (AT_PARAM | AT_PARAM_OPT) ParamDefinitionIdentifier ((COLON TypeExpression [EQUAL Expr]) | COLON_EQUAL Expr) {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
+
+AtStateSingle ::= <<BracedTag AtStateBody>> {
+  implements = "com.google.bamboo.soy.elements.AtStateElement"
+  mixin = "com.google.bamboo.soy.elements.impl.AtStateMixin"
+  stubClass = "com.google.bamboo.soy.stubs.AtStateStub"
+  elementTypeFactory = "com.google.bamboo.soy.stubs.StubFactory.getType"
+  hooks = [wsBinders = "LEADING_COMMENTS_BINDER, TRAILING_COMMENTS_BINDER"]
+}
+
+private AtStateBody ::= (AT_STATE) ParamDefinitionIdentifier (COLON TypeExpression EQUAL Expr | COLON_EQUAL Expr) {
   pin = 1
   recoverWhile = "recoverEndOfTag"
 }
@@ -430,6 +447,24 @@ private Content ::= OTHER
 private Statement ::=
     SingleTagStatement
   |
+    BlockTagStatement
+  |
+    Content
+
+
+private SingleTagStatement ::=
+    CssStatement
+  |
+    LetSingleStatement
+  |
+    SpecialCharacterStatement
+  |
+    XidStatement
+  |
+    PrintStatement
+
+
+private BlockTagStatement ::=
     CallStatement
   |
     ChoiceStatement
@@ -445,20 +480,6 @@ private Statement ::=
     LiteralStatement
   |
     MsgStatement
-  |
-    Content
-
-
-private SingleTagStatement ::=
-    CssStatement
-  |
-    LetSingleStatement
-  |
-    SpecialCharacterStatement
-  |
-    XidStatement
-  |
-    PrintStatement
 
 
 // Same as StatementList but cannot empty.
@@ -616,7 +637,7 @@ private ParamList ::=
   recoverWhile = "!(endOfStatementBlock)"
 }
 
-ParamListElement ::= !<<ClosedBracedTag BeginParamTagBody>> BlockParamListElement | BeginParamTag {
+ParamListElement ::= !(<<ClosedBracedTag BeginParamTagBody>>) BlockParamListElement | BeginParamTag {
   implements = "com.google.bamboo.soy.elements.ParamElement"
 }
 

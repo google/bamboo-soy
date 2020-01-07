@@ -160,7 +160,7 @@
     <lang.fileViewProviderFactory language="ClosureTemplate"
       implementationClass="com.google.bamboo.soy.file.SoyFileViewProviderFactory"/>
     <html.scriptContentProvider language="ClosureTemplate"
-      implementationClass="com.intellij.lang.HtmlScriptContentProvider.Empty"/>
+      implementationClass="com.intellij.lang.HtmlScriptContentProvider$Empty"/>
     <lang.formatter language="ClosureTemplate"
       implementationClass="com.google.bamboo.soy.format.SoyFormattingModelBuilder"/>
     <lang.syntaxHighlighterFactory
@@ -233,6 +233,15 @@
     <annotator
       language="ClosureTemplate"
       implementationClass="com.google.bamboo.soy.insight.annotators.DoubleQuotedStringAnnotator"/>
+    <annotator
+      language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.insight.annotators.DefaultInitializerOnOptionalParameterAnnotator"/>
+    <annotator
+      language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.insight.annotators.DefaultInitializerRefsAnnotator"/>
+    <annotator
+      language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.insight.annotators.StateInTemplateAnnotator"/>
 
     <errorHandler implementation="com.google.bamboo.soy.RollbarErrorReportSubmitter"/>
   </extensions>

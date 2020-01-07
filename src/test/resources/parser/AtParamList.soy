@@ -1,24 +1,65 @@
-{template .emptyAtParamList}
+{template .emptyAtParamListTemplate}
 {/template}
 
-{template .singleAtParamStatement}
+{template .singleAtParamStatementTemplate}
   {@param a : int}
 {/template}
 
-{template .singleAtInjectStatement}
+{template .singleAtInjectStatementTemplate}
   {@inject b : ?}
 {/template}
 
-{template .atParamAndAtInject}
+{template .singleAtStateStatementTemplate}
+  {@state c := false}
+{/template}
+
+{template .atParamAndAtInjectAndAtStateTemplate}
   {@param a : int}
   {@param b : string}
   {@inject b : ?}
   {@inject b : uri}
+  {@state c := 0}
+  {@state c : string = 'value'}
 {/template}
 
-{template .atParamAndAtInjectInterleaved}
+{template .atParamAndAtInjectInterleavedTemplate}
   {@param a : int}
   {@inject b : ?}
+  {@state c := 0}
   {@param b : string}
   {@inject b : uri}
+  {@state c : string = 'value'}
 {/template}
+
+{element .emptyAtParamListElement}
+{/element}
+
+{element .singleAtParamStatementElement}
+  {@param a : int}
+{/element}
+
+{element .singleAtInjectStatementElement}
+  {@inject b : ?}
+{/element}
+
+{element .singleAtStateStatementElement}
+  {@state c := false}
+{/element}
+
+{element .atParamAndAtInjectAndAtStateElement}
+  {@param a : int}
+  {@param b : string}
+  {@inject b : ?}
+  {@inject b : uri}
+  {@state c := 0}
+  {@state c : string = 'value'}
+{/element}
+
+{element .atParamAndAtInjectInterleavedElement}
+  {@param a : int}
+  {@inject b : ?}
+  {@state c := 0}
+  {@param b : string}
+  {@inject b : uri}
+  {@state c : string = 'value'}
+{/element}

@@ -36,7 +36,7 @@ WhiteSpace={LineTerminator}|{HorizontalSpace}
 CommentContent=([^*]|("*"+[^/*]))*
 DocComment="/**"{CommentContent}"*"+"/"
 TraditionalComment="/*"{CommentContent}"*"+"/"
-DoubleSlashComment="//"{InputCharacter}*{LineTerminator}
+DoubleSlashComment="//"{InputCharacter}*{LineTerminator}?
 HtmlComment="<!--([^-]|-[^-]|--+[^->])*-*-->"
 Comment=({WhiteSpace}{DoubleSlashComment})|{TraditionalComment}|{HtmlComment}
 
@@ -115,12 +115,14 @@ NonSemantical=({WhiteSpace}|{DoubleSlashComment}|{DocComment}|{Comment})*
   "deltemplate"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELTEMPLATE; }
   "namespace"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.NAMESPACE; }
   "template"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.TEMPLATE; }
+  "element"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.ELEMENT; }
 
   "alias" { return SoyTypes.ALIAS; }
   "call" { return SoyTypes.CALL; }
   "delcall" { return SoyTypes.DELCALL; }
   "delpackage" { return SoyTypes.DELPACKAGE; }
   "deltemplate" { return SoyTypes.DELTEMPLATE; }
+  "element" { return SoyTypes.ELEMENT; }
   "namespace" { return SoyTypes.NAMESPACE; }
   "template" { return SoyTypes.TEMPLATE; }
 
@@ -136,6 +138,7 @@ NonSemantical=({WhiteSpace}|{DoubleSlashComment}|{DocComment}|{Comment})*
   "@inject?" { return SoyTypes.AT_INJECT_OPT; }
   "@param" { return SoyTypes.AT_PARAM; }
   "@param?" { return SoyTypes.AT_PARAM_OPT; }
+  "@state" { return SoyTypes.AT_STATE; }
   "case" { return SoyTypes.CASE; }
   "default" { return SoyTypes.DEFAULT; }
 
@@ -210,6 +213,7 @@ NonSemantical=({WhiteSpace}|{DoubleSlashComment}|{DocComment}|{Comment})*
 
   "=" { return SoyTypes.EQUAL; }
   ":" { return SoyTypes.COLON; }
+  ":=" { return SoyTypes.COLON_EQUAL; }
   "?" { return SoyTypes.QUESTIONMARK; }
   "?:" { return SoyTypes.TERNARY_COALESCER; }
 

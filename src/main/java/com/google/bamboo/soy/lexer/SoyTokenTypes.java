@@ -33,6 +33,7 @@ public class SoyTokenTypes {
       /* Tag names */
       SoyTypes.AT_PARAM,
       SoyTypes.AT_PARAM_OPT,
+      SoyTypes.AT_STATE,
       SoyTypes.AT_INJECT,
       SoyTypes.AT_INJECT_OPT,
       SoyTypes.ALIAS,
@@ -43,6 +44,7 @@ public class SoyTokenTypes {
       SoyTypes.DELCALL,
       SoyTypes.DELPACKAGE,
       SoyTypes.DELTEMPLATE,
+      SoyTypes.ELEMENT,
       SoyTypes.ELSE,
       SoyTypes.ELSEIF,
       SoyTypes.FALLBACKMSG,

@@ -19,6 +19,8 @@ import com.google.bamboo.soy.lang.ParamUtils;
 import com.google.bamboo.soy.lang.Parameter;
 import com.google.bamboo.soy.lang.Variable;
 import com.google.bamboo.soy.parser.SoyTemplateBlock;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Streams;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
@@ -40,32 +42,40 @@ public class UnusedParameterAnnotator implements Annotator {
         return;
       }
 
-      Collection<Parameter> parameters = ParamUtils.getParamDefinitions(element);
+      Collection<? extends Variable> variables = Streams
+          .concat(ParamUtils.getParamDefinitions(element).stream(),
+              ParamUtils.getStateDefinitions(element).stream()).collect(
+              ImmutableList.toImmutableList());
 
       Collection<String> usedVariableIdentifiers =
           PsiTreeUtil.findChildrenOfType(element, IdentifierElement.class)
               .stream()
               .map(IdentifierElement::getReferences)
-              .flatMap(references -> Arrays.stream(references))
+              .flatMap(Arrays::stream)
               .map(PsiReference::getCanonicalText)
               .filter(id -> id.startsWith("$"))
               .map(id -> id.substring(1))
+              .distinct()
               .collect(Collectors.toList());
 
-      for (Variable parameter : parameters) {
+      for (Variable variable : variables) {
         boolean isMatched = false;
         for (String usedIdentifier : usedVariableIdentifiers) {
-          if (usedIdentifier.startsWith(parameter.name)) {
+          if (usedIdentifier.startsWith(variable.name)) {
             isMatched = true;
             break;
           }
         }
 
         if (!isMatched) {
-          annotationHolder.createInfoAnnotation(parameter.element,
-              "Parameter " + parameter.name + " is unused.");
+          annotationHolder.createInfoAnnotation(variable.element,
+              variableType(variable) + " " + variable.name + " is unused.");
         }
       }
     }
+  }
+
+  private static String variableType(Variable variable) {
+    return variable instanceof Parameter ? "Parameter" : "State variable";
   }
 }

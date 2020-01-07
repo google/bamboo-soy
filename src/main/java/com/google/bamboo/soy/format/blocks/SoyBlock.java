@@ -23,6 +23,7 @@ import com.google.bamboo.soy.elements.WhitespaceUtils;
 import com.google.bamboo.soy.format.SoySpacing;
 import com.google.bamboo.soy.parser.SoyAtInjectSingle;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
+import com.google.bamboo.soy.parser.SoyAtStateSingle;
 import com.google.bamboo.soy.parser.SoyChoiceClause;
 import com.google.bamboo.soy.parser.SoyStatementList;
 import com.google.bamboo.soy.parser.SoyTypes;
@@ -74,6 +75,7 @@ public class SoyBlock extends TemplateLanguageBlock {
     return element instanceof ParamElement
         || element instanceof SoyAtParamSingle
         || element instanceof SoyAtInjectSingle
+        || element instanceof SoyAtStateSingle
         || element instanceof SoyChoiceClause;
   }
 

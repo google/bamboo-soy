@@ -30,7 +30,7 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
   }
 
   protected void doTest(String inputText, Set<String> expectedCompletions) throws Throwable {
-    myFixture.configureByFiles("CompletionSource.soy", "ExtraCompletionSource.soy");
+    myFixture.configureByFiles("CompletionSourceTemplate.soy", "ExtraCompletionSource.soy");
     myFixture.configureByText(SoyFileType.INSTANCE, inputText);
     myFixture.complete(CompletionType.BASIC, 1);
     List<String> actualCompletions = myFixture.getLookupElementStrings();
@@ -39,7 +39,7 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
   }
 
   protected void doTest(String inputText, String expectedText) throws Throwable {
-    myFixture.configureByFiles("CompletionSource.soy", "ExtraCompletionSource.soy");
+    myFixture.configureByFiles("CompletionSourceTemplate.soy", "ExtraCompletionSource.soy");
     myFixture.configureByText(SoyFileType.INSTANCE, inputText);
     myFixture.complete(CompletionType.BASIC, 1);
     myFixture.checkResult(expectedText);
@@ -97,7 +97,7 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
         "{alias outer.space}{template}{call spaceship.e");
   }
 
-  public void testVariablesInScope() throws Throwable {
+  public void testVariablesInTemplateScope() throws Throwable {
     doTest(
         "{template .foo}"
             + "{@param dimension: number}"
@@ -107,5 +107,98 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
             + "{for $loop in range(1, 2)}"
             + "  {$<caret>",
         ImmutableSet.of("$dimension", "$force", "$multiplier", "$loop"));
+  }
+
+  public void testVariablesInElementScope() throws Throwable {
+    doTest(
+        "{element .foo}"
+            + "{@param dimension: number}"
+            + "{@state isLoaded := false}"
+            + "{@inject force: number}"
+            + "{let $multiplier: 10}"
+            + "{foreach $ignored in $dimension}{/foreach}"
+            + "{for $loop in range(1, 2)}"
+            + "  {$<caret>",
+        ImmutableSet.of("$dimension", "$isLoaded", "$force", "$multiplier", "$loop"));
+  }
+
+  public void testVariablesInUntypedAtParamDefaultInitializer() throws Throwable {
+    doTest(
+        "{element .foo}"
+            + "{@param dimension: number}"
+            + "{@state isLoaded := false}"
+            + "{@inject force: number}"
+            + "{@param another := <caret>",
+        ImmutableSet.of());
+  }
+
+  public void testVariablesInTypedAtParamDefaultInitializer() throws Throwable {
+    doTest(
+        "{element .foo}"
+            + "{@param dimension: number}"
+            + "{@state isLoaded := false}"
+            + "{@inject force: number}"
+            + "{@param another: number = <caret>",
+        ImmutableSet.of());
+  }
+
+  public void testVariablesInUntypedAtParamDefaultInitializerLeadingDollar() throws Throwable {
+    doTest(
+        "{element .foo}"
+            + "{@param dimension: number}"
+            + "{@state isLoaded := false}"
+            + "{@inject force: number}"
+            + "{@param another := $<caret>",
+        ImmutableSet.of());
+  }
+
+  public void testVariablesInTypedAtParamDefaultInitializerLeadingDollar() throws Throwable {
+    doTest(
+        "{element .foo}"
+            + "{@param dimension: number}"
+            + "{@state isLoaded := false}"
+            + "{@inject force: number}"
+            + "{@param another: number = $<caret>",
+        ImmutableSet.of());
+  }
+
+  public void testVariablesInUntypedAtStateDefaultInitializer() throws Throwable {
+    doTest(
+        "{element .foo}"
+            + "{@param dimension: number}"
+            + "{@state isLoaded := false}"
+            + "{@inject force: number}"
+            + "{@state another := <caret>",
+        ImmutableSet.of("$force", "$dimension"));
+  }
+
+  public void testVariablesInTypedAtStateDefaultInitializer() throws Throwable {
+    doTest(
+        "{element .foo}"
+            + "{@param dimension: number}"
+            + "{@state isLoaded := false}"
+            + "{@inject force: number}"
+            + "{@state another: number = <caret>",
+        ImmutableSet.of("$force", "$dimension"));
+  }
+
+  public void testVariablesInUntypedAtStateDefaultInitializerLeadingDollar() throws Throwable {
+    doTest(
+        "{element .foo}"
+            + "{@param dimension: number}"
+            + "{@state isLoaded := false}"
+            + "{@inject force: number}"
+            + "{@state another := $<caret>",
+        ImmutableSet.of("$force", "$dimension"));
+  }
+
+  public void testVariablesInTypedAtStateDefaultInitializerLeadingDollar() throws Throwable {
+    doTest(
+        "{element .foo}"
+            + "{@param dimension: number}"
+            + "{@state isLoaded := false}"
+            + "{@inject force: number}"
+            + "{@state another: number = $<caret>",
+        ImmutableSet.of("$force", "$dimension"));
   }
 }

@@ -35,7 +35,7 @@ public class SoySpacing {
 
         // Left brace should not be followed by whitespace.
         .after(SoyTokenTypes.LEFT_BRACES).spacing(0, 0, 0, false, 0)
-        // /} and /} should be preceded by a space.
+        // /} and /}} should be preceded by a space.
         .before(SoyTokenTypes.SLASH_R_BRACES).spacing(1, 1, 0, false, 0)
         // } and }} should not be preceded by whitespace.
         .before(SoyTokenTypes.RIGHT_BRACES).spacing(0, 0, 0, false, 0)
@@ -51,6 +51,7 @@ public class SoySpacing {
         .around(SoyTypes.NAMESPACE_BLOCK).lineBreakInCode()
         .around(SoyTypes.AT_INJECT_SINGLE).lineBreakInCode()
         .around(SoyTypes.AT_PARAM_SINGLE).lineBreakInCode()
+        .around(SoyTypes.AT_STATE_SINGLE).lineBreakInCode()
         .around(SoyTypes.CHOICE_CLAUSE).lineBreakInCode()
         .around(SoyTypes.PARAM_LIST_ELEMENT).lineBreakInCode()
 

@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc.
+// Copyright 2019 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,20 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.bamboo.soy.templates;
+package com.google.bamboo.soy.elements;
 
-import com.intellij.codeInsight.template.impl.DefaultLiveTemplatesProvider;
-import org.jetbrains.annotations.Nullable;
+import com.google.bamboo.soy.parser.SoyExpr;
 
-public class SoyTemplateProvider implements DefaultLiveTemplatesProvider {
-  @Override
-  public String[] getDefaultLiveTemplateFiles() {
-    return new String[] {"liveTemplates/ClosureTemplates"};
-  }
+public interface DefaultInitializerAware extends TagElement {
 
-  @Nullable
-  @Override
-  public String[] getHiddenLiveTemplateFiles() {
-    return null;
-  }
+  SoyExpr getDefaultInitializerExpr();
 }
