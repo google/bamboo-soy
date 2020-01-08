@@ -186,6 +186,7 @@ NonSemantical=({WhiteSpace}|{DoubleSlashComment}|{DocComment}|{Comment})*
 
   /* Other verbal tokens */
   "as" { return SoyTypes.AS; }
+  record { return SoyTypes.RECORD; }
   true { return SoyTypes.BOOL_LITERAL; }
   false { return SoyTypes.BOOL_LITERAL; }
   null { return SoyTypes.NULL_LITERAL; }

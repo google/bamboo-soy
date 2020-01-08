@@ -78,7 +78,8 @@ public class SoyTokenTypes {
       SoyTypes.END_LITERAL_DOUBLE,
 
       /* Other verbal tokens */
-      SoyTypes.AS);
+      SoyTypes.AS,
+      SoyTypes.RECORD);
 
   public static final TokenSet OPERATOR_LITERALS = TokenSet
       .create(SoyTypes.AND, SoyTypes.OR, SoyTypes.NOT);
