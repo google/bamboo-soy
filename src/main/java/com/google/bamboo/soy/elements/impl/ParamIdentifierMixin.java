@@ -17,6 +17,7 @@ package com.google.bamboo.soy.elements.impl;
 import com.google.bamboo.soy.elements.ParamIdentifierElement;
 import com.google.bamboo.soy.elements.references.ParameterDefinitionReference;
 import com.intellij.lang.ASTNode;
+import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class ParamIdentifierMixin extends SoyIdentifierOwnerMixin
     implements ParamIdentifierElement {
+
   public ParamIdentifierMixin(@NotNull ASTNode node) {
     super(node);
   }
@@ -37,5 +39,10 @@ public abstract class ParamIdentifierMixin extends SoyIdentifierOwnerMixin
   @Override
   public PsiReference getReference() {
     return new ParameterDefinitionReference(getNode().getPsi(), getNode().getTextRange());
+  }
+
+  @Override
+  public ItemPresentation getPresentation() {
+    return SoyPsiElementPresentationFactory.getItemPresentation(this);
   }
 }

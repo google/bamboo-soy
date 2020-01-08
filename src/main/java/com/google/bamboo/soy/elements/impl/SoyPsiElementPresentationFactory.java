@@ -14,31 +14,36 @@
 
 package com.google.bamboo.soy.elements.impl;
 
-import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
-import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
-import com.intellij.psi.PsiElement;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.util.Iconable;
+import com.intellij.psi.PsiNamedElement;
+import javax.swing.Icon;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class ParamDefinitionMixin extends IdentifierDefinitionMixin
-    implements SoyParamDefinitionIdentifier {
+class SoyPsiElementPresentationFactory {
 
-  public ParamDefinitionMixin(@NotNull ASTNode node) {
-    super(node);
+  static ItemPresentation getItemPresentation(PsiNamedElement element) {
+    return new ItemPresentation() {
+
+      @Nullable
+      @Override
+      public String getPresentableText() {
+        return element.getName();
+      }
+
+      @Nullable
+      @Override
+      public String getLocationString() {
+        return null;
+      }
+
+      @Nullable
+      @Override
+      public Icon getIcon(boolean unused) {
+        return element.getIcon(Iconable.ICON_FLAG_READ_STATUS);
+      }
+    };
   }
 
-  @Nullable
-  public abstract PsiElement getIdentifierWord();
-
-  @Nullable
-  @Override
-  public PsiElement getNameIdentifier() {
-    return getIdentifierWord();
-  }
-
-  @Override
-  public ItemPresentation getPresentation() {
-    return SoyPsiElementPresentationFactory.getItemPresentation(this);
-  }
+  private SoyPsiElementPresentationFactory() {}
 }

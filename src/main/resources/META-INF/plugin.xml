@@ -198,6 +198,7 @@
 
     <codeStyleSettingsProvider implementation="com.google.bamboo.soy.format.SoyCodeStyleSettingsProvider"/>
     <langCodeStyleSettingsProvider implementation="com.google.bamboo.soy.format.SoyLanguageCodeStyleSettingsProvider"/>
+    <iconProvider implementation="com.google.bamboo.soy.icons.SoyElementIconProvider"/>
 
     <stubIndex implementation="com.google.bamboo.soy.stubs.index.NamespaceDeclarationIndex"/>
     <stubIndex implementation="com.google.bamboo.soy.stubs.index.TemplateBlockIndex"/>

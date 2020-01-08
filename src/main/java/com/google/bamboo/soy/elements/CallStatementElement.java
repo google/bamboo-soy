@@ -18,9 +18,10 @@ import com.google.bamboo.soy.parser.SoyBeginCall;
 import com.google.bamboo.soy.parser.SoyEndTag;
 import com.google.bamboo.soy.parser.SoyParamListElement;
 import com.google.bamboo.soy.parser.SoyTypes;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public interface CallStatementElement extends TagBlockElement, StatementElement {
 

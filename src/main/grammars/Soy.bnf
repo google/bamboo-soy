@@ -244,7 +244,6 @@ private NumberLiteral ::= INTEGER_LITERAL | FLOAT_LITERAL | DOT FLOAT_LITERAL
 AnyStringLiteral ::= STRING_LITERAL | MULTI_LINE_STRING_LITERAL {
   mixin="com.google.bamboo.soy.elements.impl.IdentifierMixin"
   implements="com.google.bamboo.soy.elements.IdentifierElement"
-  methods=[getReferences]
 }
 
 // Types

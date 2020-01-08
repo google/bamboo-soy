@@ -21,7 +21,6 @@ import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.util.PsiTreeUtil;
-import javax.swing.Icon;
 import org.jetbrains.annotations.NotNull;
 
 public class SoyFile extends PsiFileBase {
@@ -43,11 +42,6 @@ public class SoyFile extends PsiFileBase {
   @Override
   public String toString() {
     return "Closure Template File";
-  }
-
-  @Override
-  public Icon getIcon(int flags) {
-    return super.getIcon(flags);
   }
 
   public String getNamespace() {

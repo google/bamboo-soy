@@ -16,7 +16,6 @@ package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.lang.StateVariable;
 import com.google.bamboo.soy.parser.SoyExpr;
-import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyTypeExpression;
 import com.google.bamboo.soy.stubs.AtStateStub;
 import com.intellij.psi.PsiElement;
@@ -27,10 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface AtStateElement extends StubBasedPsiElement<AtStateStub>, PsiNamedElement,
-    TagElement, DefaultInitializerAware {
-
-  @Nullable
-  SoyParamDefinitionIdentifier getParamDefinitionIdentifier();
+    TagElement, AtElementSingle {
 
   @Nullable
   SoyTypeExpression getTypeExpression();

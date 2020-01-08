@@ -14,13 +14,12 @@
 
 package com.google.bamboo.soy.elements.impl;
 
-import com.google.bamboo.soy.elements.AtParamElement;
 import com.google.bamboo.soy.elements.AtStateElement;
 import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyTypeExpression;
-import com.google.bamboo.soy.stubs.AtParamStub;
 import com.google.bamboo.soy.stubs.AtStateStub;
 import com.intellij.lang.ASTNode;
+import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -64,5 +63,10 @@ public abstract class AtStateMixin extends SoyStubBasedPsiElementBase<AtStateStu
   @Override
   public SoyTypeExpression getTypeExpression() {
     return PsiTreeUtil.getChildOfType(this, SoyTypeExpression.class);
+  }
+
+  @Override
+  public ItemPresentation getPresentation() {
+    return SoyPsiElementPresentationFactory.getItemPresentation(this);
   }
 }

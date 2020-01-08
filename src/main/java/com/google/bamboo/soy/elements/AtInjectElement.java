@@ -15,7 +15,6 @@
 package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.lang.Variable;
-import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyTypeExpression;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
@@ -23,9 +22,7 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface AtInjectElement extends PsiNamedElement, TagElement {
-  @Nullable
-  SoyParamDefinitionIdentifier getParamDefinitionIdentifier();
+public interface AtInjectElement extends PsiNamedElement, TagElement, AtElementSingle {
 
   @Nullable
   SoyTypeExpression getTypeExpression();

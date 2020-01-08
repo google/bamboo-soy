@@ -1,4 +1,4 @@
-// Copyright 2019 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,9 +14,22 @@
 
 package com.google.bamboo.soy.elements;
 
+import com.google.bamboo.soy.lang.Variable;
 import com.google.bamboo.soy.parser.SoyExpr;
+import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
+import com.google.bamboo.soy.parser.SoyTypeExpression;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiNamedElement;
+import com.intellij.util.IncorrectOperationException;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public interface DefaultInitializerAware extends TagElement {
+public interface AtElementSingle extends PsiNamedElement, TagElement {
+  @Nullable
+  SoyParamDefinitionIdentifier getParamDefinitionIdentifier();
 
-  SoyExpr getDefaultInitializerExpr();
+  @Nullable
+  default SoyExpr getDefaultInitializerExpr() {
+    return null;
+  }
 }

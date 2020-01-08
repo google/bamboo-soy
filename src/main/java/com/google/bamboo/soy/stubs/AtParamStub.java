@@ -28,7 +28,7 @@ import java.io.IOException;
 import org.jetbrains.annotations.NotNull;
 
 public class AtParamStub extends NamedStubBase<SoyAtParamSingle> {
-  static final Type TYPE = new Type();
+  public static final Type TYPE = new Type();
   public final String type;
   public final boolean isOptional;
 

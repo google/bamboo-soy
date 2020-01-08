@@ -17,6 +17,7 @@ package com.google.bamboo.soy.elements.impl;
 import com.google.bamboo.soy.lang.Scope;
 import com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier;
 import com.intellij.lang.ASTNode;
+import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.search.LocalSearchScope;
 import com.intellij.psi.search.SearchScope;
@@ -41,5 +42,10 @@ public abstract class VariableDefinitionMixin extends IdentifierDefinitionMixin
   public SearchScope getUseScope() {
     PsiElement scopeElement = Scope.getFirstScopeParent(this);
     return scopeElement == null ? super.getUseScope() : new LocalSearchScope(scopeElement);
+  }
+
+  @Override
+  public ItemPresentation getPresentation() {
+    return SoyPsiElementPresentationFactory.getItemPresentation(this);
   }
 }

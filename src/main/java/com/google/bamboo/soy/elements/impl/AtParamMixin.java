@@ -15,8 +15,10 @@
 package com.google.bamboo.soy.elements.impl;
 
 import com.google.bamboo.soy.elements.AtParamElement;
+import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
 import com.google.bamboo.soy.stubs.AtParamStub;
 import com.intellij.lang.ASTNode;
+import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
@@ -40,11 +42,20 @@ public abstract class AtParamMixin extends SoyStubBasedPsiElementBase<AtParamStu
   @Override
   public String getName() {
     if (getStub() != null) {
-      return getStub().getName();
+      String name = getStub().getName();
+      if (name != null) {
+        return name;
+      }
     }
-    if (getParamDefinitionIdentifier() != null) {
-      return getParamDefinitionIdentifier().getName();
+    SoyParamDefinitionIdentifier paramDefinitionIdentifier = getParamDefinitionIdentifier();
+    if (paramDefinitionIdentifier != null && paramDefinitionIdentifier.getName() != null) {
+      return paramDefinitionIdentifier.getName();
     }
     return "";
+  }
+
+  @Override
+  public ItemPresentation getPresentation() {
+    return SoyPsiElementPresentationFactory.getItemPresentation(this);
   }
 }

@@ -29,7 +29,8 @@ import java.util.regex.Pattern;
 import org.jetbrains.annotations.NotNull;
 
 public class IdentifierMixin extends ASTWrapperPsiElement implements IdentifierElement {
-  private static final Pattern identifierPattern = Pattern.compile("\\$[a-zA-Z_][a-zA-Z_0-9]*");
+
+  private static final Pattern IDENTIFIER_PATTERN = Pattern.compile("\\$[a-zA-Z_][a-zA-Z_0-9]*");
 
   public IdentifierMixin(@NotNull ASTNode node) {
     super(node);
@@ -70,10 +71,12 @@ public class IdentifierMixin extends ASTWrapperPsiElement implements IdentifierE
     String maybeEmbeddedExpression = this.getText();
     if (!maybeEmbeddedExpression.startsWith("\"")) {
       PsiReference singleReference = getReference();
-      return singleReference == null ? PsiReference.EMPTY_ARRAY : new PsiReference[] {singleReference};
+      return singleReference == null
+          ? PsiReference.EMPTY_ARRAY
+          : new PsiReference[]{singleReference};
     }
 
-    Matcher identifierMatcher = identifierPattern.matcher(maybeEmbeddedExpression);
+    Matcher identifierMatcher = IDENTIFIER_PATTERN.matcher(maybeEmbeddedExpression);
     List<PsiReference> variableReferenceList = new ArrayList<>();
     while (identifierMatcher.find()) {
       variableReferenceList.add(
