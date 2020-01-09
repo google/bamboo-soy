@@ -43,8 +43,8 @@ public class SoySyntaxHighlighter extends SyntaxHighlighterBase {
       createTextAttributesKey("NUMBER", DefaultLanguageHighlighterColors.NUMBER);
   public static final TextAttributesKey STRING =
       createTextAttributesKey("STRING", DefaultLanguageHighlighterColors.STRING);
-  public static final TextAttributesKey VARIABLE_REFERENCE =
-      createTextAttributesKey("VARIABLE_REFERENCE", DefaultLanguageHighlighterColors.IDENTIFIER);
+  public static final TextAttributesKey VARIABLE =
+      createTextAttributesKey("VARIABLE", DefaultLanguageHighlighterColors.IDENTIFIER);
 
   private static final ImmutableSet<TextAttributesKey> EMPTY_KEYS = ImmutableSet.of();
 

@@ -1,0 +1,14 @@
+{namespace space}
+
+{template .foo}
+  {@param <info descr="null">inParam</info>: string}
+  {let <info descr="null">$var</info>: <info descr="null">$inParam</info> /}
+  {call .bar}
+    {param barParam: <info descr="null">$inParam</info> + <info descr="null">$var</info> /}
+  {/call}
+{/template}
+
+{template .bar}
+  {@param <info descr="null">barParam</info>: string}
+  {<info descr="null">$barParam</info>}
+{/template}

@@ -14,8 +14,18 @@
 
 package com.google.bamboo.soy;
 
-import com.google.bamboo.soy.insight.highlight.SoySyntaxHighlighter;
+import static com.google.bamboo.soy.insight.highlight.SoySyntaxHighlighter.BUILTIN_TYPE;
+import static com.google.bamboo.soy.insight.highlight.SoySyntaxHighlighter.COMMENT;
+import static com.google.bamboo.soy.insight.highlight.SoySyntaxHighlighter.KEYWORD;
+import static com.google.bamboo.soy.insight.highlight.SoySyntaxHighlighter.NUMBER;
+import static com.google.bamboo.soy.insight.highlight.SoySyntaxHighlighter.OPERATOR_LITERAL;
+import static com.google.bamboo.soy.insight.highlight.SoySyntaxHighlighter.STRING;
+import static com.google.bamboo.soy.insight.highlight.SoySyntaxHighlighter.VARIABLE;
+
 import com.google.bamboo.soy.icons.SoyIcons;
+import com.google.bamboo.soy.insight.highlight.SoySyntaxHighlighter;
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.options.colors.AttributesDescriptor;
@@ -27,16 +37,23 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SoyColorSettingsPage implements ColorSettingsPage {
+
   private static final AttributesDescriptor[] DESCRIPTORS =
-      new AttributesDescriptor[] {
-        new AttributesDescriptor("Numeric and boolean literals", SoySyntaxHighlighter.NUMBER),
-        new AttributesDescriptor("Built-in types", SoySyntaxHighlighter.BUILTIN_TYPE),
-        new AttributesDescriptor("Comments", SoySyntaxHighlighter.COMMENT),
-        new AttributesDescriptor("Tag names", SoySyntaxHighlighter.KEYWORD),
-        new AttributesDescriptor("Operators words", SoySyntaxHighlighter.OPERATOR_LITERAL),
-        new AttributesDescriptor("String literals", SoySyntaxHighlighter.STRING),
-        new AttributesDescriptor("Variable references", SoySyntaxHighlighter.VARIABLE_REFERENCE),
+      new AttributesDescriptor[]{
+          new AttributesDescriptor("Numeric and boolean literals", NUMBER),
+          new AttributesDescriptor("Built-in types", BUILTIN_TYPE),
+          new AttributesDescriptor("Comments", COMMENT),
+          new AttributesDescriptor("Tag names", KEYWORD),
+          new AttributesDescriptor("Operators words", OPERATOR_LITERAL),
+          new AttributesDescriptor("String literals", STRING),
+          new AttributesDescriptor("Variables", VARIABLE),
       };
+
+  private static final ImmutableMap<String, TextAttributesKey> ADDITIONAL_HIGHLIGHTING_TAG_MAP =
+      ImmutableMap.of(
+          "paramDef", VARIABLE,
+          "varDef", VARIABLE,
+          "varRef", VARIABLE);
 
   @Nullable
   @Override
@@ -53,30 +70,32 @@ public class SoyColorSettingsPage implements ColorSettingsPage {
   @NotNull
   @Override
   public String getDemoText() {
-    return "{namespace foo.bar}\n"
-        + "\n"
-        + "{template .localExample}\n"
-        + "  {@param foo: int}\n"
-        + "{/template}\n"
-        + "\n"
-        + "// Foo\n"
-        + "/* Bar */\n"
-        + "{template .bar}\n"
-        + "  {@param bar: string}\n"
-        + "  {call .localExample}\n"
-        + "    {param foo: true /}\n"
-        + "  {/call}\n"
-        + "  {if $foo and 3}\n"
-        + "    {$foo}\n"
-        + "  {/if}\n"
-        + "  <!-- -->\n"
-        + "{/template}\n";
+    return Joiner.on('\n').join(
+        "{namespace foo.bar}",
+        "",
+        "{template .localExample}",
+        "  {@param <paramDef>foo</paramDef>: int}",
+        "{/template}",
+        "",
+        "// Foo",
+        "/* Bar */",
+        "{template .bar}",
+        "  {@param <paramDef>bar</paramDef>: string}",
+        "  {let <varDef>$bar</varDef>: 'default' /}",
+        "  {call .localExample}",
+        "    {param <paramDef>foo</paramDef>: true /}",
+        "  {/call}",
+        "  {if <varRef>$foo</varRef> and 3}",
+        "    {<varRef>$foo</varRef> ?: <varRef>$bar</varRef>}",
+        "  {/if}",
+        "  <!-- -->",
+        "{/template}");
   }
 
   @Nullable
   @Override
   public Map<String, TextAttributesKey> getAdditionalHighlightingTagToDescriptorMap() {
-    return null;
+    return ADDITIONAL_HIGHLIGHTING_TAG_MAP;
   }
 
   @NotNull
