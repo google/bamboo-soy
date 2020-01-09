@@ -195,6 +195,8 @@
 
     <lang.documentationProvider language="ClosureTemplate"
       implementationClass="com.google.bamboo.soy.insight.documentation.SoyDocumentationProvider"/>
+    <lang.foldingBuilder language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.insight.folding.SoyFoldingBuilder"/>
 
     <codeStyleSettingsProvider implementation="com.google.bamboo.soy.format.SoyCodeStyleSettingsProvider"/>
     <langCodeStyleSettingsProvider implementation="com.google.bamboo.soy.format.SoyLanguageCodeStyleSettingsProvider"/>

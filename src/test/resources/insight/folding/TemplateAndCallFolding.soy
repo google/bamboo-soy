@@ -1,0 +1,34 @@
+{namespace test1}
+
+<fold text='{template .foo}...{/template}'>{template .foo}
+    {let $foo: '1' /}
+    <fold text='{call .bar}...{/call}'>{call .bar}
+        {param barParam: $foo /}
+    {/call}</fold>
+    <fold text='{call test2.external}...{/call}'>{call test2.external}
+        {param para: 'test' /}
+    {/call}</fold>
+    <fold text='{delcall test2.external}...{/delcall}'>{delcall test2.external}
+        {param para: 'test' /}
+    {/delcall}</fold>
+    {$foo}
+    {call test2.selfClosing /}
+{/template}</fold>
+
+<fold text='/** Leading comment. */'>/**
+ * Leading comment.
+ */</fold>
+<fold text='{template .bar}...{/template}'>{template .bar}
+    {@param barParam: string}
+    {@state barParam: string = ''}
+    {$barParam}
+
+    // Incomplete call block.
+    {call test2.external}
+        {param para: 'test' /}
+{/template}</fold>
+
+<fold text='{element .elem}...{/element}'>{element .elem}
+    {@param input: string}
+    {@state state := $input}
+{/element}</fold>
