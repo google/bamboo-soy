@@ -104,8 +104,7 @@ public class SoyReferenceTest extends SoyCodeInsightFixtureTestCase {
     myFixture.configureByFiles("CompletionSourceTemplate.soy");
     PsiElement container = PsiTreeUtil.findChildOfType(myFixture.getFile(), SoyMsgStatement.class);
     Collection<SoyVariableReferenceIdentifier> vars =
-        PsiTreeUtil
-            .findChildrenOfType(container, SoyVariableReferenceIdentifier.class);
+        PsiTreeUtil.findChildrenOfType(container, SoyVariableReferenceIdentifier.class);
     assertSize(3, vars);
     for (SoyVariableReferenceIdentifier var : vars) {
       switch (var.getText()) {
@@ -129,8 +128,7 @@ public class SoyReferenceTest extends SoyCodeInsightFixtureTestCase {
     myFixture.configureByFiles("CompletionSourceElement.soy");
     PsiElement container = PsiTreeUtil.findChildOfType(myFixture.getFile(), SoyMsgStatement.class);
     Collection<SoyVariableReferenceIdentifier> vars =
-        PsiTreeUtil
-            .findChildrenOfType(container, SoyVariableReferenceIdentifier.class);
+        PsiTreeUtil.findChildrenOfType(container, SoyVariableReferenceIdentifier.class);
     assertSize(4, vars);
     for (SoyVariableReferenceIdentifier var : vars) {
       switch (var.getText()) {

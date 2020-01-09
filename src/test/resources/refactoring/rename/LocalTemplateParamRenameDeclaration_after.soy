@@ -1,0 +1,10 @@
+{template .test}
+  {call .referencedTemplate}
+    {param barParam: 'test' /}
+  {/call}
+{/template}
+
+{template .referencedTemplate}
+  {@param barParam: string}
+  {$barParam} + {$barParam} = {$barParam + $barParam}
+{/template}

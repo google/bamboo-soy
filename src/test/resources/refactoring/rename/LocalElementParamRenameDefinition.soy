@@ -1,0 +1,11 @@
+{element .test}
+  {call .referencedElement}
+    {param fooPar<caret>am: 'test' /}
+  {/call}
+{/element}
+
+{element .referencedElement}
+  {@param fooParam: string}
+  {@state myState:= $fooParam}
+  {$fooParam} + {$fooParam} = {$fooParam + $fooParam}
+{/element}

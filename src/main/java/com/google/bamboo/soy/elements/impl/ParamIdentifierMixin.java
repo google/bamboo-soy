@@ -16,14 +16,22 @@ package com.google.bamboo.soy.elements.impl;
 
 import com.google.bamboo.soy.elements.ParamIdentifierElement;
 import com.google.bamboo.soy.elements.references.ParameterDefinitionReference;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class ParamIdentifierMixin extends ASTWrapperPsiElement implements ParamIdentifierElement {
+public abstract class ParamIdentifierMixin extends SoyIdentifierOwnerMixin
+    implements ParamIdentifierElement {
   public ParamIdentifierMixin(@NotNull ASTNode node) {
     super(node);
+  }
+
+  @Nullable
+  @Override
+  public PsiElement getNameIdentifier() {
+    return getIdentifierWord();
   }
 
   @Override

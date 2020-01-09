@@ -30,12 +30,14 @@ import static com.google.bamboo.soy.parser.SoyTypes.SWITCH_STATEMENT;
 import static com.google.bamboo.soy.parser.SoyTypes.TEMPLATE;
 import static com.google.bamboo.soy.parser.SoyTypes.TEMPLATE_BLOCK;
 
+import com.google.bamboo.soy.elements.impl.VariableDefinitionMixin;
 import com.google.common.collect.ImmutableMap;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
 import com.intellij.lang.WhitespacesAndCommentsBinder;
 import com.intellij.lang.WhitespacesAndCommentsBinder.RecursiveBinder;
 import com.intellij.lang.parser.GeneratedParserUtilBase;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.IElementType;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -45,14 +47,12 @@ public class SoyParserUtil extends GeneratedParserUtilBase {
 
   private static final Pattern NEWLINE_PATTERN = Pattern.compile("\r\n|\r|\n");
 
-  /**
-   * Binds the last leading doc comment either on the same or previous line.
-   */
+  /** Binds the last leading doc comment either on the same or previous line. */
   public static WhitespacesAndCommentsBinder LEADING_COMMENTS_BINDER =
       new WhitespacesAndCommentsBinder.RecursiveBinder() {
         @Override
-        public int getEdgePosition(List<IElementType> tokens, boolean atStreamEdge,
-            TokenTextGetter getter) {
+        public int getEdgePosition(
+            List<IElementType> tokens, boolean atStreamEdge, TokenTextGetter getter) {
           int newLinesFound = 0;
           for (int i = tokens.size() - 1; i > 0; i--) {
             if (tokens.get(i) == DOC_COMMENT_BLOCK) {
@@ -67,14 +67,12 @@ public class SoyParserUtil extends GeneratedParserUtilBase {
         }
       };
 
-  /**
-   * Binds the trailing doc comments on the same line
-   */
+  /** Binds the trailing doc comments on the same line */
   public static WhitespacesAndCommentsBinder TRAILING_COMMENTS_BINDER =
       new WhitespacesAndCommentsBinder.RecursiveBinder() {
         @Override
-        public int getEdgePosition(List<IElementType> tokens, boolean atStreamEdge,
-            TokenTextGetter getter) {
+        public int getEdgePosition(
+            List<IElementType> tokens, boolean atStreamEdge, TokenTextGetter getter) {
           int edgePosition = 0;
           for (int i = 0; i < tokens.size(); i++) {
             if (tokens.get(i) == DOC_COMMENT_BLOCK) {
@@ -87,6 +85,7 @@ public class SoyParserUtil extends GeneratedParserUtilBase {
           return edgePosition;
         }
       };
+
   private static ImmutableMap<IElementType, IElementType> closingTokenToBlock =
       ImmutableMap.<IElementType, IElementType>builder()
           .put(CALL, DIRECT_CALL_STATEMENT)
@@ -114,9 +113,7 @@ public class SoyParserUtil extends GeneratedParserUtilBase {
     return n;
   }
 
-  /**
-   * Matches a closing tag iff there is frame in the stack which it may close.
-   */
+  /** Matches a closing tag iff there is frame in the stack which it may close. */
   public static boolean parseEndOfStatementBlock(PsiBuilder builder, int level) {
     if (!nextTokenIs(builder, "", LBRACE_SLASH, LBRACE_LBRACE_SLASH)) {
       return false;

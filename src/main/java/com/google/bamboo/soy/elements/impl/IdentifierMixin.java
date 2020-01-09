@@ -16,7 +16,7 @@ package com.google.bamboo.soy.elements.impl;
 
 import com.google.bamboo.soy.elements.IdentifierElement;
 import com.google.bamboo.soy.elements.references.TemplateDefinitionReference;
-import com.google.bamboo.soy.elements.references.VariableReference;
+import com.google.bamboo.soy.elements.references.VariableDefinitionReference;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
@@ -44,13 +44,14 @@ public class IdentifierMixin extends ASTWrapperPsiElement implements IdentifierE
       String fullIdentifier = identifier.substring(1);
       String[] fragments = fullIdentifier.split("\\.");
 
-      return new VariableReference(
+      int dollarFragmentLength = fragments[0].length() + 1;
+      return new VariableDefinitionReference(
           element,
           fragments[0],
           new TextRange(
               element.getTextRange().getStartOffset(),
-              element.getTextRange().getStartOffset() + fragments[0].length()),
-          new TextRange(0, fragments[0].length() + 1));
+              element.getTextRange().getStartOffset() + dollarFragmentLength),
+          new TextRange(1, dollarFragmentLength));
     } else if (identifier.startsWith(".")) {
       return new TemplateDefinitionReference(element, element.getTextRange());
     } else {
@@ -69,14 +70,14 @@ public class IdentifierMixin extends ASTWrapperPsiElement implements IdentifierE
     String maybeEmbeddedExpression = this.getText();
     if (!maybeEmbeddedExpression.startsWith("\"")) {
       PsiReference singleReference = getReference();
-      return singleReference == null ? new PsiReference[] {} : new PsiReference[] {singleReference};
+      return singleReference == null ? PsiReference.EMPTY_ARRAY : new PsiReference[] {singleReference};
     }
 
     Matcher identifierMatcher = identifierPattern.matcher(maybeEmbeddedExpression);
     List<PsiReference> variableReferenceList = new ArrayList<>();
     while (identifierMatcher.find()) {
       variableReferenceList.add(
-          new VariableReference(
+          new VariableDefinitionReference(
               element,
               maybeEmbeddedExpression.substring(
                   identifierMatcher.start() + 1, identifierMatcher.end()),

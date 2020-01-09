@@ -1,0 +1,6 @@
+{template .test}
+  {@param fooParam: string}
+  {let $bar kind="text"}{$fooParam}{/let}
+  {$bar} + {$bar} = {$bar + $bar}
+  <span class="{$bar}"></span>
+{/template}

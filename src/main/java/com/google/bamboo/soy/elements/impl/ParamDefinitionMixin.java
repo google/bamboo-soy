@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,13 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.bamboo.soy.elements;
+package com.google.bamboo.soy.elements.impl;
 
+import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
+import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNameIdentifierOwner;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface ParamIdentifierElement extends PsiNameIdentifierOwner {
+public abstract class ParamDefinitionMixin extends IdentifierDefinitionMixin
+    implements SoyParamDefinitionIdentifier {
+
+  public ParamDefinitionMixin(@NotNull ASTNode node) {
+    super(node);
+  }
+
   @Nullable
-  PsiElement getIdentifierWord();
+  public abstract PsiElement getIdentifierWord();
+
+  @Nullable
+  @Override
+  public PsiElement getNameIdentifier() {
+    return getIdentifierWord();
+  }
 }

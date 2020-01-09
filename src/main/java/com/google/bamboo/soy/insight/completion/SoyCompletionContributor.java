@@ -20,7 +20,9 @@ import static com.intellij.patterns.StandardPatterns.or;
 
 import com.google.bamboo.soy.elements.CallStatementElement;
 import com.google.bamboo.soy.elements.DefaultInitializerAware;
+import com.google.bamboo.soy.elements.IdentifierElement;
 import com.google.bamboo.soy.elements.WhitespaceUtils;
+import com.google.bamboo.soy.elements.impl.IdentifierMixin;
 import com.google.bamboo.soy.lang.ParamUtils;
 import com.google.bamboo.soy.lang.Scope;
 import com.google.bamboo.soy.lang.StateVariable;
@@ -48,6 +50,7 @@ import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyTemplateReferenceIdentifier;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier;
+import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.intellij.codeInsight.completion.CompletionContributor;
@@ -102,9 +105,6 @@ public class SoyCompletionContributor extends CompletionContributor {
           .map(LookupElementBuilder::create)
           .collect(ImmutableList.toImmutableList());
 
-  private static final ImmutableSet<IElementType> DEFAULT_INITIALIZER_DELIMITERS =
-      ImmutableSet.of(SoyTypes.EQUAL, SoyTypes.COLON_EQUAL);
-
   SoyCompletionContributor() {
     extendWithTemplateDefinitionLevelKeywords();
     extendWithKindKeyword();
@@ -113,6 +113,25 @@ public class SoyCompletionContributor extends CompletionContributor {
     extendWithIdentifierFragmentsForAlias();
     extendWithParameterNames();
     extendWithParameterTypes();
+  }
+
+  @Override
+  public void fillCompletionVariants(
+      @NotNull final CompletionParameters parameters,
+      @NotNull final CompletionResultSet resultSet) {
+    super.fillCompletionVariants(parameters, resultSet);
+
+    // Discard _semantically_ invalid suggestions accepted by CamelHumpMatcher
+    // (e.g. @state in @state/@param default initializer). We provide these ourselves.
+    resultSet.runRemainingContributors(
+        parameters,
+        completionResult -> {
+          if (completionResult.getLookupElement() != null
+              && completionResult.getLookupElement().getLookupString().startsWith("$")) {
+            return;
+          }
+          resultSet.addElement(completionResult.getLookupElement());
+        });
   }
 
   /**
@@ -128,12 +147,11 @@ public class SoyCompletionContributor extends CompletionContributor {
               @NotNull CompletionParameters completionParameters,
               ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
-            if (isPrecededBy(completionParameters.getPosition(),
+            if (isPrecededBy(
+                completionParameters.getPosition(),
                 elt -> elt instanceof SoyTemplateDefinitionIdentifier)) {
-              completionResultSet.addElement(
-                  LookupElementBuilder.create("visibility=\"private\""));
-              completionResultSet.addElement(
-                  LookupElementBuilder.create("stricthtml=\"true\""));
+              completionResultSet.addElement(LookupElementBuilder.create("visibility=\"private\""));
+              completionResultSet.addElement(LookupElementBuilder.create("stricthtml=\"true\""));
             }
           }
         });
@@ -156,9 +174,11 @@ public class SoyCompletionContributor extends CompletionContributor {
               @NotNull CompletionParameters completionParameters,
               ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
-            if (isPrecededBy(completionParameters.getPosition(),
-                elt -> elt instanceof SoyParamSpecificationIdentifier
-                    || elt instanceof SoyVariableDefinitionIdentifier)) {
+            if (isPrecededBy(
+                completionParameters.getPosition(),
+                elt ->
+                    elt instanceof SoyParamSpecificationIdentifier
+                        || elt instanceof SoyVariableDefinitionIdentifier)) {
               completionResultSet.addElement(
                   LookupElementBuilder.create("kind")
                       .withInsertHandler(new PostfixInsertHandler("=\"", "\"")));
@@ -191,64 +211,73 @@ public class SoyCompletionContributor extends CompletionContributor {
   private void extendWithVariableNamesInScope() {
     extend(
         CompletionType.BASIC,
-        psiElement().andOr(
-            psiElement().inside(SoyExpr.class),
-            psiElement().inside(SoyBeginIf.class),
-            psiElement().inside(SoyBeginElseIf.class),
-            psiElement().inside(SoyBeginFor.class),
-            psiElement().inside(SoyBeginForeach.class),
-            psiElement().inside(SoyPrintStatement.class),
-            psiElement().inside(SoyBeginParamTag.class).and(
-                psiElement().afterLeafSkipping(psiElement(PsiWhiteSpace.class),
-                    psiElement(SoyTypes.COLON))),
-            psiElement()
-                .inside(or(instanceOf(SoyAtParamSingle.class), instanceOf(SoyAtStateSingle.class)))
-                .and(
-                    psiElement().afterLeafSkipping(psiElement(PsiWhiteSpace.class),
-                        or(psiElement(SoyTypes.EQUAL), psiElement(SoyTypes.COLON_EQUAL))
-                    ))),
+        psiElement()
+            .andOr(
+                psiElement().inside(SoyExpr.class),
+                psiElement().inside(SoyBeginIf.class),
+                psiElement().inside(SoyBeginElseIf.class),
+                psiElement().inside(SoyBeginFor.class),
+                psiElement().inside(SoyBeginForeach.class),
+                psiElement().inside(SoyPrintStatement.class),
+                psiElement()
+                    .inside(SoyBeginParamTag.class)
+                    .and(
+                        psiElement()
+                            .afterLeafSkipping(
+                                psiElement(PsiWhiteSpace.class), psiElement(SoyTypes.COLON))),
+                psiElement()
+                    .inside(
+                        or(instanceOf(SoyAtParamSingle.class), instanceOf(SoyAtStateSingle.class)))
+                    .and(
+                        psiElement()
+                            .afterLeafSkipping(
+                                psiElement(PsiWhiteSpace.class),
+                                or(psiElement(SoyTypes.EQUAL), psiElement(SoyTypes.COLON_EQUAL))))),
         new CompletionProvider<CompletionParameters>() {
           @Override
           protected void addCompletions(
               @NotNull CompletionParameters completionParameters,
               @NotNull ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
+
             PsiElement currentElement = completionParameters.getPosition();
 
-            Collection<Variable> params =
-                Scope.getScopeOrEmpty(currentElement).getVariables();
             boolean isInsideDefaultInitializer = isInsideDefaultInitializer(currentElement);
-            if (isInsideDefaultInitializer && PsiTreeUtil
-                .getParentOfType(currentElement, SoyAtParamSingle.class) != null) {
+            if (isInsideDefaultInitializer
+                && PsiTreeUtil.getParentOfType(currentElement, SoyAtParamSingle.class) != null) {
               // Default parameters cannot depend on other parameters or state.
               return;
             }
 
+            Collection<Variable> params = Scope.getScopeOrEmpty(currentElement).getVariables();
             completionResultSet.addAllElements(
-                params
-                    .stream()
-                    .filter(variable -> !isInsideDefaultInitializer
-                        // State cannot be referenced in default initializers.
-                        || !(variable instanceof StateVariable))
+                params.stream()
+                    .filter(
+                        variable ->
+                            !isInsideDefaultInitializer
+                                // State cannot be referenced in default initializers.
+                                || !(variable instanceof StateVariable))
                     .map(param -> "$" + param.name)
                     .map(LookupElementBuilder::create)
                     .collect(Collectors.toList()));
           }
         });
-
   }
 
   private boolean isInsideDefaultInitializer(PsiElement currentElement) {
-    DefaultInitializerAware atParamOrState = PsiTreeUtil
-        .getParentOfType(currentElement, DefaultInitializerAware.class);
+    DefaultInitializerAware atParamOrState =
+        PsiTreeUtil.getParentOfType(currentElement, DefaultInitializerAware.class);
     if (atParamOrState == null) {
       return false;
     }
 
-    if (atParamOrState.getLastChild() != null && PsiTreeUtil
-        .findSiblingBackward(atParamOrState.getLastChild(),
-            currentElement.getNode().getElementType(), false, null)
-        == currentElement) {
+    if (atParamOrState.getLastChild() != null
+        && PsiTreeUtil.findSiblingBackward(
+                atParamOrState.getLastChild(),
+                currentElement.getNode().getElementType(),
+                false,
+                null)
+            == currentElement) {
       // currentElement is an immediate child of a SoyAt[State|Param]Single that does not have
       // a valid default initializer Expr (due to malformed source code during typing).
       return true;
@@ -259,8 +288,8 @@ public class SoyCompletionContributor extends CompletionContributor {
     }
 
     // currentElement is a child of a SoyAt[State|Param]Single's default initializer Expr.
-    return PsiTreeUtil.findFirstParent(
-        currentElement, element -> element == atDefaultInitializer) != null;
+    return PsiTreeUtil.findFirstParent(currentElement, element -> element == atDefaultInitializer)
+        != null;
   }
 
   /**
@@ -278,9 +307,9 @@ public class SoyCompletionContributor extends CompletionContributor {
               @NotNull CompletionParameters completionParameters,
               ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
-            if (
-                PsiTreeUtil.getParentOfType(
-                    completionParameters.getPosition(), CallStatementElement.class).isDelegate()) {
+            if (PsiTreeUtil.getParentOfType(
+                completionParameters.getPosition(), CallStatementElement.class)
+                .isDelegate()) {
               return;
             }
 
@@ -313,8 +342,8 @@ public class SoyCompletionContributor extends CompletionContributor {
             String identifier = identifierElement.getText();
 
             boolean isDelegate =
-                PsiTreeUtil.getParentOfType(
-                    identifierElement, CallStatementElement.class).isDelegate();
+                PsiTreeUtil.getParentOfType(identifierElement, CallStatementElement.class)
+                    .isDelegate();
 
             String prefix = identifier.replaceFirst("IntellijIdeaRulezzz", "");
             Collection<TemplateNameUtils.Fragment> completions =
@@ -325,8 +354,7 @@ public class SoyCompletionContributor extends CompletionContributor {
                     isDelegate);
 
             completionResultSet.addAllElements(
-                completions
-                    .stream()
+                completions.stream()
                     .map(
                         (fragment) ->
                             LookupElementBuilder.create(fragment.text)
@@ -363,8 +391,7 @@ public class SoyCompletionContributor extends CompletionContributor {
                     completionParameters.getPosition().getProject(), prefix);
 
             completionResultSet.addAllElements(
-                completions
-                    .stream()
+                completions.stream()
                     .map(
                         (fragment) ->
                             LookupElementBuilder.create(fragment.text)
@@ -396,15 +423,15 @@ public class SoyCompletionContributor extends CompletionContributor {
             PsiElement position = completionParameters.getPosition();
             CallStatementElement callStatement =
                 (CallStatementElement)
-                    PsiTreeUtil
-                        .findFirstParent(position, elt -> elt instanceof CallStatementElement);
+                    PsiTreeUtil.findFirstParent(
+                        position, elt -> elt instanceof CallStatementElement);
 
             if (callStatement == null) {
               return;
             }
 
-            PsiElement identifier = PsiTreeUtil
-                .findChildOfType(callStatement, SoyTemplateReferenceIdentifier.class);
+            PsiElement identifier =
+                PsiTreeUtil.findChildOfType(callStatement, SoyTemplateReferenceIdentifier.class);
 
             if (identifier == null) {
               return;
@@ -412,14 +439,12 @@ public class SoyCompletionContributor extends CompletionContributor {
 
             Collection<String> givenParameters = ParamUtils.getGivenParameters(callStatement);
             List<Variable> parameters =
-                ParamUtils.getParametersForInvocation(position, identifier.getText())
-                    .stream()
+                ParamUtils.getParametersForInvocation(position, identifier.getText()).stream()
                     .filter(v -> !givenParameters.contains(v.name))
                     .collect(Collectors.toList());
 
             completionResultSet.addAllElements(
-                parameters
-                    .stream()
+                parameters.stream()
                     .map(
                         (variable) ->
                             LookupElementBuilder.create(variable.name).withTypeText(variable.type))
@@ -468,7 +493,8 @@ public class SoyCompletionContributor extends CompletionContributor {
    * whitespaces).
    */
   private boolean isPrecededBy(PsiElement startElement, Predicate<PsiElement> predicate) {
-    for (PsiElement element = WhitespaceUtils.getPrevMeaningSibling(startElement); element != null;
+    for (PsiElement element = WhitespaceUtils.getPrevMeaningSibling(startElement);
+        element != null;
         element = WhitespaceUtils.getPrevMeaningSibling(element)) {
       if (predicate.test(element)) {
         return true;

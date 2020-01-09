@@ -16,24 +16,23 @@ package com.google.bamboo.soy.elements.references;
 
 import com.google.bamboo.soy.lang.Scope;
 import com.google.bamboo.soy.lang.Variable;
+import com.google.common.collect.ImmutableList;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiElementResolveResult;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.PsiReferenceBase;
-import com.intellij.psi.ResolveResult;
+import com.intellij.psi.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
-public class VariableReference extends PsiReferenceBase<PsiElement> implements PsiReference {
+public class VariableDefinitionReference extends PsiReferenceBase<PsiElement>
+    implements PsiReference, MultiRangeReference {
   private String identifier;
   private TextRange textRangeInElement;
 
-  public VariableReference(
+  public VariableDefinitionReference(
       PsiElement element, String identifier, TextRange textRange, TextRange textRangeInElement) {
     super(element, textRange);
     this.identifier = identifier;
@@ -78,13 +77,23 @@ public class VariableReference extends PsiReferenceBase<PsiElement> implements P
         .getVariables()
         .stream()
         .map(v -> v.name)
-        .map(LookupElementBuilder::create)
+        .map(VariableDefinitionReference::createLookupElementBuilder)
         .collect(Collectors.toList())
         .toArray();
+  }
+
+  private static LookupElementBuilder createLookupElementBuilder(String name) {
+    return LookupElementBuilder.create("$" + name);
   }
 
   @Override
   public TextRange getRangeInElement() {
     return textRangeInElement;
+  }
+
+  @NotNull
+  @Override
+  public List<TextRange> getRanges() {
+    return ImmutableList.of(new TextRange(0, textRangeInElement.getEndOffset()));
   }
 }

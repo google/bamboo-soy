@@ -1,0 +1,11 @@
+{element .test}
+  {call .referencedElement}
+    {param barParam: 'test' /}
+  {/call}
+{/element}
+
+{element .referencedElement}
+  {@param barParam: string}
+  {@state myState:= $barParam}
+  {$barParam} + {$barParam} = {$barParam + $barParam}
+{/element}
