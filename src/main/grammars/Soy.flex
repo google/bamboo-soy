@@ -33,17 +33,18 @@ InputCharacter=[^\r\n]
 HorizontalSpace=[ \t\f]
 WhiteSpace={LineTerminator}|{HorizontalSpace}
 
+OptionalEndOfBlockComment="*"*("*/")?
 CommentContent=([^*]|("*"+[^/*]))*
-DocComment="/**"{CommentContent}"*"+"/"
-TraditionalComment="/*"{CommentContent}"*"+"/"
-DoubleSlashComment="//"{InputCharacter}*{LineTerminator}?
+DocComment="/**"{CommentContent}{OptionalEndOfBlockComment}? // May be unterminated
+CStyleComment="/*"{CommentContent}{OptionalEndOfBlockComment}? // May be unterminated
+LineComment="//"{InputCharacter}*{LineTerminator}?
 HtmlComment="<!--([^-]|-[^-]|--+[^->])*-*-->"
-Comment=({WhiteSpace}{DoubleSlashComment})|{TraditionalComment}|{HtmlComment}
+Comment={CStyleComment}|{HtmlComment}
 
 /* Integer literal */
 DecimalDigit=[0-9]
 DecimalDigits={DecimalDigit}+
-HexDigit=[0-9A-F]
+HexDigit=[0-9a-fA-F]
 
 DecimalIntegerLiteral={DecimalDigits}
 SignedDecimalIntegerLiteral=("+"|"-")?{DecimalIntegerLiteral}
@@ -62,7 +63,7 @@ SingleQuotedStringLiteral='([^\r\n'\\]|\\.)*'
 MultiLineDoubleQuotedStringLiteral=\"([^\"\\]|\\([^]))*\"
 MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
 
-NonSemantical=({WhiteSpace}|{DoubleSlashComment}|{DocComment}|{Comment})*
+NonSemantical=({WhiteSpace}|{LineComment}|{DocComment}|{Comment})*
 
 /* Lexer states */
 %state TAG
@@ -81,7 +82,8 @@ NonSemantical=({WhiteSpace}|{DoubleSlashComment}|{DocComment}|{Comment})*
   "{/literal}" { yybegin(YYINITIAL); return SoyTypes.END_LITERAL; }
   "{{/literal}}" { yybegin(YYINITIAL); return SoyTypes.END_LITERAL_DOUBLE; }
   .|{WhiteSpace}|"{{"|"{/"|"{{/" { return SoyTypes.OTHER; }
-  ^{DoubleSlashComment} { return SoyTypes.OTHER; }
+  ^{LineComment} { return SoyTypes.OTHER; }
+  {WhiteSpace}{LineComment} { return SoyTypes.OTHER; }
   {DocComment} { return SoyTypes.OTHER; }
   {Comment} { return SoyTypes.OTHER; }
 }
@@ -90,7 +92,8 @@ NonSemantical=({WhiteSpace}|{DoubleSlashComment}|{DocComment}|{Comment})*
 {WhiteSpace}  { return TokenType.WHITE_SPACE; }
 
 /* Comments */
-^{DoubleSlashComment} { return SoyTypes.COMMENT_BLOCK; }
+^{LineComment} { return SoyTypes.LINE_COMMENT; }
+{WhiteSpace}{LineComment} { return SoyTypes.LINE_COMMENT; }
 {DocComment} { return SoyTypes.DOC_COMMENT_BLOCK; }
 {Comment} { return SoyTypes.COMMENT_BLOCK; }
 

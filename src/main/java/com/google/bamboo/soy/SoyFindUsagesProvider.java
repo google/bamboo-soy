@@ -42,7 +42,7 @@ public class SoyFindUsagesProvider implements FindUsagesProvider {
     return new DefaultWordsScanner(
         new SoyLexer(),
         TokenSet.create(SoyTypes.IDENTIFIER_WORD),
-        TokenSet.create(SoyTypes.COMMENT_BLOCK),
+        TokenSet.create(SoyTypes.COMMENT_BLOCK, SoyTypes.LINE_COMMENT),
         TokenSet.EMPTY);
   }
 

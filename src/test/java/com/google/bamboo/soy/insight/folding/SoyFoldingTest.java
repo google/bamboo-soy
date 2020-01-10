@@ -23,7 +23,7 @@ public class SoyFoldingTest extends SoyCodeInsightFixtureTestCase {
   }
 
   public void testTemplateAndCallFolding() {
-    myFixture.configureByFile("TemplateAndCallFolding.soy");
-    myFixture.testFolding(getTestDataPath() + "/TemplateAndCallFolding.soy");
+    myFixture.configureByFile("SoyFolding.soy");
+    myFixture.testFolding(getTestDataPath() + "/SoyFolding.soy");
   }
 }

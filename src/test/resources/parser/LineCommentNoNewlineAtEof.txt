@@ -1,4 +1,4 @@
 Closure Template File
-  PsiComment(SoyTokenType.COMMENT_BLOCK)('// No trailing newline.')
+  PsiComment(SoyTokenType.LINE_COMMENT)('// No trailing newline.')
   SoyBlockListImpl(BLOCK_LIST)
     <empty list>

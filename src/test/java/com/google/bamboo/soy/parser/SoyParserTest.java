@@ -81,6 +81,10 @@ public class SoyParserTest extends ParsingTestCase {
     doTest(true);
   }
 
+  public void testHrefInHtml() {
+    doTest(true);
+  }
+
   @Override
   protected boolean checkAllPsiRoots() {
     return false;

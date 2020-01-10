@@ -260,6 +260,9 @@
     <annotator
       language="ClosureTemplate"
       implementationClass="com.google.bamboo.soy.insight.annotators.StateInTemplateAnnotator"/>
+    <annotator
+      language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.insight.annotators.UnterminatedCommentAnnotator"/>
 
     <errorHandler implementation="com.google.bamboo.soy.RollbarErrorReportSubmitter"/>
   </extensions>

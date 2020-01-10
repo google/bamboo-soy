@@ -14,7 +14,10 @@
 
 package com.google.bamboo.soy.insight.folding;
 
-import com.google.bamboo.soy.elements.*;
+import com.google.bamboo.soy.elements.CallStatementElement;
+import com.google.bamboo.soy.elements.TagBlockElement;
+import com.google.bamboo.soy.elements.TagElement;
+import com.google.bamboo.soy.elements.WhitespaceUtils;
 import com.google.bamboo.soy.file.SoyFile;
 import com.google.bamboo.soy.parser.SoyEndTag;
 import com.google.bamboo.soy.parser.SoyTemplateBlock;
@@ -26,12 +29,10 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
-
+import com.intellij.psi.util.PsiTreeUtil;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,6 +43,8 @@ public class SoyFoldingBuilder extends CustomFoldingBuilder {
       Pattern.compile("^(/\\*{1,2})(.*)\\*/$", Pattern.DOTALL);
   private static final Pattern BLOCK_COMMENT_LINE_CONTINUATION = Pattern
       .compile("\\n\\s*\\*\\s*", Pattern.DOTALL);
+  private static final Pattern BLOCK_COMMENT_NEWLINE_PATTERN =
+      Pattern.compile("[\\r\\n]", Pattern.DOTALL);
   private static final Pattern BLOCK_COMMENT_WHITESPACE = Pattern.compile("\\s+", Pattern.DOTALL);
 
   @Override
@@ -75,7 +78,8 @@ public class SoyFoldingBuilder extends CustomFoldingBuilder {
       return;
     }
     PsiElement commentElement = getCommentElement(element);
-    if (commentElement != null) {
+    if (commentElement != null
+        && BLOCK_COMMENT_NEWLINE_PATTERN.matcher(commentElement.getText()).find()) {
       descriptors.add(new FoldingDescriptor(commentElement, commentElement.getTextRange()));
     }
     TextRange meaningfulTextRange = buildMeaningfulTextRange(element, commentElement);
@@ -110,8 +114,7 @@ public class SoyFoldingBuilder extends CustomFoldingBuilder {
     if (element instanceof TagBlockElement) {
       TagBlockElement block = (TagBlockElement) element;
       String openingTagText = block.getOpeningTag().getText();
-      PsiElement firstMeaningfulChild = WhitespaceUtils
-          .getFirstMeaningChild(block.getOpeningTag());
+      PsiElement firstMeaningfulChild = WhitespaceUtils.getFirstMeaningChild(block.getOpeningTag());
       if (firstMeaningfulChild == null) {
         return "...";
       }
@@ -125,25 +128,40 @@ public class SoyFoldingBuilder extends CustomFoldingBuilder {
           + normalizePlaceHolderText(getClosingTagText(element));
     }
     if (element instanceof PsiComment) {
-      Matcher matcher = BLOCK_COMMENT_PATTERN.matcher(element.getText());
-      if (matcher.find()) {
-        String sanitizedComment = BLOCK_COMMENT_LINE_CONTINUATION.matcher(matcher.group(2))
-            .replaceAll(" ");
-        sanitizedComment = BLOCK_COMMENT_WHITESPACE.matcher(sanitizedComment).replaceAll(" ")
-            .trim();
-        if (sanitizedComment.length() > MAX_PLACEHOLDER_LENGTH) {
-          return matcher.group(1)
-              + " "
-              + sanitizedComment.substring(0, MAX_PLACEHOLDER_LENGTH)
-              + " ...*/";
-        }
-
-        return matcher.group(1) + " " + sanitizedComment + " */";
+      String placeholderText = buildCommentPlaceholderText(element);
+      if (placeholderText != null) {
+        return placeholderText;
       }
     }
     return "{...}";
   }
 
+  @Nullable
+  private String buildCommentPlaceholderText(PsiElement element) {
+    Matcher matcher = BLOCK_COMMENT_PATTERN.matcher(element.getText());
+    if (!matcher.find()) {
+      return null;
+    }
+
+    String sanitizedComment =
+        BLOCK_COMMENT_LINE_CONTINUATION.matcher(matcher.group(2)).replaceAll(" ");
+    sanitizedComment = BLOCK_COMMENT_WHITESPACE.matcher(sanitizedComment).replaceAll(" ").trim();
+    if (sanitizedComment.length() > MAX_PLACEHOLDER_LENGTH) {
+      int lastSpaceIndex = sanitizedComment.lastIndexOf(' ', MAX_PLACEHOLDER_LENGTH);
+      sanitizedComment = sanitizedComment
+          .substring(0, lastSpaceIndex > 0 ? lastSpaceIndex : MAX_PLACEHOLDER_LENGTH);
+      return matcher.group(1)
+          + " "
+          + sanitizedComment
+          + " ...*/";
+    }
+
+    return matcher.group(1) + " " + sanitizedComment + " */";
+  }
+
+  /**
+   * This is a multiline doc comment that should be collapsed.
+   */
   private static String getClosingTagText(PsiElement element) {
     SoyEndTag endTag = PsiTreeUtil.getChildOfType(element, SoyEndTag.class);
     return endTag == null ? "" : endTag.getText();

@@ -96,9 +96,16 @@ public class SoyDocumentationProvider extends AbstractDocumentationProvider {
   @Nullable
   @Override
   public String getQuickNavigateInfo(PsiElement element, PsiElement originalElement) {
+    if (element.getNode() == null) {
+      // Happens for a fake PSI element containing a URL ("Open in browser").
+      return null;
+    }
+
     Document document =
         FileDocumentManager.getInstance().getDocument(element.getContainingFile().getVirtualFile());
-    if (document == null) return "";
+    if (document == null) {
+      return null;
+    }
 
     int lineNum = document.getLineNumber(element.getTextOffset()) + 1 /* count starts at zero */;
     String path = element.getContainingFile().getVirtualFile().getName();
