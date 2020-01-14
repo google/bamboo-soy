@@ -18,6 +18,8 @@ import com.google.bamboo.soy.lang.Variable;
 import com.google.bamboo.soy.parser.SoyExpr;
 import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyTypeExpression;
+import com.google.bamboo.soy.parser.SoyTypes;
+import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.util.IncorrectOperationException;
@@ -31,5 +33,14 @@ public interface AtElementSingle extends PsiNamedElement, TagElement {
   @Nullable
   default SoyExpr getDefaultInitializerExpr() {
     return null;
+  }
+
+  @Nullable
+  default PsiComment getDocComment() {
+    PsiElement firstChild = getFirstChild();
+    return firstChild instanceof PsiComment
+            && firstChild.getNode().getElementType() == SoyTypes.DOC_COMMENT_BLOCK
+        ? (PsiComment) firstChild
+        : null;
   }
 }

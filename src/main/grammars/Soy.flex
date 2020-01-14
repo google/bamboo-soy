@@ -35,11 +35,11 @@ WhiteSpace={LineTerminator}|{HorizontalSpace}
 
 OptionalEndOfBlockComment="*"*("*/")?
 CommentContent=([^*]|("*"+[^/*]))*
-DocComment="/**"{CommentContent}{OptionalEndOfBlockComment}? // May be unterminated
-CStyleComment="/*"{CommentContent}{OptionalEndOfBlockComment}? // May be unterminated
+DocCommentBlock="/**"{CommentContent}{OptionalEndOfBlockComment}? // May be unterminated
+CommentBlock="/*"{CommentContent}{OptionalEndOfBlockComment}? // May be unterminated
 LineComment="//"{InputCharacter}*{LineTerminator}?
 HtmlComment="<!--([^-]|-[^-]|--+[^->])*-*-->"
-Comment={CStyleComment}|{HtmlComment}
+BlockComment={CommentBlock}|{HtmlComment}
 
 /* Integer literal */
 DecimalDigit=[0-9]
@@ -63,7 +63,7 @@ SingleQuotedStringLiteral='([^\r\n'\\]|\\.)*'
 MultiLineDoubleQuotedStringLiteral=\"([^\"\\]|\\([^]))*\"
 MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
 
-NonSemantical=({WhiteSpace}|{LineComment}|{DocComment}|{Comment})*
+NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
 
 /* Lexer states */
 %state TAG
@@ -82,10 +82,6 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocComment}|{Comment})*
   "{/literal}" { yybegin(YYINITIAL); return SoyTypes.END_LITERAL; }
   "{{/literal}}" { yybegin(YYINITIAL); return SoyTypes.END_LITERAL_DOUBLE; }
   .|{WhiteSpace}|"{{"|"{/"|"{{/" { return SoyTypes.OTHER; }
-  ^{LineComment} { return SoyTypes.OTHER; }
-  {WhiteSpace}{LineComment} { return SoyTypes.OTHER; }
-  {DocComment} { return SoyTypes.OTHER; }
-  {Comment} { return SoyTypes.OTHER; }
 }
 
 // -- Rest
@@ -94,8 +90,8 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocComment}|{Comment})*
 /* Comments */
 ^{LineComment} { return SoyTypes.LINE_COMMENT; }
 {WhiteSpace}{LineComment} { return SoyTypes.LINE_COMMENT; }
-{DocComment} { return SoyTypes.DOC_COMMENT_BLOCK; }
-{Comment} { return SoyTypes.COMMENT_BLOCK; }
+{DocCommentBlock} { return SoyTypes.DOC_COMMENT_BLOCK; }
+{BlockComment} { return SoyTypes.COMMENT_BLOCK; }
 
 "{" { yybegin(TAG); return SoyTypes.LBRACE; }
 "{{" { yybegin(TAG); return SoyTypes.LBRACE_LBRACE; }

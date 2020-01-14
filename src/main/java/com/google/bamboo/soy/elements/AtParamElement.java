@@ -19,6 +19,7 @@ import com.google.bamboo.soy.parser.SoyExpr;
 import com.google.bamboo.soy.parser.SoyTypeExpression;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.bamboo.soy.stubs.AtParamStub;
+import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.StubBasedPsiElement;
@@ -26,8 +27,8 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface AtParamElement extends StubBasedPsiElement<AtParamStub>, PsiNamedElement,
-    TagElement, AtElementSingle {
+public interface AtParamElement
+    extends StubBasedPsiElement<AtParamStub>, PsiNamedElement, TagElement, AtElementSingle {
 
   @Nullable
   SoyTypeExpression getTypeExpression();

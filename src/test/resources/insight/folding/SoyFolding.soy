@@ -28,8 +28,15 @@
  * Short leading multiline comment.
  */</fold>
 <fold text='{template .bar}...{/template}'>{template .bar}
+    <fold text='/** barParam doc comment */'>/**
+     * barParam doc comment
+     */</fold>
     {@param barParam: string}
-    {@state barParam: string = ''}
+
+    <fold text='/** stateParam doc comment */'>/**
+     * stateParam doc comment
+     */</fold>
+    {@state stateParam: string = ''}
     {$barParam}
 
     // Incomplete call block.
