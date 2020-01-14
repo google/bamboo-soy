@@ -18,11 +18,9 @@ import static com.intellij.patterns.PlatformPatterns.psiElement;
 import static com.intellij.patterns.StandardPatterns.instanceOf;
 import static com.intellij.patterns.StandardPatterns.or;
 
+import com.google.bamboo.soy.elements.AtElementSingle;
 import com.google.bamboo.soy.elements.CallStatementElement;
-import com.google.bamboo.soy.elements.DefaultInitializerAware;
-import com.google.bamboo.soy.elements.IdentifierElement;
 import com.google.bamboo.soy.elements.WhitespaceUtils;
-import com.google.bamboo.soy.elements.impl.IdentifierMixin;
 import com.google.bamboo.soy.lang.ParamUtils;
 import com.google.bamboo.soy.lang.Scope;
 import com.google.bamboo.soy.lang.StateVariable;
@@ -50,9 +48,7 @@ import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyTemplateReferenceIdentifier;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier;
-import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
@@ -62,7 +58,6 @@ import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
-import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
 import java.util.Collection;
@@ -126,11 +121,12 @@ public class SoyCompletionContributor extends CompletionContributor {
     resultSet.runRemainingContributors(
         parameters,
         completionResult -> {
-          if (completionResult.getLookupElement() != null
-              && completionResult.getLookupElement().getLookupString().startsWith("$")) {
-            return;
+          if (completionResult.getLookupElement() != null) {
+            if (completionResult.getLookupElement().getLookupString().startsWith("$")) {
+              return;
+            }
+            resultSet.addElement(completionResult.getLookupElement());
           }
-          resultSet.addElement(completionResult.getLookupElement());
         });
   }
 
@@ -265,15 +261,15 @@ public class SoyCompletionContributor extends CompletionContributor {
   }
 
   private boolean isInsideDefaultInitializer(PsiElement currentElement) {
-    DefaultInitializerAware atParamOrState =
-        PsiTreeUtil.getParentOfType(currentElement, DefaultInitializerAware.class);
-    if (atParamOrState == null) {
+    AtElementSingle parentAtElement =
+        PsiTreeUtil.getParentOfType(currentElement, AtElementSingle.class);
+    if (parentAtElement == null) {
       return false;
     }
 
-    if (atParamOrState.getLastChild() != null
+    if (parentAtElement.getLastChild() != null
         && PsiTreeUtil.findSiblingBackward(
-                atParamOrState.getLastChild(),
+                parentAtElement.getLastChild(),
                 currentElement.getNode().getElementType(),
                 false,
                 null)
@@ -282,8 +278,9 @@ public class SoyCompletionContributor extends CompletionContributor {
       // a valid default initializer Expr (due to malformed source code during typing).
       return true;
     }
-    SoyExpr atDefaultInitializer = atParamOrState.getDefaultInitializerExpr();
+    SoyExpr atDefaultInitializer = parentAtElement.getDefaultInitializerExpr();
     if (atDefaultInitializer == null) {
+      // This is also the case for @inject.
       return false;
     }
 

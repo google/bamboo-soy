@@ -14,16 +14,12 @@
 
 package com.google.bamboo.soy.insight.annotators;
 
-import com.google.bamboo.soy.elements.DefaultInitializerAware;
+import com.google.bamboo.soy.elements.AtElementSingle;
 import com.google.bamboo.soy.lang.ParamUtils;
 import com.google.bamboo.soy.lang.StateVariable;
-import com.google.bamboo.soy.lang.Variable;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.SoyExpr;
-import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.bamboo.soy.parser.SoyVariableReferenceIdentifier;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Streams;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
@@ -40,12 +36,12 @@ public class DefaultInitializerRefsAnnotator implements Annotator {
     }
     SoyVariableReferenceIdentifier variableRef = (SoyVariableReferenceIdentifier) element;
 
-    DefaultInitializerAware atParamOrState = PsiTreeUtil
-        .getParentOfType(variableRef, DefaultInitializerAware.class);
-    if (atParamOrState == null) {
+    AtElementSingle parentAtElement = PsiTreeUtil
+        .getParentOfType(variableRef, AtElementSingle.class);
+    if (parentAtElement == null) {
       return;
     }
-    SoyExpr atDefaultInitializer = atParamOrState.getDefaultInitializerExpr();
+    SoyExpr atDefaultInitializer = parentAtElement.getDefaultInitializerExpr();
     if (atDefaultInitializer == null) {
       return;
     }
@@ -56,7 +52,7 @@ public class DefaultInitializerRefsAnnotator implements Annotator {
       return;
     }
 
-    if (atParamOrState instanceof SoyAtParamSingle) {
+    if (parentAtElement instanceof SoyAtParamSingle) {
       annotationHolder.createErrorAnnotation(element,
           "Default initializers cannot depend on other parameters or state");
       return;

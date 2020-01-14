@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,57 +14,33 @@
 
 package com.google.bamboo.soy.elements;
 
-import com.google.bamboo.soy.lang.Parameter;
+import com.google.bamboo.soy.lang.Variable;
 import com.google.bamboo.soy.parser.SoyExpr;
+import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyTypeExpression;
 import com.google.bamboo.soy.parser.SoyTypes;
-import com.google.bamboo.soy.stubs.AtParamStub;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
-import com.intellij.psi.StubBasedPsiElement;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface AtParamElement
-    extends StubBasedPsiElement<AtParamStub>, PsiNamedElement, TagElement, AtElementSingle {
+public interface AtElementSingle extends PsiNamedElement, TagElement {
+  @Nullable
+  SoyParamDefinitionIdentifier getParamDefinitionIdentifier();
 
   @Nullable
-  SoyTypeExpression getTypeExpression();
-
-  @Nullable
-  SoyExpr getExpr();
-
-  default PsiElement setName(@NotNull String s) throws IncorrectOperationException {
+  default SoyExpr getDefaultInitializerExpr() {
     return null;
   }
 
-  @NotNull
-  default String getType() {
-    if (getStub() != null) {
-      return getStub().type;
-    }
-    if (getTypeExpression() != null) {
-      return getTypeExpression().getText();
-    }
-    return "";
-  }
-
-  default boolean isOptional() {
-    if (getStub() != null) {
-      return getStub().isOptional;
-    }
-    return getTagNameTokenType() == SoyTypes.AT_PARAM_OPT;
-  }
-
-  default SoyExpr getDefaultInitializerExpr() {
-    return getExpr();
-  }
-
-  default Parameter toParameter() {
-    return this.getParamDefinitionIdentifier() == null
-        ? null
-        : new Parameter(getName(), getType(), isOptional(), this.getParamDefinitionIdentifier());
+  @Nullable
+  default PsiComment getDocComment() {
+    PsiElement firstChild = getFirstChild();
+    return firstChild instanceof PsiComment
+            && firstChild.getNode().getElementType() == SoyTypes.DOC_COMMENT_BLOCK
+        ? (PsiComment) firstChild
+        : null;
   }
 }

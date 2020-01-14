@@ -1,0 +1,51 @@
+{namespace test1}
+
+<fold text='/** This is a multiline doc comment that should be ...*/'>/**
+ * This is a multiline
+ * doc comment that
+ * should be collapsed.
+ */</fold>
+<fold text='{template .foo}...{/template}'>{template .foo}
+    {let $foo: '1' /}
+    <fold text='{call .bar}...{/call}'>{call .bar}
+        {param barParam: $foo /}
+    {/call}</fold>
+    /**
+     * Short multiline
+     * non-trimmed comment.
+     */
+    <fold text='{call test2.external}...{/call}'>{call test2.external}
+        {param para: 'test' /}
+    {/call}</fold>
+    <fold text='{delcall test2.external}...{/delcall}'>{delcall test2.external}
+        {param para: 'test' /}
+    {/delcall}</fold>
+    {$foo}
+    {call test2.selfClosing /}
+{/template}</fold>
+
+<fold text='/** Short leading multiline comment. */'>/**
+ * Short leading multiline comment.
+ */</fold>
+<fold text='{template .bar}...{/template}'>{template .bar}
+    <fold text='/** barParam doc comment */'>/**
+     * barParam doc comment
+     */</fold>
+    {@param barParam: string}
+
+    <fold text='/** stateParam doc comment */'>/**
+     * stateParam doc comment
+     */</fold>
+    {@state stateParam: string = ''}
+    {$barParam}
+
+    // Incomplete call block.
+    {call test2.external}
+        {param para: 'test' /}
+{/template}</fold>
+
+/** Short comment no folding. */
+<fold text='{element .elem}...{/element}'>{element .elem}
+    {@param input: string}
+    {@state state := $input}
+{/element}</fold>

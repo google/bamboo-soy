@@ -28,7 +28,7 @@ import java.io.IOException;
 import org.jetbrains.annotations.NotNull;
 
 public class TemplateDefinitionStub extends NamedStubBase<SoyTemplateDefinitionIdentifier> {
-  static final Type TYPE = new Type();
+  public static final Type TYPE = new Type();
 
   TemplateDefinitionStub(StubElement parent, String name) {
     super(parent, TYPE, name);

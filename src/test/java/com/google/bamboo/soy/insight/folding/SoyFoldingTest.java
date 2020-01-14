@@ -1,4 +1,4 @@
-// Copyright 2019 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,11 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.bamboo.soy.elements;
+package com.google.bamboo.soy.insight.folding;
 
-import com.google.bamboo.soy.parser.SoyExpr;
+import com.google.bamboo.soy.SoyCodeInsightFixtureTestCase;
 
-public interface DefaultInitializerAware extends TagElement {
+public class SoyFoldingTest extends SoyCodeInsightFixtureTestCase {
+  @Override
+  protected String getBasePath() {
+    return "/insight/folding";
+  }
 
-  SoyExpr getDefaultInitializerExpr();
+  public void testFolding() {
+    myFixture.configureByFile("SoyFolding.soy");
+    myFixture.testFolding(getTestDataPath() + "/SoyFolding.soy");
+  }
 }

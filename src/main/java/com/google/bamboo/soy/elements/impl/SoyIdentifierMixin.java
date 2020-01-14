@@ -13,9 +13,9 @@
 // limitations under the License.
 package com.google.bamboo.soy.elements.impl;
 
-import com.google.bamboo.soy.elements.impl.IdentifierMixin;
 import com.google.bamboo.soy.refactoring.SoyPsiElementFactory;
 import com.intellij.lang.ASTNode;
+import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.util.IncorrectOperationException;
@@ -48,5 +48,10 @@ public abstract class SoyIdentifierMixin extends IdentifierMixin implements PsiN
         .replace(SoyPsiElementFactory
             .createIdentifierFromText(getProject(), name));
     return this;
+  }
+
+  @Override
+  public ItemPresentation getPresentation() {
+    return SoyPsiElementPresentationFactory.getItemPresentation(this);
   }
 }

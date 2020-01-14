@@ -195,9 +195,12 @@
 
     <lang.documentationProvider language="ClosureTemplate"
       implementationClass="com.google.bamboo.soy.insight.documentation.SoyDocumentationProvider"/>
+    <lang.foldingBuilder language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.insight.folding.SoyFoldingBuilder"/>
 
     <codeStyleSettingsProvider implementation="com.google.bamboo.soy.format.SoyCodeStyleSettingsProvider"/>
     <langCodeStyleSettingsProvider implementation="com.google.bamboo.soy.format.SoyLanguageCodeStyleSettingsProvider"/>
+    <iconProvider implementation="com.google.bamboo.soy.icons.SoyElementIconProvider"/>
 
     <stubIndex implementation="com.google.bamboo.soy.stubs.index.NamespaceDeclarationIndex"/>
     <stubIndex implementation="com.google.bamboo.soy.stubs.index.TemplateBlockIndex"/>
@@ -257,6 +260,9 @@
     <annotator
       language="ClosureTemplate"
       implementationClass="com.google.bamboo.soy.insight.annotators.StateInTemplateAnnotator"/>
+    <annotator
+      language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.insight.annotators.UnterminatedCommentAnnotator"/>
 
     <errorHandler implementation="com.google.bamboo.soy.RollbarErrorReportSubmitter"/>
   </extensions>

@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class AtStateStub extends NamedStubBase<SoyAtStateSingle> {
 
-  static final Type TYPE = new Type();
+  public static final Type TYPE = new Type();
   public final String type;
 
   AtStateStub(StubElement parent, String name, String type) {

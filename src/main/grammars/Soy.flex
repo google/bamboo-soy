@@ -33,17 +33,18 @@ InputCharacter=[^\r\n]
 HorizontalSpace=[ \t\f]
 WhiteSpace={LineTerminator}|{HorizontalSpace}
 
+OptionalEndOfBlockComment="*"*("*/")?
 CommentContent=([^*]|("*"+[^/*]))*
-DocComment="/**"{CommentContent}"*"+"/"
-TraditionalComment="/*"{CommentContent}"*"+"/"
-DoubleSlashComment="//"{InputCharacter}*{LineTerminator}?
+DocCommentBlock="/**"{CommentContent}{OptionalEndOfBlockComment}? // May be unterminated
+CommentBlock="/*"{CommentContent}{OptionalEndOfBlockComment}? // May be unterminated
+LineComment="//"{InputCharacter}*{LineTerminator}?
 HtmlComment="<!--([^-]|-[^-]|--+[^->])*-*-->"
-Comment=({WhiteSpace}{DoubleSlashComment})|{TraditionalComment}|{HtmlComment}
+BlockComment={CommentBlock}|{HtmlComment}
 
 /* Integer literal */
 DecimalDigit=[0-9]
 DecimalDigits={DecimalDigit}+
-HexDigit=[0-9A-F]
+HexDigit=[0-9a-fA-F]
 
 DecimalIntegerLiteral={DecimalDigits}
 SignedDecimalIntegerLiteral=("+"|"-")?{DecimalIntegerLiteral}
@@ -62,7 +63,7 @@ SingleQuotedStringLiteral='([^\r\n'\\]|\\.)*'
 MultiLineDoubleQuotedStringLiteral=\"([^\"\\]|\\([^]))*\"
 MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
 
-NonSemantical=({WhiteSpace}|{DoubleSlashComment}|{DocComment}|{Comment})*
+NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
 
 /* Lexer states */
 %state TAG
@@ -81,18 +82,16 @@ NonSemantical=({WhiteSpace}|{DoubleSlashComment}|{DocComment}|{Comment})*
   "{/literal}" { yybegin(YYINITIAL); return SoyTypes.END_LITERAL; }
   "{{/literal}}" { yybegin(YYINITIAL); return SoyTypes.END_LITERAL_DOUBLE; }
   .|{WhiteSpace}|"{{"|"{/"|"{{/" { return SoyTypes.OTHER; }
-  ^{DoubleSlashComment} { return SoyTypes.OTHER; }
-  {DocComment} { return SoyTypes.OTHER; }
-  {Comment} { return SoyTypes.OTHER; }
 }
 
 // -- Rest
 {WhiteSpace}  { return TokenType.WHITE_SPACE; }
 
 /* Comments */
-^{DoubleSlashComment} { return SoyTypes.COMMENT_BLOCK; }
-{DocComment} { return SoyTypes.DOC_COMMENT_BLOCK; }
-{Comment} { return SoyTypes.COMMENT_BLOCK; }
+^{LineComment} { return SoyTypes.LINE_COMMENT; }
+{WhiteSpace}{LineComment} { return SoyTypes.LINE_COMMENT; }
+{DocCommentBlock} { return SoyTypes.DOC_COMMENT_BLOCK; }
+{BlockComment} { return SoyTypes.COMMENT_BLOCK; }
 
 "{" { yybegin(TAG); return SoyTypes.LBRACE; }
 "{{" { yybegin(TAG); return SoyTypes.LBRACE_LBRACE; }

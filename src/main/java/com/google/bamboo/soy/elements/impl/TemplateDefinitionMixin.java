@@ -17,6 +17,7 @@ package com.google.bamboo.soy.elements.impl;
 import com.google.bamboo.soy.elements.TemplateDefinitionElement;
 import com.google.bamboo.soy.stubs.TemplateDefinitionStub;
 import com.intellij.lang.ASTNode;
+import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
@@ -40,5 +41,10 @@ public class TemplateDefinitionMixin extends SoyStubBasedPsiElementBase<Template
   @Override
   public String getName() {
     return getStub() != null ? getStub().getName() : getText();
+  }
+
+  @Override
+  public ItemPresentation getPresentation() {
+    return SoyPsiElementPresentationFactory.getItemPresentation(this);
   }
 }

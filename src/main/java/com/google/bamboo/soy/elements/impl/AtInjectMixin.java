@@ -15,8 +15,10 @@
 package com.google.bamboo.soy.elements.impl;
 
 import com.google.bamboo.soy.elements.AtInjectElement;
+import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
+import com.intellij.navigation.ItemPresentation;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AtInjectMixin extends ASTWrapperPsiElement implements AtInjectElement {
@@ -28,9 +30,15 @@ public abstract class AtInjectMixin extends ASTWrapperPsiElement implements AtIn
   @NotNull
   @Override
   public String getName() {
-    if (getParamDefinitionIdentifier() != null) {
-      return getParamDefinitionIdentifier().getName();
+    SoyParamDefinitionIdentifier paramDefinitionIdentifier = getParamDefinitionIdentifier();
+    if (paramDefinitionIdentifier != null && paramDefinitionIdentifier.getName() != null) {
+      return paramDefinitionIdentifier.getName();
     }
     return "";
+  }
+
+  @Override
+  public ItemPresentation getPresentation() {
+    return SoyPsiElementPresentationFactory.getItemPresentation(this);
   }
 }

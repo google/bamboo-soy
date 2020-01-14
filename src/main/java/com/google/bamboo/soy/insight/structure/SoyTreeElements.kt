@@ -14,12 +14,21 @@
 
 package com.google.bamboo.soy.insight.structure
 
+import com.google.bamboo.soy.elements.AtElementSingle
 import com.google.bamboo.soy.elements.CallStatementElement
 import com.google.bamboo.soy.elements.ParamElement
 import com.google.bamboo.soy.elements.TagBlockElement
 import com.google.bamboo.soy.file.SoyFile
-import com.google.bamboo.soy.file.SoyFileType
-import com.google.bamboo.soy.parser.*
+import com.google.bamboo.soy.icons.SoyIcons
+import com.google.bamboo.soy.parser.SoyAtInjectSingle
+import com.google.bamboo.soy.parser.SoyAtParamSingle
+import com.google.bamboo.soy.parser.SoyAtStateSingle
+import com.google.bamboo.soy.parser.SoyLetCompoundStatement
+import com.google.bamboo.soy.parser.SoyLetSingleStatement
+import com.google.bamboo.soy.parser.SoyMsgStatement
+import com.google.bamboo.soy.parser.SoyNamespaceBlock
+import com.google.bamboo.soy.parser.SoyParamListElement
+import com.google.bamboo.soy.parser.SoyTemplateBlock
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.structureView.impl.common.PsiTreeElementBase
 import com.intellij.psi.PsiElement
@@ -31,16 +40,17 @@ import javax.swing.Icon
  * Builds a subtree corresponding to a given [PsiElement]
  */
 fun getTreeElement(psiElement: PsiElement): PsiTreeElementBase<PsiElement> =
-    when (psiElement) {
-      is CallStatementElement -> CallTreeElement(psiElement)
-      is SoyLetCompoundStatement -> LetCompoundTreeElement(psiElement)
-      is SoyLetSingleStatement -> LetSingleTreeElement(psiElement)
-      is ParamElement -> ParamTreeElement(psiElement)
-      is SoyTemplateBlock -> TemplateTreeElement(psiElement)
-      is SoyFile -> FileTreeElement(psiElement)
-      is SoyMsgStatement -> MsgTreeElement(psiElement)
-      else -> BaseTreeElement(psiElement)
-    }
+  when (psiElement) {
+    is CallStatementElement -> CallTreeElement(psiElement)
+    is SoyLetCompoundStatement -> LetCompoundTreeElement(psiElement)
+    is SoyLetSingleStatement -> LetSingleTreeElement(psiElement)
+    is ParamElement -> ParamTreeElement(psiElement)
+    is SoyTemplateBlock -> TemplateTreeElement(psiElement)
+    is SoyFile -> FileTreeElement(psiElement)
+    is SoyMsgStatement -> MsgTreeElement(psiElement)
+    is AtElementSingle -> AtTreeElement(psiElement)
+    else -> BaseTreeElement(psiElement)
+  }
 
 
 /**
@@ -48,11 +58,17 @@ fun getTreeElement(psiElement: PsiElement): PsiTreeElementBase<PsiElement> =
  * structure view.
  */
 private fun getPresentableName(psiElement: PsiElement): String? =
-    when (psiElement) {
-      is TagBlockElement -> psiElement.tagName
-      is SoyNamespaceBlock -> "namespace"
-      else -> null
-    }
+  when (psiElement) {
+    is TagBlockElement -> psiElement.tagName
+    is SoyNamespaceBlock -> "namespace"
+    is SoyLetSingleStatement -> "let"
+    is ParamElement -> "param"
+    is SoyMsgStatement -> "msg"
+    is SoyAtInjectSingle -> "@inject"
+    is SoyAtParamSingle -> "@param"
+    is SoyAtStateSingle -> "@state"
+    else -> null
+  }
 
 /**
  * A base class for all Soy TreeElements. The descendants would usually override the methods
@@ -65,11 +81,10 @@ private open class BaseTreeElement(psiElement: PsiElement)
 
   override fun getPresentableText(): String? = getPresentableName(value)
 
-  override fun getIcon(open: Boolean): Icon? = SoyFileType.INSTANCE.icon
+  override fun getIcon(open: Boolean): Icon? = super.getIcon(open) ?: SoyIcons.FILE
 
   protected fun getChildren(psiElement: PsiElement): Collection<PsiTreeElementBase<PsiElement>> =
-      psiElement.children.map {
-        child ->
+      psiElement.children.map { child ->
         if (getPresentableName(child) != null)
           listOf(getTreeElement(child))
         else
@@ -126,7 +141,8 @@ private class LetSingleTreeElement(val psiElement: SoyLetSingleStatement)
   override fun getPresentableText(): String? =
       getPresentableName(psiElement) + " ${psiElement.variableDefinitionIdentifier.name}"
 
-  override fun getLocationString(): String? = " : ${psiElement.expr?.text}"
+  override fun getLocationString(): String? =
+      if (psiElement.expr != null) ": ${psiElement.expr?.text}" else null
 }
 
 /**
@@ -145,7 +161,40 @@ private class ParamTreeElement(val psiElement: ParamElement) : BaseTreeElement(p
       getPresentableName(psiElement) + " ${psiElement.paramName}"
 
   override fun getLocationString(): String? =
-      if (psiElement.inlinedValue != null) " : ${psiElement.inlinedValue}" else ""
+      if (psiElement.inlinedValue != null) ": ${psiElement.inlinedValue}" else ""
+}
+
+/**
+ * A TreeElement for [SoyAtInjectSingle], [SoyAtParamSingle] and [SoyAtStateSingle].
+ */
+private class AtTreeElement(val psiElement: AtElementSingle) : BaseTreeElement(psiElement) {
+  override fun getPresentableText(): String? =
+      if (psiElement.paramDefinitionIdentifier != null)
+        shortenTextIfLong(atElementSinglePresentableText(psiElement))
+      else null
+
+
+  private fun atElementSinglePresentableText(psiElement: AtElementSingle): String {
+    return "${getPresentableName(psiElement)} ${psiElement.name}" +
+        buildTypeAndDefaultValue(psiElement)
+  }
+
+  private fun buildTypeAndDefaultValue(psiElement: AtElementSingle): String {
+    var type = ""
+    var defaultValue = ""
+    if (psiElement is SoyAtParamSingle) {
+      type = psiElement.type
+      defaultValue = psiElement.defaultInitializerExpr?.text ?: ""
+    }
+    if (psiElement is SoyAtStateSingle) {
+      type = psiElement.type
+      defaultValue = psiElement.defaultInitializerExpr?.text ?: ""
+    }
+    if (type.isEmpty()) {
+      return if (defaultValue.isEmpty()) "" else " := $defaultValue"
+    }
+    return if (defaultValue.isEmpty()) ": $type" else ": $type = $defaultValue"
+  }
 }
 
 /**
@@ -155,5 +204,3 @@ private class TemplateTreeElement(val psiElement: SoyTemplateBlock) : BaseTreeEl
   override fun getPresentableText(): String? =
       getPresentableName(psiElement) + " ${psiElement.name}"
 }
-
-

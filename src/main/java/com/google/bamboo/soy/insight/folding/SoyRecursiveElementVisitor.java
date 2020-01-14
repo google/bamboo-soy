@@ -1,4 +1,4 @@
-// Copyright 2017 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.bamboo.soy.elements;
+package com.google.bamboo.soy.insight.folding;
 
-import com.google.bamboo.soy.lang.Variable;
-import com.intellij.navigation.NavigationItem;
-import com.intellij.psi.PsiNameIdentifierOwner;
-import org.jetbrains.annotations.NotNull;
+import com.google.bamboo.soy.parser.SoyVisitor;
+import com.intellij.psi.PsiElement;
 
-public interface VariableDefinitionElement extends PsiNameIdentifierOwner {
-  @NotNull
-  default Variable toVariable() {
-    return new Variable(getName(), "", this);
+public class SoyRecursiveElementVisitor extends SoyVisitor {
+
+  public void visitElement(final PsiElement element) {
+    element.acceptChildren(this);
   }
+
 }

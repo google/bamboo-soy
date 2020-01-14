@@ -27,13 +27,13 @@ public class SoyCommenter implements Commenter {
   @Nullable
   @Override
   public String getBlockCommentPrefix() {
-    return "";
+    return "/*";
   }
 
   @Nullable
   @Override
   public String getBlockCommentSuffix() {
-    return null;
+    return "*/";
   }
 
   @Nullable

@@ -25,7 +25,7 @@ public class SoyTokenTypes {
   public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
 
   public static final TokenSet COMMENTS =
-      TokenSet.create(SoyTypes.COMMENT_BLOCK, SoyTypes.DOC_COMMENT_BLOCK);
+      TokenSet.create(SoyTypes.COMMENT_BLOCK, SoyTypes.DOC_COMMENT_BLOCK, SoyTypes.LINE_COMMENT);
 
   public static final TokenSet STRINGS = TokenSet.create(SoyTypes.OTHER);
 
