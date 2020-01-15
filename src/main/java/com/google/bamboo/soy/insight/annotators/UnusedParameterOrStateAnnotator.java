@@ -16,6 +16,7 @@ package com.google.bamboo.soy.insight.annotators;
 
 import com.google.bamboo.soy.elements.IdentifierElement;
 import com.google.bamboo.soy.insight.quickfix.RemoveUnusedParameterFix;
+import com.google.bamboo.soy.insight.quickfix.RemoveUnusedStateVarFix;
 import com.google.bamboo.soy.lang.ParamUtils;
 import com.google.bamboo.soy.lang.Parameter;
 import com.google.bamboo.soy.lang.Variable;
@@ -33,7 +34,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
-public class UnusedParameterAnnotator implements Annotator {
+public class UnusedParameterOrStateAnnotator implements Annotator {
 
   @Override
   public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder annotationHolder) {
@@ -71,13 +72,19 @@ public class UnusedParameterAnnotator implements Annotator {
           Annotation annotation = annotationHolder.createErrorAnnotation(
               variable.element,
               variableType(variable) + " " + variable.name + " is unused.");
-          annotation.registerFix(new RemoveUnusedParameterFix(variable.name));
+          annotation.registerFix(isParameter(variable)
+              ? new RemoveUnusedParameterFix(variable.name)
+              : new RemoveUnusedStateVarFix(variable.name));
         }
       }
     }
   }
 
   private static String variableType(Variable variable) {
-    return variable instanceof Parameter ? "Parameter" : "State variable";
+    return isParameter(variable) ? "Parameter" : "State variable";
+  }
+
+  private static boolean isParameter(Variable variable) {
+    return variable instanceof Parameter;
   }
 }

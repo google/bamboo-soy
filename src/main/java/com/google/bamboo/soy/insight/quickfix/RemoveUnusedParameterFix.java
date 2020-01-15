@@ -1,35 +1,39 @@
 package com.google.bamboo.soy.insight.quickfix;
 
-import com.google.bamboo.soy.elements.WhitespaceUtils;
+import com.google.bamboo.soy.elements.ParamElement;
+import com.google.bamboo.soy.file.SoyFile;
+import com.google.bamboo.soy.file.SoyFileType;
+import com.google.bamboo.soy.insight.folding.SoyRecursiveElementVisitor;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
-import com.intellij.codeInsight.intention.IntentionAction;
-import com.intellij.codeInspection.LocalQuickFix;
+import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
+import com.google.bamboo.soy.parser.SoyParamSpecificationIdentifier;
+import com.google.common.collect.ImmutableList;
 import com.intellij.codeInspection.ProblemDescriptor;
-import com.intellij.lang.ASTNode;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiDocumentManager;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.PsiManager;
+import com.intellij.psi.PsiReference;
+import com.intellij.psi.search.FileTypeIndex;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.IncorrectOperationException;
+import java.util.Collection;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
-public class RemoveUnusedParameterFix implements LocalQuickFix, IntentionAction {
-
-  private final String name;
+public class RemoveUnusedParameterFix extends RemoveUnusedAtFixBase<SoyAtParamSingle> {
 
   public RemoveUnusedParameterFix(String paramName) {
-    name = paramName;
+    super(paramName);
   }
 
   @NotNull
   @Override
   public String getText() {
-    return "Remove unused @param " + name;
+    return "Remove unused @param " + name + " and its specifications";
   }
 
   @Override
@@ -44,67 +48,60 @@ public class RemoveUnusedParameterFix implements LocalQuickFix, IntentionAction 
   }
 
   @Override
-  public void applyFix(@NotNull Project project,
-      @NotNull ProblemDescriptor descriptor) {
-    final PsiElement element = descriptor.getPsiElement();
-    if (!(element instanceof SoyAtParamSingle)) {
-      return;
-    }
-
-    runFix(element);
-  }
-
-  @Override
-  public void invoke(@NotNull Project project, Editor editor, PsiFile file)
-      throws IncorrectOperationException {
-    int offset = editor.getCaretModel().getOffset();
-    PsiElement psiElement = file.findElementAt(offset);
-    if (psiElement == null || !psiElement.isValid()) {
-      return;
-    }
-    if (psiElement instanceof PsiWhiteSpace && offset > 0) {
-      // The caret might be located right after the closing brace and before a newline, in which
-      // case the current PsiElement is PsiWhiteSpace.
-      psiElement = file.findElementAt(offset - 1);
-    }
-    SoyAtParamSingle atParamSingle = PsiTreeUtil
-        .getParentOfType(psiElement, SoyAtParamSingle.class);
-    if (atParamSingle == null) {
-      return;
-    }
-    runFix(atParamSingle);
-  }
-
-  @Override
   public boolean startInWriteAction() {
     return true;
   }
 
-  private static void runFix(PsiElement element) {
-    final Document document = PsiDocumentManager.getInstance(element.getProject())
-        .getDocument(element.getContainingFile());
-    if (document != null) {
-      ASTNode atParamNode = element.getNode();
-      PsiElement nextMeaningfulNode = PsiTreeUtil
-          .skipSiblingsForward(element, PsiWhiteSpace.class);
-      nextMeaningfulNode = nextMeaningfulNode == null ? null
-          : WhitespaceUtils.getFirstNonWhitespaceChild(nextMeaningfulNode);
-      TextRange rangeToDelete = computeRangeToDelete(element, atParamNode, nextMeaningfulNode);
-      document.deleteString(rangeToDelete.getStartOffset(), rangeToDelete.getEndOffset());
+  @Override
+  void runFix(SoyAtParamSingle element) {
+    final Document document = getContainingDocument(element);
+    if (document == null) {
+      return;
+    }
+    SoyParamDefinitionIdentifier paramDefinitionIdentifier =
+        element.getParamDefinitionIdentifier();
+    if (paramDefinitionIdentifier == null) {
+      return;
+    }
+    deleteParamSpecifications(paramDefinitionIdentifier);
+    deleteElement(element, document);
+  }
+
+  private static void deleteParamSpecifications(
+      SoyParamDefinitionIdentifier paramDefinitionIdentifier) {
+    List<SoyParamSpecificationIdentifier> paramSpecifications =
+        getReferencingParamSpecificationIdentifiers(paramDefinitionIdentifier);
+    for (SoyParamSpecificationIdentifier paramSpecification : paramSpecifications) {
+      ParamElement paramElement =
+          PsiTreeUtil.getParentOfType(paramSpecification, ParamElement.class);
+      if (paramElement != null) {
+        deleteElement(paramElement, getContainingDocument(paramElement));
+      }
     }
   }
 
-  @NotNull
-  private static TextRange computeRangeToDelete(PsiElement element, ASTNode atParamNode,
-      PsiElement nextMeaningfulNode) {
-    if (nextMeaningfulNode != null) {
-      return new TextRange(atParamNode.getStartOffset(),
-          nextMeaningfulNode.getNode().getStartOffset());
+  private static List<SoyParamSpecificationIdentifier> getReferencingParamSpecificationIdentifiers(
+      SoyParamDefinitionIdentifier paramDefinitionIdentifier) {
+    Project project = paramDefinitionIdentifier.getProject();
+    final ImmutableList.Builder<SoyParamSpecificationIdentifier> result = ImmutableList.builder();
+    Collection<VirtualFile> virtualFiles =
+        FileTypeIndex.getFiles(SoyFileType.INSTANCE, GlobalSearchScope.allScope(project));
+    for (VirtualFile virtualFile : virtualFiles) {
+      SoyFile soyFile = (SoyFile) PsiManager.getInstance(project).findFile(virtualFile);
+      if (soyFile != null) {
+        soyFile.accept(new SoyRecursiveElementVisitor() {
+          @Override
+          public void visitParamSpecificationIdentifier(
+              @NotNull SoyParamSpecificationIdentifier identifier) {
+            super.visitParamSpecificationIdentifier(identifier);
+            PsiReference reference = identifier.getReference();
+            if (reference != null && paramDefinitionIdentifier.equals(reference.resolve())) {
+              result.add(identifier);
+            }
+          }
+        });
+      }
     }
-    PsiElement prevMeaningfulNode = PsiTreeUtil
-        .skipSiblingsBackward(element, PsiWhiteSpace.class);
-    return new TextRange(
-        prevMeaningfulNode != null ? prevMeaningfulNode.getTextRange().getEndOffset() :
-            atParamNode.getStartOffset(), atParamNode.getTextRange().getEndOffset());
+    return result.build();
   }
 }
