@@ -5,6 +5,7 @@ import com.google.bamboo.soy.parser.SoyElementType;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.bamboo.soy.stubs.AtParamStub;
 import com.google.bamboo.soy.stubs.AtStateStub;
+import com.google.bamboo.soy.stubs.TemplateBlockStub;
 import com.google.bamboo.soy.stubs.TemplateDefinitionStub;
 import com.google.common.collect.ImmutableMap;
 import com.intellij.ide.IconProvider;
@@ -50,6 +51,7 @@ public class SoyElementIconProvider extends IconProvider {
               .<IStubElementType<? extends StubElement<?>, ? extends PsiElement>, Icon>builder()
               .put(AtParamStub.TYPE, SoyIcons.CODE_PARAMETER)
               .put(AtStateStub.TYPE, SoyIcons.CODE_STATE)
+              .put(TemplateBlockStub.TYPE, SoyIcons.CODE_TEMPLATE)
               .put(TemplateDefinitionStub.TYPE, SoyIcons.CODE_TEMPLATE)
               .build();
 
