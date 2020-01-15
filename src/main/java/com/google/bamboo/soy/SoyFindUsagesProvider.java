@@ -22,6 +22,7 @@ import com.google.bamboo.soy.parser.SoyBeginLet;
 import com.google.bamboo.soy.parser.SoyBeginTemplate;
 import com.google.bamboo.soy.parser.SoyLetSingleStatement;
 import com.google.bamboo.soy.parser.SoyNamespaceDeclarationIdentifier;
+import com.google.bamboo.soy.parser.SoyParamSpecificationIdentifier;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier;
 import com.google.common.base.Strings;
@@ -62,6 +63,9 @@ public class SoyFindUsagesProvider implements FindUsagesProvider {
   public String getType(@NotNull PsiElement psiElement) {
     if (psiElement instanceof SoyVariableDefinitionIdentifier) {
       return "Variable"; // for/foreach/let
+    }
+    if (psiElement instanceof SoyParamSpecificationIdentifier) {
+      return "Parameter specification";
     }
     PsiElement parent = psiElement.getParent();
     if (parent instanceof SoyAtParamSingle) {
