@@ -57,7 +57,6 @@ public class UnusedParameterOrStateAnnotator implements Annotator {
               .map(IdentifierElement::getReferences)
               .flatMap(Arrays::stream)
               .map(PsiReference::getCanonicalText)
-              .distinct()
               .collect(ImmutableSet.toImmutableSet());
 
       for (Variable variable : variables) {
