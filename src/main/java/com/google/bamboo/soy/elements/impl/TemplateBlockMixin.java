@@ -19,6 +19,7 @@ import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.bamboo.soy.stubs.TemplateBlockStub;
 import com.intellij.lang.ASTNode;
+import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
@@ -50,5 +51,10 @@ public abstract class TemplateBlockMixin extends SoyStubBasedPsiElementBase<Temp
     }
     SoyTemplateDefinitionIdentifier identifier = getDefinitionIdentifier();
     return identifier == null ? "" : identifier.getName();
+  }
+
+  @Override
+  public ItemPresentation getPresentation() {
+    return SoyPsiElementPresentationFactory.getItemPresentation(this);
   }
 }

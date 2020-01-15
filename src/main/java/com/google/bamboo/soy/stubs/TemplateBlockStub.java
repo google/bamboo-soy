@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 public class TemplateBlockStub extends StubBase<SoyTemplateBlock> {
-  static final Type TYPE = new Type();
+  public static final Type TYPE = new Type();
   public final boolean isDelegate;
 
   TemplateBlockStub(StubElement parent, boolean isDelegate) {
