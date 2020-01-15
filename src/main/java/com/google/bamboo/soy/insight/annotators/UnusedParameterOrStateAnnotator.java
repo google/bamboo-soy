@@ -22,6 +22,7 @@ import com.google.bamboo.soy.lang.Parameter;
 import com.google.bamboo.soy.lang.Variable;
 import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Streams;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
@@ -31,7 +32,7 @@ import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
 public class UnusedParameterOrStateAnnotator implements Annotator {
@@ -50,25 +51,17 @@ public class UnusedParameterOrStateAnnotator implements Annotator {
               ParamUtils.getStateDefinitions(element).stream()).collect(
               ImmutableList.toImmutableList());
 
-      Collection<String> usedVariableIdentifiers =
+      Set<String> usedVariableIdentifiers =
           PsiTreeUtil.findChildrenOfType(element, IdentifierElement.class)
               .stream()
               .map(IdentifierElement::getReferences)
               .flatMap(Arrays::stream)
               .map(PsiReference::getCanonicalText)
               .distinct()
-              .collect(Collectors.toList());
+              .collect(ImmutableSet.toImmutableSet());
 
       for (Variable variable : variables) {
-        boolean isMatched = false;
-        for (String usedIdentifier : usedVariableIdentifiers) {
-          if (usedIdentifier.equals(variable.name)) {
-            isMatched = true;
-            break;
-          }
-        }
-
-        if (!isMatched) {
+        if (!usedVariableIdentifiers.contains(variable.name)) {
           Annotation annotation = annotationHolder.createErrorAnnotation(
               variable.element,
               variableType(variable) + " " + variable.name + " is unused.");
