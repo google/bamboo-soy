@@ -175,6 +175,9 @@
     <lang.commenter
       language="ClosureTemplate"
       implementationClass="com.google.bamboo.soy.SoyCommenter"/>
+    <lang.braceMatcher
+      language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.SoyBraceMatcher"/>
     <lang.findUsagesProvider
       language="ClosureTemplate"
       implementationClass="com.google.bamboo.soy.SoyFindUsagesProvider"/>
@@ -223,7 +226,7 @@
       implementationClass="com.google.bamboo.soy.insight.annotators.MissingParametersAnnotator"/>
     <annotator
       language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.insight.annotators.UnusedParameterAnnotator"/>
+      implementationClass="com.google.bamboo.soy.insight.annotators.UnusedParameterOrStateAnnotator"/>
     <annotator
       language="ClosureTemplate"
       implementationClass="com.google.bamboo.soy.insight.annotators.CaseAndDefaultAnnotator"/>
