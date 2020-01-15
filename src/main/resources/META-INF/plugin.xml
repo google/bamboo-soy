@@ -175,6 +175,9 @@
     <lang.commenter
       language="ClosureTemplate"
       implementationClass="com.google.bamboo.soy.SoyCommenter"/>
+    <lang.braceMatcher
+      language="ClosureTemplate"
+      implementationClass="com.google.bamboo.soy.SoyBraceMatcher"/>
     <lang.findUsagesProvider
       language="ClosureTemplate"
       implementationClass="com.google.bamboo.soy.SoyFindUsagesProvider"/>
