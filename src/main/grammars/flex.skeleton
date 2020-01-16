@@ -30,6 +30,10 @@
   /** the current lexical state */
   private int zzLexicalState = YYINITIAL;
 
+  /** stack for saving lexical states */
+  private java.util.Stack<Integer> zzLexicalStateStack =
+      new java.util.Stack<>();
+
   /** this buffer contains the current text to be matched and is
       the source of the yytext() string */
   private CharSequence zzBuffer = "";
@@ -108,6 +112,21 @@
     zzLexicalState = newState;
   }
 
+  /**
+   * Saves the current lexical state onto stack
+   *
+   * @param state the lexical state to save
+   */
+  public final void yypush() {
+    zzLexicalStateStack.push(yystate());
+  }
+
+  /**
+   * Loads the current lexical state from stack
+   */
+  public final void yypop() {
+    yybegin(zzLexicalStateStack.pop());
+  }
 
   /**
    * Returns the text matched by the current regular expression.
