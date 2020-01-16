@@ -71,6 +71,7 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
 %state TAG_CSS_XID
 %state TAG_IDENTIFIER_WORD
 %state TAG_QUALIFIED_IDENTIFIER
+%state WHITESPACE_BEFORE_LINE_COMMENT
 
 %%
 
@@ -84,14 +85,26 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
   .|{WhiteSpace}|"{{"|"{/"|"{{/" { return SoyTypes.OTHER; }
 }
 
-// -- Rest
-{WhiteSpace}  { return TokenType.WHITE_SPACE; }
-
 /* Comments */
+
+// Require a whitespace before a line comment but do not coalesce the two.
+{WhiteSpace}/{LineComment} {
+    yypush();
+    yybegin(WHITESPACE_BEFORE_LINE_COMMENT);
+    return TokenType.WHITE_SPACE;
+}
+<WHITESPACE_BEFORE_LINE_COMMENT> {
+  {LineComment} { yypop(); return SoyTypes.LINE_COMMENT; }
+  . { yypop(); return SoyTypes.OTHER; } // Should not really happen.
+}
+
+// Line comment can also begin at line start.
 ^{LineComment} { return SoyTypes.LINE_COMMENT; }
-{WhiteSpace}{LineComment} { return SoyTypes.LINE_COMMENT; }
 {DocCommentBlock} { return SoyTypes.DOC_COMMENT_BLOCK; }
 {BlockComment} { return SoyTypes.COMMENT_BLOCK; }
+
+// -- Rest
+{WhiteSpace}  { return TokenType.WHITE_SPACE; }
 
 "{" { yybegin(TAG); return SoyTypes.LBRACE; }
 "{{" { yybegin(TAG); return SoyTypes.LBRACE_LBRACE; }
