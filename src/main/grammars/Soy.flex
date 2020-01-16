@@ -37,7 +37,7 @@ OptionalEndOfBlockComment="*"*("*/")?
 CommentContent=([^*]|("*"+[^/*]))*
 DocCommentBlock="/**"{CommentContent}{OptionalEndOfBlockComment}? // May be unterminated
 CommentBlock="/*"{CommentContent}{OptionalEndOfBlockComment}? // May be unterminated
-LineComment="//"{InputCharacter}*{LineTerminator}?
+LineComment="//"{InputCharacter}*
 HtmlComment="<!--([^-]|-[^-]|--+[^->])*-*-->"
 BlockComment={CommentBlock}|{HtmlComment}
 
