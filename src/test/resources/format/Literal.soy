@@ -1,0 +1,15 @@
+{namespace foo}{template .bar}
+  {literal}{/literal}  {literal} {/literal}
+{literal}Test{/literal}
+ {literal}  Test  {/literal}
+      {literal}{template}
+  {/template}{/literal}
+   {literal}{{literal}} and {{/literal}} inside a single literal{/literal}
+
+{{literal}}{{/literal}}  {{literal}} {{/literal}}
+{{literal}}Test{{/literal}}
+{{literal}}  Test  {{/literal}}
+{{literal}}{template}
+{/template}{{/literal}}
+   {{literal}}{literal} and {/literal} inside a literal{{/literal}}
+{/template}

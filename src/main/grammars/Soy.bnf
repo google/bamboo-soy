@@ -18,7 +18,7 @@
   implements("(Css|LetSingle|SpecialCharacter|Xid|Print)Statement")
       = ["com.google.bamboo.soy.elements.StatementElement" "com.google.bamboo.soy.elements.TagElement"]
   implements("LiteralStatement") = ["com.google.bamboo.soy.elements.StatementElement"]
-  implements("(Call|Choice|For|Foreach|If|LetCompound|Literal|Msg)Statement")
+  implements("(Call|Choice|For|Foreach|If|LetCompound|Msg)Statement")
       = ["com.google.bamboo.soy.elements.StatementElement" "com.google.bamboo.soy.elements.TagBlockElement"]
 
   extends(".*Expr|VariableReferenceIdentifier")=Expr
