@@ -229,7 +229,7 @@ FieldIdentifier ::= PlainIdentifier
 
 AttributeNameIdentifier ::= PlainIdentifier
 
-FunctionIdentifier ::= PlainIdentifier
+FunctionIdentifier ::= PlainIdentifier (DOT PlainIdentifier)*
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
