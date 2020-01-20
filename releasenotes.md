@@ -1,22 +1,38 @@
 # Release notes
 
+## Release notes for 1.4
+
+ * General stability and robustness improvements.
+ * Added support for Map literals.
+ * Fixed formatting of ternary expressions.
+ * Fixed issue where the plugin was interfering with non-soy files.
+ * Fixed parsing of HTML comments (made non-greedy).
+ * Fixed parsing of `{literal}` tag content.
+
+## Release notes for 1.3
+
+ * Formatter: Better support for spacing in and around expressions.
+ * General stability and robustness improvements.
+ * Fixed ClassCastException occurring when jumping to definitions.
+ * More consistent handling of CSS literals.
+
 ## Release notes for 1.2
 ### Features
 
- * Automatic insertion of closing characters for `"`, `'`, `(` and `[`,
- * Code style settings are now available,
-   * Pressing enter after an open tag now places the cursor at the right indentation level,
+ * Automatic insertion of closing characters for `"`, `'`, `(` and `[`.
+ * Code style settings are now available.
+   * Pressing <kbd>Enter</kbd> after an open tag now places the caret at the right indentation level.
  * Formatting improvements:
-   * Continuation indent on multiline `alias`,
-   * Continuation indent on tag attributes,
-   * Improved frormatting for deeply nested tags,
- * Live templates for `{let}` and `{let /}`,
- * Autocompletion
-   * Add support for `stricthtml="true"` in template definition blocks,
-   * Better context-detection for where variable autocompletion should trigger,
+   * Continuation indent on multiline `alias`.
+   * Continuation indent on tag attributes.
+   * Improved formatting for deeply nested tags.
+ * Live templates for `{let}` and `{let /}`.
+ * Autocompletion:
+   * Add support for `stricthtml="true"` in template definition blocks.
+   * Better context detection for where variable autocompletion should trigger.
  
 ### Stability and bug fixes
- * Fixed various NPEs and bugs that occured on partial/incomplete code constructs,
+ * Fixed various NPEs and bugs that occurred on partial/incomplete code constructs.
 
 ## Release notes for 1.1
 
@@ -34,8 +50,8 @@
  * Completion improvements:
      * Kind keyword and supported literals in string literal.
      * Show type in parameter identifier suggestions.
-     * Only deltemplates are suggested for delcalls and vice verso for normal templates.
- * Indexing of files is now persisted accross restarts.
+     * Only deltemplates are suggested for delcalls and vice versa for normal templates.
+ * Indexing of files is now persisted across restarts.
  * Stability and bug fixes.
 
 ## Release notes for alpha-5.

@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.google.bamboo.id</id>
   <name>Bamboo Soy</name>
-  <version>1.2.1</version>
+  <version>1.4</version>
   <vendor>Google</vendor>
 
   <description><![CDATA[
@@ -9,134 +9,7 @@
     ]]>
   </description>
 
-  <change-notes><![CDATA[
-      <p>
-        <b>Release notes for 1.3</b>
-
-        <ul>
-          <li>Formatter: Better support for spacing in and around expressions,</li>
-          <li>General stability and robustness improvements,</li>
-          <li>Fixed ClassCastException occurring when jumping to definitions,</li>
-          <li>More consistent handling of CSS literals,</li>
-       </ul>
-     </p>
-
-      <p>
-        <b>Release notes for 1.2</b>
-
-        <ul>
-          <li>Automatic insertion of closing characters for `"`, `'`, `(` and `[`,</li>
-          <li>Code style settings are now available,</li>
-          <li>Pressing enter after an open tag now places the cursor at the right indentation level,</li>
-          <li>Formatting improvements:</li>
-            <ul>
-              <li>Continuation indent on multiline `alias`,</li>
-              <li>Continuation indent on tag attributes,</li>
-              <li>Improved frormatting for deeply nested tags,</li>
-            </ul>
-          <li>Live templates for `{let}` and `{let /}`,</li>
-         <li>Add support for `stricthtml="true"` in template definition blocks,</li>
-         <li>Better context-detection for where variable autocompletion should trigger,</li>
-         <li>Fixed various NPEs and bugs that occured on partial/incomplete code constructs,</li>
-       </ul>
-     </p>
-
-     <p>
-        <b>Release notes for 1.1</b>
-
-        <ul>
-          <li>Autocompletion now respects block scoping</li>
-          <li>Performance improvements to parsing and indexing phase</li>
-          <li>Fixed bug where Soy parser would not correctly delegate to HTML</li>
-        </ul>
-     </p>
-
-     <p>
-        <b>Release notes for 1.0</b>
-
-        <ul>
-          <li>HTML highlighting and completion</li>
-          <li>Autoformatting</li>
-          <li>Structure view</li>
-          <li>Autoclosing of soy tags when typing "{/"</li>
-          <li>Doc comment support for @param, @inject and let statements</li>
-          <li>
-            Completion improvements
-            <ul>
-              <li>Kind keyword and supported literals in string literal</li>
-              <li>Show type in parameter identifier suggestions</li>
-              <li>Only deltemplates are suggested for delcalls and vice verso for normal templates</li>
-            </ul>
-          </li>
-          <li>Indexing of files is now persisted accross restarts</li>
-          <li>Stability and bug fixes</li>
-        </ul>
-     </p>
-
-     <p>
-        <b>Release notes for 1.0-alpha.5</b>
-
-        <ul>
-          <li>Added completion for visibility="private" in template open tags.</li>
-          <li>Recognize usage of variables inside string literals, like {msg desc="$variable"}.</li>
-          <li>Fix referencing of variables declared in let statements.</li>
-          <li>Disallow referencing @inject declarations from template call sites.</li>
-          <li>Fix checking for slash before closing brace on single-tag call statements.</li>
-          <li>Parser accepts index access of parenthesized expressions, like ($foo)[0]</li>
-          <li>Parser accepts `for` statements with empty body.</li>
-        </ul>
-     </p>
-
-     <p>
-       <b>Release notes for 1.0-alpha.4</b>
-
-       <ul>
-         <li>Fix issue where identifiers suggestions from let statements would begin with an invalid double-$,</li>
-         <li>Properly recognize map/list access as an expression (it would previously show as a parsing error in certain cases),</li>
-         <li>Remove auto-adding of single quote, it's annoying when typing vanilla text.</li>
-       </ul>
-     </p>
-
-     <p>
-       <b>Release notes for 1.0-alpha.3</b>
-
-        <ul>
-          <li>Improved alias support:
-              <ul>
-                <li>Suggest aliased namespaces in autocompletion results for templates in a {call},</li>
-                <li>Provide autocompletion after using a namespace alias as identifier</li>
-              </ul>
-          </li>
-          <li>Adds support for union and record types in parameter definitions,</li>
-          <li>Autocompletion for `kind` of parameters {text, html, uri, attributes, ...},</li>
-          <li>Live template for {param} adds `kind="text"` as default based on usage stats.</li>
-          <li>Improvements to live templates:
-             <ul>
-                <li>Automatically open completion suggestions for {param} and {alias} live templates,</li>
-                <li>Renamed the single line {call} and {param} triggers to scall and sparam to avoid
-                    colliding with most probable case which is to have open-close tags.</li>
-             </ul>
-          </li>
-        </ul>
-      </p>
-
-      <p>
-        <b>Release notes for 1.0-alpha.2</b>
-
-        <ul>
-          <li>Adds documentation tooltips for references (
-              Ctrl-hover to show or Ctrl-Q to trigger quick documentation),</li>
-          <li>Adds support for union and record types in parameter definitions,</li>
-          <li>Adds support for alias declaration that omit the alias identifier {alias my.namespace},</li>
-          <li>Adds support for identifiers that are part of identifier expressions. For example in
-              {print($foo.bar.baz)}, the identifier $foo is correctly recognized and will be a reference
-              to the site where it’s declared,</li>
-          <li>Fixes parsing issues where `uri` was not allowed as parameter name,</li>
-          <li>Fixes NPE when desugaring aliases.</li>
-        </ul>
-      </p>
-    ]]>
-  </change-notes>
+  <change-notes>[The content will be generated at build time]</change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
   <idea-version since-build="163.0"/>
