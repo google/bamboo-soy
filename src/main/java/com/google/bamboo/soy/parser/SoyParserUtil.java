@@ -30,14 +30,11 @@ import static com.google.bamboo.soy.parser.SoyTypes.SWITCH_STATEMENT;
 import static com.google.bamboo.soy.parser.SoyTypes.TEMPLATE;
 import static com.google.bamboo.soy.parser.SoyTypes.TEMPLATE_BLOCK;
 
-import com.google.bamboo.soy.elements.impl.VariableDefinitionMixin;
 import com.google.common.collect.ImmutableMap;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
 import com.intellij.lang.WhitespacesAndCommentsBinder;
-import com.intellij.lang.WhitespacesAndCommentsBinder.RecursiveBinder;
 import com.intellij.lang.parser.GeneratedParserUtilBase;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.IElementType;
 import java.util.List;
 import java.util.regex.Matcher;
