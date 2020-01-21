@@ -234,6 +234,10 @@ public class SoyBlock extends TemplateLanguageBlock {
 
   @Override
   public Spacing getSpacing(Block child1, Block child2) {
+    if (getNode().getElementType() == SoyTypes.LITERAL_STATEMENT) {
+      // No custom spacing inside literal statements whatsoever.
+      return null;
+    }
     Spacing spacing = super.getSpacing(child1, child2);
     return spacing != null ? spacing : SoySpacing.getSpacing(getSettings().getCommonSettings(
         SoyLanguage.INSTANCE), this, child1, child2);

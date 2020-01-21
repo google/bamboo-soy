@@ -67,7 +67,8 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
 
 /* Lexer states */
 %state TAG
-%state LITERAL
+%state LITERAL_SINGLE
+%state LITERAL_DOUBLE
 %state TAG_CSS_XID
 %state TAG_IDENTIFIER_WORD
 %state TAG_QUALIFIED_IDENTIFIER
@@ -77,13 +78,24 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
 
 // -- Literal tags: ensure we parse literal tags and eat their whole content first without matching
 // anything within the literal body.
-"{literal}" { yybegin(LITERAL); return SoyTypes.LITERAL; }
-"{{literal}}" { yybegin(LITERAL); return SoyTypes.LITERAL_DOUBLE; }
-<LITERAL> {
+<LITERAL_SINGLE> {
   "{/literal}" { yybegin(YYINITIAL); return SoyTypes.END_LITERAL; }
+  "{{literal}}" { return SoyTypes.OTHER; }
+  "{{/literal}}" { return SoyTypes.OTHER; }
+}
+
+<LITERAL_DOUBLE> {
   "{{/literal}}" { yybegin(YYINITIAL); return SoyTypes.END_LITERAL_DOUBLE; }
+  "{literal}" { return SoyTypes.OTHER; }
+  "{/literal}" { return SoyTypes.OTHER; }
+}
+
+<LITERAL_SINGLE, LITERAL_DOUBLE> {
   .|{WhiteSpace}|"{{"|"{/"|"{{/" { return SoyTypes.OTHER; }
 }
+
+"{literal}" { yybegin(LITERAL_SINGLE); return SoyTypes.LITERAL; }
+"{{literal}}" { yybegin(LITERAL_DOUBLE); return SoyTypes.LITERAL_DOUBLE; }
 
 /* Comments */
 

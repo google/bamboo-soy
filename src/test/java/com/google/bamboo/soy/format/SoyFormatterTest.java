@@ -43,4 +43,8 @@ public class SoyFormatterTest extends SoyCodeInsightFixtureTestCase {
   public void testSpacing() {
     doTest();
   }
+
+  public void testLiteral() {
+    doTest();
+  }
 }

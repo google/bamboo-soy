@@ -63,3 +63,12 @@
   {@inject b : uri}
   {@state c : string = 'value'}
 {/element}
+
+{element .atParamAndStateWithFunctionCallInitializers}
+  {@param a := foo.Bar()}
+  {@param b := foo.Moo(3, 4, 'test')}
+  {@param c := Zoo()}
+  {@state d := foo.Bar()}
+  {@state e := foo.Moo(null)}
+  {@state f := Zoo()}
+{/element}
