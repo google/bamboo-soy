@@ -191,7 +191,6 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
   "select" { return SoyTypes.SELECT; }
   "sp" { return SoyTypes.SP; }
   "switch" { return SoyTypes.SWITCH; }
-  "msg" { return SoyTypes.MSG; }
 
   /* Types */
   "any" { return SoyTypes.ANY; }

@@ -109,7 +109,7 @@
     TEMPLATE = "template"
     TERNARY_COALESCER = "?:"
     TESTING_WHITESPACE = "regexp:[ \n\t\r\f]+"
-    XID="xid"
+    XID = "xid"
 
     /* Types */
     ANY = "any"
