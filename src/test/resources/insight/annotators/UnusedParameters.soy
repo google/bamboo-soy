@@ -1,6 +1,10 @@
 {namespace space}
 
 {element .foo}
-  {@param <error descr="Parameter unusedParam is unused.">unusedParam</error>: string}
-  {@state <error descr="State variable unusedState is unused.">unusedState</error>:= 'test'}
+  {@param <warning descr="Parameter unusedParam is unused.">unusedParam</warning>: string}
+  {@state <warning descr="State variable unusedState is unused.">unusedState</warning>:= 'test'}
 {/element}
+
+{template .bar}
+  {@param <error descr="Parameter unusedParam is unused.">unusedParam</error>: string}
+{/template}
