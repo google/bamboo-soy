@@ -1,5 +1,24 @@
 # Release notes
 
+## Release notes for 1.5
+
+### Features
+ * Added support for {element}, {@state} and default initializers (fixes #172)
+ * Added record() type support (fixes #170)
+ * Added "Remove unused parameter (state)" quickfix (also removes respective specifications from calls across the project)
+ * Added Rename refactoring for variables, @param's and @state's
+ * Added folding for template/element, call/delcall and doc comments
+ * Added "Comment selection as block"
+ * Improved presentation of Soy elements (Structure and Find Usages views)
+
+### Bug and stability fixes
+ * Fixed @param parsing (fixes #169)
+ * Fixed variable highlighting
+ * Fixed Soy file Structure view
+ * Improved comments parsing (fixes #164)
+ * Minor cosmetic fixes
+
+
 ## Release notes for 1.4
 
  * General stability and robustness improvements.
@@ -9,12 +28,14 @@
  * Fixed parsing of HTML comments (made non-greedy).
  * Fixed parsing of `{literal}` tag content.
 
+
 ## Release notes for 1.3
 
  * Formatter: Better support for spacing in and around expressions.
  * General stability and robustness improvements.
  * Fixed ClassCastException occurring when jumping to definitions.
  * More consistent handling of CSS literals.
+
 
 ## Release notes for 1.2
 ### Features
@@ -34,11 +55,13 @@
 ### Stability and bug fixes
  * Fixed various NPEs and bugs that occurred on partial/incomplete code constructs.
 
+
 ## Release notes for 1.1
 
  * Autocompletion now respects block scoping.
  * Performance improvements to parsing and indexing phase.
  * Fixed bug where Soy parser would not correctly delegate to HTML.
+
 
 ## Release notes for 1.0
 
@@ -54,6 +77,7 @@
  * Indexing of files is now persisted across restarts.
  * Stability and bug fixes.
 
+
 ## Release notes for alpha-5.
 
  * Added completion for `visibility="private"` in template open tags.
@@ -64,11 +88,13 @@
  * Parser accepts index access of parenthesized expressions, like `($foo)[0]`
  * Parser accepts `for` statements with empty body.
 
+
 ## Release notes for alpha-4.
 
  * Fix issue where identifiers suggestions from let statements would begin with an invalid double-$,
  * Properly recognize map/list access as an expression (it would previously show as a parsing error in certain cases),
  * Remove auto-adding of single quote, it's annoying when typing vanilla text.
+
 
 ## Release notes for alpha-3.
 
@@ -82,6 +108,7 @@
     * Automatically open completion suggestions for `{param}` and `{alias}` live templates,
     * Renamed the single line `{call}` and `{param}` triggers to scall and sparam to avoid
       colliding with most probable case which is to have open-close tags.
+
 
 ## Release notes for alpha-2.
 
