@@ -15,6 +15,7 @@
 package com.google.bamboo.soy.insight.annotators;
 
 import com.google.bamboo.soy.elements.IdentifierElement;
+import com.google.bamboo.soy.elements.impl.TemplateBlockMixin;
 import com.google.bamboo.soy.insight.quickfix.RemoveUnusedParameterFix;
 import com.google.bamboo.soy.insight.quickfix.RemoveUnusedStateVarFix;
 import com.google.bamboo.soy.lang.ParamUtils;
@@ -27,6 +28,7 @@ import com.google.common.collect.Streams;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -39,7 +41,7 @@ public class UnusedParameterOrStateAnnotator implements Annotator {
 
   @Override
   public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder annotationHolder) {
-    if (element instanceof SoyTemplateBlock) {
+    if (element instanceof TemplateBlockMixin) {
       // Abort if values are passed with data="...", parameter are sometimes defined for the sake
       // of added documentation even when not technically used directly in the template body.
       if (element.getText().contains("data=")) {
@@ -61,9 +63,11 @@ public class UnusedParameterOrStateAnnotator implements Annotator {
 
       for (Variable variable : variables) {
         if (!usedVariableIdentifiers.contains(variable.name)) {
-          Annotation annotation = annotationHolder.createErrorAnnotation(
-              variable.element,
-              variableType(variable) + " " + variable.name + " is unused.");
+          Annotation annotation = annotationHolder
+              .createAnnotation(((TemplateBlockMixin) element).isElementBlock() ?
+                      HighlightSeverity.WEAK_WARNING : HighlightSeverity.ERROR,
+                  variable.element.getTextRange(),
+                  variableType(variable) + " " + variable.name + " is unused.");
           annotation.registerFix(isParameter(variable)
               ? new RemoveUnusedParameterFix(variable.name)
               : new RemoveUnusedStateVarFix(variable.name));
