@@ -814,6 +814,7 @@ private AtomExpr ::= VariableReferenceIdentifier
   | FieldExpr
   | IndexExpr
   | MapExpr
+  | ListComprehensionExpr
   | ListExpr
   | ParenthesizedExpr
   | LiteralExpr
@@ -840,5 +841,15 @@ FieldExpr ::= Expr FieldAccess
 IndexExpr ::= Expr (SQUARE_OPEN | INDEX_NULL_CHECK) [CommaSeparatedExpressionList] SQUARE_CLOSE
 MapExpr ::= SQUARE_OPEN [CommaSeparatedKeyValueList] SQUARE_CLOSE
 ListExpr ::= SQUARE_OPEN [CommaSeparatedExpressionList] SQUARE_CLOSE
+
+ListComprehensionInList ::= IN Expr
+ListComprehensionFilter ::= IF Expr
+ListComprehensionContent ::= Expr FOR VariableDefinitionIdentifier ListComprehensionInList ListComprehensionFilter? SQUARE_CLOSE {
+  pin = 2
+  recoverWhile = "!(Brace | LITERAL | LITERAL_DOUBLE | SQUARE_CLOSE)"
+  implements = "com.google.bamboo.soy.elements.ListComprehensionContentElement"
+}
+ListComprehensionExpr ::= SQUARE_OPEN ListComprehensionContent
+
 RecordExpr ::= RECORD PARENS_OPEN [CommaSeparatedRecordFieldValueList] PARENS_CLOSE
 ParenthesizedExpr ::= PARENS_OPEN Expr PARENS_CLOSE

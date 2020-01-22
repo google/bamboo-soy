@@ -51,6 +51,7 @@ public class SoyTokenTypes {
       SoyTypes.FOR,
       SoyTypes.FOREACH,
       SoyTypes.IF,
+      SoyTypes.IN,
       SoyTypes.IFEMPTY,
       SoyTypes.LB,
       SoyTypes.LET,
