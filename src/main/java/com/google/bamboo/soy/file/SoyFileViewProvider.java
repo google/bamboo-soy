@@ -17,35 +17,33 @@ package com.google.bamboo.soy.file;
 import static com.google.bamboo.soy.parser.SoyTypes.OTHER;
 
 import com.google.bamboo.soy.SoyLanguage;
+import com.google.common.collect.ImmutableSet;
 import com.intellij.lang.Language;
 import com.intellij.lang.LanguageParserDefinitions;
 import com.intellij.lang.ParserDefinition;
 import com.intellij.lang.html.HTMLLanguage;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.LanguageSubstitutors;
 import com.intellij.psi.MultiplePsiFilesPerDocumentFileViewProvider;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.impl.source.PsiFileImpl;
 import com.intellij.psi.templateLanguages.ConfigurableTemplateLanguageFileViewProvider;
 import com.intellij.psi.templateLanguages.TemplateDataElementType;
-import com.intellij.psi.templateLanguages.TemplateDataLanguageMappings;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
 public class SoyFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProvider
     implements ConfigurableTemplateLanguageFileViewProvider {
+
   // Base language, a template language like Soy
-  private static final Language baseLanguage = SoyLanguage.INSTANCE;
+  private static final Language BASE_LANGUAGE = SoyLanguage.INSTANCE;
 
   // Template data language, like HTML
-  private static final Language templateDataLanguage = HTMLLanguage.INSTANCE;
+  private static final Language TEMPLATE_DATA_LANGUAGE = HTMLLanguage.INSTANCE;
 
   // Element type for template data language
-  private static TemplateDataElementType templateDataLanguageType =
-      new TemplateDataElementType("CLOSURE_TEMPLATE_DATA", templateDataLanguage, OTHER, OTHER);
+  private static final TemplateDataElementType TEMPLATE_DATA_ELEMENT_TYPE =
+      new TemplateDataElementType("CLOSURE_TEMPLATE_DATA", TEMPLATE_DATA_LANGUAGE, OTHER, OTHER);
 
   SoyFileViewProvider(PsiManager manager, VirtualFile file, boolean physical) {
     super(manager, file, physical);
@@ -59,23 +57,25 @@ public class SoyFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProv
   @NotNull
   @Override
   public Language getBaseLanguage() {
-    return baseLanguage;
+    return BASE_LANGUAGE;
   }
 
   @NotNull
   @Override
   public Language getTemplateDataLanguage() {
-    return templateDataLanguage;
+    return TEMPLATE_DATA_LANGUAGE;
   }
 
   @NotNull
   @Override
   public Set<Language> getLanguages() {
-    return new HashSet<>(Arrays.asList(new Language[] {baseLanguage, templateDataLanguage}));
+    return ImmutableSet.of(BASE_LANGUAGE, TEMPLATE_DATA_LANGUAGE);
   }
 
+  @NotNull
   @Override
-  protected MultiplePsiFilesPerDocumentFileViewProvider cloneInner(VirtualFile virtualFile) {
+  protected MultiplePsiFilesPerDocumentFileViewProvider cloneInner(
+      @NotNull VirtualFile virtualFile) {
     return new SoyFileViewProvider(getManager(), virtualFile, false);
   }
 
@@ -86,11 +86,11 @@ public class SoyFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProv
       return null;
     }
 
-    if (lang.is(templateDataLanguage)) {
+    if (lang.is(TEMPLATE_DATA_LANGUAGE)) {
       PsiFileImpl file = (PsiFileImpl) parserDefinition.createFile(this);
-      file.setContentElementType(templateDataLanguageType);
+      file.setContentElementType(TEMPLATE_DATA_ELEMENT_TYPE);
       return file;
-    } else if (lang.isKindOf(baseLanguage)) {
+    } else if (lang.isKindOf(BASE_LANGUAGE)) {
       return parserDefinition.createFile(this);
     } else {
       return null;

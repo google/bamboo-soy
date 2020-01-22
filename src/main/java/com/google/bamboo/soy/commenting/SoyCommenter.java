@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.bamboo.soy;
+package com.google.bamboo.soy.commenting;
 
 import com.intellij.lang.Commenter;
 import org.jetbrains.annotations.Nullable;
