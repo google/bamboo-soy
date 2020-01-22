@@ -47,7 +47,9 @@
     <stubElementTypeHolder class="com.google.bamboo.soy.parser.SoyTypes"/>
     <lang.commenter
       language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.SoyCommenter"/>
+      implementationClass="com.google.bamboo.soy.commenting.SoyCommenter"/>
+    <multiLangCommenter
+      implementation="com.google.bamboo.soy.commenting.SoyMultiLangCommentProvider"/>
     <lang.braceMatcher
       language="ClosureTemplate"
       implementationClass="com.google.bamboo.soy.SoyBraceMatcher"/>
