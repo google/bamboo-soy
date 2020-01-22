@@ -1,15 +1,15 @@
 <idea-plugin>
   <id>com.google.bamboo.id</id>
   <name>Bamboo Soy</name>
-  <version>1.4</version>
+  <version></version>
   <vendor>Google</vendor>
 
   <description><![CDATA[
-      Syntax highlighting, autocompletion and static analysis for your closure template files.
+      Syntax highlighting, autocompletion, static analysis and more for your closure template files.
     ]]>
   </description>
 
-  <change-notes>[The content will be generated at build time]</change-notes>
+  <change-notes></change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
   <idea-version since-build="163.0"/>
