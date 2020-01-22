@@ -93,6 +93,10 @@ public class SoyParserTest extends ParsingTestCase {
     doTest(true);
   }
 
+  public void testLists() {
+    doTest(true);
+  }
+
   @Override
   protected boolean checkAllPsiRoots() {
     return false;
