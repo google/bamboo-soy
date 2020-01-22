@@ -59,6 +59,7 @@ public class SoyTokenTypes {
       SoyTypes.LITERAL_DOUBLE,
       SoyTypes.MSG,
       SoyTypes.NAMESPACE,
+      SoyTypes.NBSP,
       SoyTypes.NIL,
       SoyTypes.PARAM,
       SoyTypes.PLURAL,

@@ -77,6 +77,7 @@
     MINUS = "-"
     MSG = "msg"
     NAMESPACE = "namespace"
+    NBSP = "nbsp"
     NEWLINE_LITERAL = "\\n"
     NIL = "nil"
     NOT = "not"
@@ -159,7 +160,7 @@ FileInput ::= BlockList
 
 private KeywordsAllowedInIdentifiers ::=
     ANY | AS | ATTRIBUTES | BOOL | CSS | FLOAT | HTML | INT | JS | LB | LIST |
-    MAP | MSG | NIL | NUMBER | PLURAL | RB | SP | STRING | URI | XID
+    MAP | MSG | NBSP | NIL | NUMBER | PLURAL | RB | SP | STRING | URI | XID
 
 // A single identifier token: foo, bar, any, int
 private PlainIdentifier ::= IDENTIFIER_WORD | KeywordsAllowedInIdentifiers {
@@ -738,6 +739,7 @@ private LetSingleTagBody ::= LET VariableDefinitionIdentifier COLON Expr {
 
 SpecialCharacterStatement ::=
     <<BracedTag LB>>
+  | <<BracedTag NBSP>>
   | <<BracedTag NIL>>
   | <<BracedTag RB>>
   | <<BracedTag SP>>
