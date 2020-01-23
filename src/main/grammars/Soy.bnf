@@ -821,10 +821,7 @@ private AtomExpr ::= VariableReferenceIdentifier
 
 LiteralExpr ::= ValueLiteral
 ProtobufEnum ::= PlainIdentifier (DOT PlainIdentifier)+
-ProtobufLiteral ::= FunctionIdentifier PARENS_OPEN [CommaSeparatedRecordFieldValueList] PARENS_CLOSE {
-  pin = 2
-  recoverWhile = "!(PARENS_CLOSE)"
-}
+ProtobufLiteral ::= FunctionIdentifier PARENS_OPEN [CommaSeparatedRecordFieldValueList] PARENS_CLOSE
 
 NullCheckTernaryExpr ::= Expr QUESTIONMARK Expr COLON Expr
 NullCheckBinExpr ::= Expr TERNARY_COALESCER Expr
