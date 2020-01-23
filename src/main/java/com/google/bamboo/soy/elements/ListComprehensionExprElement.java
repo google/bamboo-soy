@@ -9,7 +9,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface ListComprehensionContentElement extends Scope, PsiElement {
+public interface ListComprehensionExprElement extends Scope, PsiElement {
 
   @Nullable
   SoyVariableDefinitionIdentifier getVariableDefinitionIdentifier();

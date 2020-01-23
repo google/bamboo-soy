@@ -39,7 +39,7 @@ import com.google.bamboo.soy.parser.SoyBeginLet;
 import com.google.bamboo.soy.parser.SoyBeginParamTag;
 import com.google.bamboo.soy.parser.SoyBeginTemplate;
 import com.google.bamboo.soy.parser.SoyExpr;
-import com.google.bamboo.soy.parser.SoyListComprehensionContent;
+import com.google.bamboo.soy.parser.SoyListComprehensionExpr;
 import com.google.bamboo.soy.parser.SoyListType;
 import com.google.bamboo.soy.parser.SoyMapType;
 import com.google.bamboo.soy.parser.SoyNamespaceIdentifier;
@@ -216,7 +216,7 @@ public class SoyCompletionContributor extends CompletionContributor {
                 psiElement().inside(SoyBeginFor.class),
                 psiElement().inside(SoyBeginForeach.class),
                 psiElement().inside(SoyPrintStatement.class),
-                psiElement().inside(SoyListComprehensionContent.class),
+                psiElement().inside(SoyListComprehensionExpr.class),
                 psiElement()
                     .inside(SoyBeginParamTag.class)
                     .and(
