@@ -28,7 +28,6 @@ import com.google.bamboo.soy.parser.impl.SoyBeginIfImpl;
 import com.google.bamboo.soy.parser.impl.SoyBeginLetImpl;
 import com.google.bamboo.soy.parser.impl.SoyBeginMsgImpl;
 import com.google.bamboo.soy.parser.impl.SoyBeginTemplateImpl;
-import com.google.bamboo.soy.parser.impl.SoyCssStatementImpl;
 import com.google.bamboo.soy.parser.impl.SoyDelegatePackageBlockImpl;
 import com.google.bamboo.soy.parser.impl.SoyElseTagImpl;
 import com.google.bamboo.soy.parser.impl.SoyEndTagImpl;
@@ -37,7 +36,6 @@ import com.google.bamboo.soy.parser.impl.SoyLetSingleStatementImpl;
 import com.google.bamboo.soy.parser.impl.SoyNamespaceBlockImpl;
 import com.google.bamboo.soy.parser.impl.SoyPrintStatementImpl;
 import com.google.bamboo.soy.parser.impl.SoySpecialCharacterStatementImpl;
-import com.google.bamboo.soy.parser.impl.SoyXidStatementImpl;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
 import com.intellij.lang.annotation.AnnotationHolder;
@@ -65,7 +63,6 @@ public class ClosingBraceSanityAnnotator implements Annotator {
           .add(SoyBeginMsgImpl.class)
           .add(SoyBeginChoiceImpl.class)
           .add(SoyBeginTemplateImpl.class)
-          .add(SoyCssStatementImpl.class)
           .add(SoyDelegatePackageBlockImpl.class)
           .add(SoyElseTagImpl.class)
           .add(SoyEndTagImpl.class)
@@ -73,7 +70,6 @@ public class ClosingBraceSanityAnnotator implements Annotator {
           .add(SoySpecialCharacterStatementImpl.class)
           .add(SoyNamespaceBlockImpl.class)
           .add(SoyPrintStatementImpl.class)
-          .add(SoyXidStatementImpl.class)
           .build();
 
   private static ImmutableSet<Class> mustCloseSlashRBraceTags =

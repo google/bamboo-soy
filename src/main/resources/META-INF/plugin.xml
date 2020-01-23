@@ -122,9 +122,6 @@
       implementationClass="com.google.bamboo.soy.insight.annotators.UnfinishedIdentifiersAnnotator"/>
     <annotator
       language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.insight.annotators.IdentifierSanityAnnotator"/>
-    <annotator
-      language="ClosureTemplate"
       implementationClass="com.google.bamboo.soy.insight.annotators.VariableHighlightAnnotator"/>
     <annotator
       language="ClosureTemplate"

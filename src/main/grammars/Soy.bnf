@@ -15,7 +15,7 @@
   tokenTypeClass="com.google.bamboo.soy.lexer.SoyTokenType"
 
   implements("Begin.*|.*Tag|(Namespace|Alias|DelegatePackage)Block")="com.google.bamboo.soy.elements.TagElement"
-  implements("(Css|LetSingle|SpecialCharacter|Xid|Print)Statement")
+  implements("(LetSingle|SpecialCharacter|Print)Statement")
       = ["com.google.bamboo.soy.elements.StatementElement" "com.google.bamboo.soy.elements.TagElement"]
   implements("LiteralStatement") = ["com.google.bamboo.soy.elements.StatementElement"]
   implements("(Call|Choice|For|Foreach|If|LetCompound|Msg)Statement")
@@ -132,7 +132,6 @@
 
     IDENTIFIER_WORD = "regexp:[a-zA-Z_]([a-zA-Z_0-9])*"
     QUALIFIED_IDENTIFIER = "regexp:\.?[a-zA-Z_]([a-zA-Z_0-9])(\.[a-zA-Z_]([a-zA-Z_0-9]))*"
-    CSS_XID_IDENTIFIER = "regexp:%?[a-zA-Z_.-]([a-zA-Z_0-9.-])*"
 
     STRING_LITERAL = "regexp:'([^\r\n'\\]|\\.)*'"
     MULTI_LINE_STRING_LITERAL = "regexp:'([^'\\]|\\([^]))*'"
@@ -456,13 +455,9 @@ private Statement ::=
 
 
 private SingleTagStatement ::=
-    CssStatement
-  |
     LetSingleStatement
   |
     SpecialCharacterStatement
-  |
-    XidStatement
   |
     PrintStatement
 
@@ -717,12 +712,6 @@ private BeginCaseClauseTagBody ::= CASE CommaSeparatedExpressionList {
 // Single tag statements.
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Css statement
-
-CssStatement ::= <<BracedTag CssStatementTagBody>>
-
-private CssStatementTagBody ::= CSS CSS_XID_IDENTIFIER
-
 // Let statement
 
 LetSingleStatement ::= <<BracedTag LetSingleTagBody>> {
@@ -744,13 +733,6 @@ SpecialCharacterStatement ::=
   | <<BracedTag TAB>>
   | <<BracedTag NEWLINE_LITERAL>>
   | <<BracedTag CARRIAGE_RETURN>>
-
-// Xid statement
-
-XidStatement ::= <<BracedTag XidStatementTagBody>>
-
-private XidStatementTagBody ::= XID CSS_XID_IDENTIFIER
-
 
 // Literal statement
 
@@ -782,6 +764,9 @@ Directive
     FunctionIdentifier COLON LiteralExpr (COMMA LiteralExpr)*
 
 CommaSeparatedExpressionList ::= Expr (COMMA Expr)* COMMA?
+
+Argument ::= Expr | AliasIdentifier
+CommaSeparatedArgExpressionList ::= Argument (COMMA Argument)* COMMA?
 
 KeyValue ::= Expr COLON Expr
 CommaSeparatedKeyValueList ::= KeyValue (COMMA KeyValue)* COMMA?
@@ -836,7 +821,7 @@ AddBinExpr ::= Expr (PLUS | MINUS) Expr
 MulBinExpr ::= Expr (STAR | SLASH | PERCENT) Expr
 UnaryExpr ::= (PLUS | MINUS | NOT | EXCLAMATION) Expr
 
-FunctionCallExpr ::= FunctionIdentifier PARENS_OPEN [CommaSeparatedExpressionList] PARENS_CLOSE
+FunctionCallExpr ::= FunctionIdentifier PARENS_OPEN [CommaSeparatedArgExpressionList] PARENS_CLOSE
 FieldExpr ::= Expr FieldAccess
 IndexExpr ::= Expr (SQUARE_OPEN | INDEX_NULL_CHECK) [CommaSeparatedExpressionList] SQUARE_CLOSE
 MapExpr ::= SQUARE_OPEN [CommaSeparatedKeyValueList] SQUARE_CLOSE
