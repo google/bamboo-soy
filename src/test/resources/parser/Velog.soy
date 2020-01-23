@@ -1,0 +1,36 @@
+{template .caller}
+  {call .velog}
+    {param vedata: SearchSoyData(visibility: Visibility.HIDDEN) /}
+  {/call}
+{/template}
+
+{template .velog}
+  {@param vedata: ve_data}
+  {let $veMetadata: isNull($defaultVeMetadata)
+      ? search.boq.logging.SearchSoyData()
+      : search.boq.logging.SearchSoyData(
+          veForExtensions: logs.VisualElementLiteProto(
+              mapsData: logs.MapsData(
+                  rapFlowInteractionData:$defaultVeMetadata))) /}
+  {velog $vedata}
+    <div>Foo</div>
+  {/velog}
+  {velog VeId1}
+    <div>Foo</div>
+  {/velog}
+  {velog ve_data(VeId2)}
+    <div>Foo</div>
+  {/velog}
+  {velog ve_data(VeId3, SearchSoyData(visibility: Visibility.HIDDEN))}
+    <div>Foo</div>
+  {/velog}
+  {velog ve_data(VeId4, $veMetadata)}
+    <div>Foo</div>
+  {/velog}
+  {velog ve_data(VeId5, search.boq.logging.SearchSoyData(
+      veForExtensions: logs.VisualElementLiteProto(
+          mapsData: logs.MapsData(
+              rapFlowInteractionData: $defaultVeMetadata))))}
+    <div>Foo</div>
+  {/velog}
+{/template}

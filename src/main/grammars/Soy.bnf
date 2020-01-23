@@ -18,7 +18,7 @@
   implements("(Css|LetSingle|SpecialCharacter|Xid|Print)Statement")
       = ["com.google.bamboo.soy.elements.StatementElement" "com.google.bamboo.soy.elements.TagElement"]
   implements("LiteralStatement") = ["com.google.bamboo.soy.elements.StatementElement"]
-  implements("(Call|Choice|For|Foreach|If|LetCompound|Msg)Statement")
+  implements("(Call|Choice|For|Foreach|If|LetCompound|Msg|Velog)Statement")
       = ["com.google.bamboo.soy.elements.StatementElement" "com.google.bamboo.soy.elements.TagBlockElement"]
 
   extends(".*Expr|VariableReferenceIdentifier")=Expr
@@ -109,6 +109,8 @@
     TEMPLATE = "template"
     TERNARY_COALESCER = "?:"
     TESTING_WHITESPACE = "regexp:[ \n\t\r\f]+"
+    VELOG = "velog"
+    VE_DATA = "ve_data"
     XID = "xid"
 
     /* Types */
@@ -231,6 +233,7 @@ AttributeNameIdentifier ::= PlainIdentifier
 
 FunctionIdentifier ::= PlainIdentifier (DOT PlainIdentifier)*
 
+VisualElementIdentifier ::= PlainIdentifier
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Literals and types
@@ -238,7 +241,7 @@ FunctionIdentifier ::= PlainIdentifier (DOT PlainIdentifier)*
 
 // Literals
 
-private ValueLiteral ::= NumberLiteral | AnyStringLiteral | ProtobufLiteral | ProtobufEnum | BOOL_LITERAL | NULL_LITERAL
+private ValueLiteral ::= NumberLiteral | AnyStringLiteral | VeDataLiteral | ProtobufLiteral | ProtobufEnum | BOOL_LITERAL | NULL_LITERAL
 
 private NumberLiteral ::= INTEGER_LITERAL | FLOAT_LITERAL | DOT FLOAT_LITERAL
 
@@ -254,7 +257,7 @@ TypeExpression ::= UnionType | CompoundType | PrimitiveType
 PrimitiveType
   ::=
     ANY | STRING | BOOL | INT | FLOAT | NUMBER | HTML | NULL_LITERAL | QUESTIONMARK |
-    URI | JS | ATTRIBUTES | TypeIdentifier
+    URI | JS | ATTRIBUTES | VE_DATA | TypeIdentifier
 
 CompoundType ::= ListType | MapType | RecordType
 
@@ -275,6 +278,10 @@ RecordType ::= SQUARE_OPEN RecordTypeField (COMMA RecordTypeField)* SQUARE_CLOSE
 }
 
 RecordTypeField ::= FieldIdentifier COLON TypeExpression {
+  pin = 2
+}
+
+VeDataLiteral ::= VE_DATA PARENS_OPEN VisualElementIdentifier [COMMA Expr] PARENS_CLOSE {
   pin = 2
 }
 
@@ -483,6 +490,8 @@ private BlockTagStatement ::=
     LiteralStatement
   |
     MsgStatement
+  |
+    VelogStatement
 
 
 // Same as StatementList but cannot empty.
@@ -602,6 +611,19 @@ private FallbackMsgTagBody ::= FALLBACKMSG AttributeList {
   recoverWhile = "recoverEndOfTag"
 }
 
+// Velog
+
+VelogStatement ::=
+    <<BracedTag BeginVelogTagBody>>
+    [<<StatementList !()>>]
+    <<EndTag VELOG>>
+
+private BeginVelogTagBody ::= VELOG VelogExpr {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
+
+VelogExpr ::= Expr | VisualElementIdentifier
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Call statements

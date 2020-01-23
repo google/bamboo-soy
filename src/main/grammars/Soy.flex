@@ -182,6 +182,7 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
   "lb" { return SoyTypes.LB; }
   "let" { return SoyTypes.LET; }
   "msg" { return SoyTypes.MSG; }
+  "velog" { return SoyTypes.VELOG; }
 
   "nil" { return SoyTypes.NIL; }
   "param" { return SoyTypes.PARAM; }
@@ -219,6 +220,7 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
   true { return SoyTypes.BOOL_LITERAL; }
   false { return SoyTypes.BOOL_LITERAL; }
   null { return SoyTypes.NULL_LITERAL; }
+  ve_data { return SoyTypes.VE_DATA; }
 
   /* Maybe followed by IdentifierWord, a special state to not trigger keyword rules. */
   "."/{NonSemantical}{IdentifierWord} { yybegin(TAG_IDENTIFIER_WORD); return SoyTypes.DOT; }

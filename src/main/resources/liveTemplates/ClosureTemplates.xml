@@ -161,4 +161,11 @@
       <option name="CLOSURE_TEMPLATE_TEMPLATE_BLOCK" value="true"/>
     </context>
   </template>
+  <template name="{velog" value="{velog $IDENT$}$END${/velog}"
+      description="Velog" toReformat="false" toShortenFQNames="true">
+    <variable name="IDENT" expression="" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="CLOSURE_TEMPLATE_TEMPLATE_BLOCK" value="true"/>
+    </context>
+  </template>
 </templateSet>

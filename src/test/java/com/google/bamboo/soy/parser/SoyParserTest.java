@@ -29,6 +29,10 @@ public class SoyParserTest extends ParsingTestCase {
     return SoyTestUtils.getTestDataFolder();
   }
 
+  public void testVelog() {
+    doTest(true);
+  }
+
   public void testAlias() {
     doTest(true);
   }
