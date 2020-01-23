@@ -1,0 +1,8 @@
+{template .lists}
+  {@param myList: list<string>}
+  {let $a1: [] /}
+  {let $a2: [1] /}
+  {let $a3: [null, '42', 42] /}
+  {let $a4: [$a + 1 for $a in $myList] /}
+  {let $a5: [$a + 1 for $a in $myList if $a >= 3] /}
+{/template}

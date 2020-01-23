@@ -1,0 +1,5 @@
+{template .test}
+  {@param b: int}
+  {@param myList: list<int>}
+  {let $list: [$b + $item for $item in $myList if $item * $item<caret> > 42] /}
+{/template}

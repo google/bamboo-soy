@@ -78,7 +78,6 @@ public class VariableDefinitionReference extends PsiReferenceBase<PsiElement>
         .stream()
         .map(v -> v.name)
         .map(VariableDefinitionReference::createLookupElementBuilder)
-        .collect(Collectors.toList())
         .toArray();
   }
 
@@ -86,6 +85,7 @@ public class VariableDefinitionReference extends PsiReferenceBase<PsiElement>
     return LookupElementBuilder.create("$" + name);
   }
 
+  @NotNull
   @Override
   public TextRange getRangeInElement() {
     return textRangeInElement;
@@ -96,6 +96,4 @@ public class VariableDefinitionReference extends PsiReferenceBase<PsiElement>
   public List<TextRange> getRanges() {
     return ImmutableList.of(new TextRange(0, textRangeInElement.getEndOffset()));
   }
-
-
 }

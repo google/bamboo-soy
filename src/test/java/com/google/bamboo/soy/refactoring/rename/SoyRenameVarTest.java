@@ -47,4 +47,12 @@ public class SoyRenameVarTest extends SoyRenameTest {
   public void testForeachRenameReference() {
     doTest("bar");
   }
+
+  public void testListComprehensionRenameDeclaration() {
+    doTest("bar");
+  }
+
+  public void testListComprehensionRenameReference() {
+    doTest("bar");
+  }
 }
