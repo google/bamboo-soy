@@ -1,0 +1,10 @@
+{template .protobuf}
+  {@param leftPara: int}
+  {@param rightPara: int}
+  {let $a: package.MyProto(
+  leftField: $leftPara,
+  rightField: package.OtherProto(
+  one: 2,
+  three: '4',
+  a: $rightPara)) /}
+{/template}
