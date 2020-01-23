@@ -25,6 +25,7 @@ import com.google.bamboo.soy.parser.SoyAtInjectSingle;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.SoyAtStateSingle;
 import com.google.bamboo.soy.parser.SoyChoiceClause;
+import com.google.bamboo.soy.parser.SoyRecordFieldValue;
 import com.google.bamboo.soy.parser.SoyStatementList;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.intellij.formatting.Alignment;
@@ -198,6 +199,9 @@ public class SoyBlock extends TemplateLanguageBlock {
       return Indent.getNormalIndent();
     }
 
+    if (isRecordFieldValue()) {
+      return Indent.getContinuationIndent();
+    }
     if (isDirectTagChild()) {
       return Indent.getContinuationWithoutFirstIndent();
     } else {
@@ -252,6 +256,10 @@ public class SoyBlock extends TemplateLanguageBlock {
       TagElement tag = findLastDescendantOfType(myNode.getPsi(), TagElement.class);
       return tag != null && tag.isIncomplete();
     }
+  }
+
+  private boolean isRecordFieldValue() {
+    return myNode.getPsi() instanceof SoyRecordFieldValue;
   }
 
   private boolean isDirectXMLTagChild() {

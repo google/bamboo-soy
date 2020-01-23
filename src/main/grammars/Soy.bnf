@@ -238,7 +238,7 @@ FunctionIdentifier ::= PlainIdentifier (DOT PlainIdentifier)*
 
 // Literals
 
-private ValueLiteral ::= NumberLiteral | AnyStringLiteral | ProtobufEnum | BOOL_LITERAL | NULL_LITERAL
+private ValueLiteral ::= NumberLiteral | AnyStringLiteral | ProtobufLiteral | ProtobufEnum | BOOL_LITERAL | NULL_LITERAL
 
 private NumberLiteral ::= INTEGER_LITERAL | FLOAT_LITERAL | DOT FLOAT_LITERAL
 
@@ -821,6 +821,10 @@ private AtomExpr ::= VariableReferenceIdentifier
 
 LiteralExpr ::= ValueLiteral
 ProtobufEnum ::= PlainIdentifier (DOT PlainIdentifier)+
+ProtobufLiteral ::= FunctionIdentifier PARENS_OPEN [CommaSeparatedRecordFieldValueList] PARENS_CLOSE {
+  pin = 2
+  recoverWhile = "!(PARENS_CLOSE)"
+}
 
 NullCheckTernaryExpr ::= Expr QUESTIONMARK Expr COLON Expr
 NullCheckBinExpr ::= Expr TERNARY_COALESCER Expr

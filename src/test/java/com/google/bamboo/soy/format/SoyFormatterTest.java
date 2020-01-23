@@ -47,4 +47,8 @@ public class SoyFormatterTest extends SoyCodeInsightFixtureTestCase {
   public void testLiteral() {
     doTest();
   }
+
+  public void testProtobufLiteral() {
+    doTest();
+  }
 }
