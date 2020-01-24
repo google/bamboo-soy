@@ -21,11 +21,9 @@ Alpha=[a-zA-Z]
 
 IdentifierChar={Alpha}|"_"
 Digit=[0-9]
-CssXidIdentifierChar={IdentifierChar}|"-"|"."
 
 IdentifierWord={IdentifierChar}({IdentifierChar}|{Digit})*
 QualifiedIdentifier="."?{IdentifierWord}("."{IdentifierWord})*
-CssXidIdentifier="%"?{CssXidIdentifierChar}({CssXidIdentifierChar}|{Digit})*
 
 /* Line terminators, white space, and comments */
 LineTerminator=\r|\n|\r\n
@@ -69,7 +67,6 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
 %state TAG
 %state LITERAL_SINGLE
 %state LITERAL_DOUBLE
-%state TAG_CSS_XID
 %state TAG_IDENTIFIER_WORD
 %state TAG_QUALIFIED_IDENTIFIER
 %state WHITESPACE_BEFORE_LINE_COMMENT
@@ -156,10 +153,6 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
   "namespace" { return SoyTypes.NAMESPACE; }
   "template" { return SoyTypes.TEMPLATE; }
 
-  /* Tag names that may be followed by CSS or Xid identifier */
-  "css"/{NonSemantical}{WhiteSpace}{CssXidIdentifier} { yybegin(TAG_CSS_XID); return SoyTypes.CSS; }
-  "xid"/{NonSemantical}{WhiteSpace}{CssXidIdentifier} { yybegin(TAG_CSS_XID); return SoyTypes.XID; }
-
   "css" { return SoyTypes.CSS; }
   "xid" { return SoyTypes.XID; }
 
@@ -202,7 +195,6 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
   "html" { return SoyTypes.HTML; }
   "uri" { return SoyTypes.URI; }
   "js" { return SoyTypes.JS; }
-  "css" { return SoyTypes.CSS; }
   "attributes" { return SoyTypes.ATTRIBUTES; }
   "list" { return SoyTypes.LIST; }
   "map" { return SoyTypes.MAP; }
@@ -284,11 +276,6 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
 // Only IdentifierWord expected (ensured by look-ahead).
 <TAG_IDENTIFIER_WORD> {
   {IdentifierWord} { yybegin(TAG); return SoyTypes.IDENTIFIER_WORD; }
-}
-
-// Only CssXidIdentifier expected (ensured by look-ahead).
-<TAG_CSS_XID> {
-  {CssXidIdentifier} { yybegin(TAG); return SoyTypes.CSS_XID_IDENTIFIER; }
 }
 
 . { return SoyTypes.OTHER; }
