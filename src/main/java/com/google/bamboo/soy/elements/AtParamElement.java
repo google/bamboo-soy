@@ -55,7 +55,7 @@ public interface AtParamElement
     if (getStub() != null) {
       return getStub().isOptional;
     }
-    return getTagNameTokenType() == SoyTypes.AT_PARAM_OPT;
+    return getTagNameTokenType() == SoyTypes.AT_PARAM_OPT || getDefaultInitializerExpr() != null;
   }
 
   default SoyExpr getDefaultInitializerExpr() {
