@@ -176,6 +176,7 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
   "let" { return SoyTypes.LET; }
   "msg" { return SoyTypes.MSG; }
 
+  "nbsp" { return SoyTypes.NBSP; }
   "nil" { return SoyTypes.NIL; }
   "param" { return SoyTypes.PARAM; }
   "plural" { return SoyTypes.PLURAL; }
