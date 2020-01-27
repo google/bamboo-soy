@@ -1,0 +1,20 @@
+{namespace space}
+
+{template .calleeTemplate}
+  {@param stringParam: string}
+  {@param intParam: int}
+  {@param defaultParam := false}
+  {$stringParam}{$intParam}{$defaultParam}
+{/template}
+
+{element .calleeElement}
+  {@param stringParam: string}
+  {@param intParam: int}
+  {@param defaultParam := false}
+  {$stringParam}{$intParam}{$defaultParam}
+{/element}
+
+{template .callerTemplate}
+  {call <error descr="Missing required parameters: stringParam,intParam">.calleeTemplate</error> /}
+  {call <error descr="Missing required parameters: stringParam,intParam">.calleeElement</error> /}
+{/template}
