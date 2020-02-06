@@ -1,0 +1,11 @@
+{template .switchStatement}
+  {@param var: int}
+  {switch $var}
+    {case 1}
+      {$var}
+    {case 2, 3}
+      {$var + 1}
+    {default}
+      DEFAULT
+  {/switch}
+{/template}
