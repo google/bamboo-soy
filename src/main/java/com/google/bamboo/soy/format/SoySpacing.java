@@ -58,8 +58,10 @@ public class SoySpacing {
         .around(SoyTokenTypes.KEYWORDS).spaces(1)
 
         // Inside expressions and type expressions.
-        .aroundInside(SoyTypes.LESS, TokenSet.create(SoyTypes.MAP_TYPE, SoyTypes.LIST_TYPE)).spaces(0)
-        .beforeInside(SoyTypes.GREATER, TokenSet.create(SoyTypes.MAP_TYPE, SoyTypes.LIST_TYPE)).spaces(0)
+        .aroundInside(SoyTypes.LESS, TokenSet.create(SoyTypes.MAP_TYPE, SoyTypes.LIST_TYPE))
+        .spaces(0)
+        .beforeInside(SoyTypes.GREATER, TokenSet.create(SoyTypes.MAP_TYPE, SoyTypes.LIST_TYPE))
+        .spaces(0)
         .around(SoyTypes.PIPE).spaces(0)
         .afterInside(SoyTokenTypes.UNARY_OPERATORS, SoyTypes.UNARY_EXPR).spaces(0)
         .around(SoyTokenTypes.BINARY_OPERATORS).spaces(1)
@@ -67,6 +69,7 @@ public class SoySpacing {
         .around(
             TokenSet.create(SoyTypes.SQUARE_OPEN, SoyTypes.INDEX_NULL_CHECK, SoyTypes.PARENS_OPEN))
         .spaces(0)
+        .before(TokenSet.create(SoyTypes.ITEM_ACCESS, SoyTypes.FIELD_ACCESS)).spaces(0)
         .before(TokenSet.create(SoyTypes.SQUARE_CLOSE, SoyTypes.PARENS_CLOSE)).spaces(0);
   }
 
