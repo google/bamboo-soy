@@ -1,0 +1,11 @@
+{template .printDirectives}
+  {@param someUserContent: string}
+
+  {$someUserContent|cleanHtml}
+  {$someUserContent|cleanHtml:'ul','li'}
+  {$someUserContent | formatNumber: 3 | cleanHtml: 'ul', 'li'}
+
+  {print $someUserContent|cleanHtml}
+  {print $someUserContent|cleanHtml:'ul','li'}
+  {print $someUserContent | formatNumber: 3 | cleanHtml: 'ul', 'li'}
+{/template}

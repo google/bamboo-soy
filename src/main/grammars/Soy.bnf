@@ -759,22 +759,17 @@ private ImplicitPrintBody ::= Expr [PIPE DirectiveList] [AttributeKeyValuePair]
 
 private DirectiveList ::= Directive (PIPE Directive)*
 
-Directive
-  ::=
-    FunctionIdentifier
-  |
-    FunctionIdentifier COLON LiteralExpr (COMMA LiteralExpr)*
-
-CommaSeparatedExpressionList ::= Expr (COMMA Expr)* COMMA?
+CommaSeparatedExpressionList ::= Expr (COMMA Expr)*
+Directive ::= FunctionIdentifier [COLON CommaSeparatedExpressionList]
 
 Argument ::= Expr | AliasIdentifier
-CommaSeparatedArgExpressionList ::= Argument (COMMA Argument)* COMMA?
+CommaSeparatedArgExpressionList ::= Argument (COMMA Argument)*
 
 KeyValue ::= Expr COLON Expr
-CommaSeparatedKeyValueList ::= KeyValue (COMMA KeyValue)* COMMA?
+CommaSeparatedKeyValueList ::= KeyValue (COMMA KeyValue)*
 
 RecordFieldValue ::= FieldIdentifier COLON Expr
-CommaSeparatedRecordFieldValueList ::= RecordFieldValue (COMMA RecordFieldValue)* COMMA?
+CommaSeparatedRecordFieldValueList ::= RecordFieldValue (COMMA RecordFieldValue)*
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Expressions
@@ -809,7 +804,7 @@ private AtomExpr ::= VariableReferenceIdentifier
 
 LiteralExpr ::= ValueLiteral
 ProtobufEnum ::= PlainIdentifier (DOT PlainIdentifier)+
-ProtobufLiteral ::= FunctionIdentifier PARENS_OPEN [CommaSeparatedRecordFieldValueList] PARENS_CLOSE
+ProtobufLiteral ::= FunctionIdentifier PARENS_OPEN [CommaSeparatedRecordFieldValueList COMMA?] PARENS_CLOSE
 
 NullCheckTernaryExpr ::= Expr QUESTIONMARK Expr COLON Expr
 NullCheckBinExpr ::= Expr TERNARY_COALESCER Expr
@@ -823,11 +818,11 @@ AddBinExpr ::= Expr (PLUS | MINUS) Expr
 MulBinExpr ::= Expr (STAR | SLASH | PERCENT) Expr
 UnaryExpr ::= (PLUS | MINUS | NOT | EXCLAMATION) Expr
 
-FunctionCallExpr ::= FunctionIdentifier PARENS_OPEN [CommaSeparatedArgExpressionList] PARENS_CLOSE
+FunctionCallExpr ::= FunctionIdentifier PARENS_OPEN [CommaSeparatedArgExpressionList COMMA?] PARENS_CLOSE
 FieldExpr ::= Expr FieldAccess
-IndexExpr ::= Expr (SQUARE_OPEN | INDEX_NULL_CHECK) [CommaSeparatedExpressionList] SQUARE_CLOSE
-MapExpr ::= SQUARE_OPEN [CommaSeparatedKeyValueList] SQUARE_CLOSE
-ListExpr ::= SQUARE_OPEN [CommaSeparatedExpressionList] SQUARE_CLOSE
+IndexExpr ::= Expr (SQUARE_OPEN | INDEX_NULL_CHECK) [CommaSeparatedExpressionList COMMA?] SQUARE_CLOSE
+MapExpr ::= SQUARE_OPEN [CommaSeparatedKeyValueList COMMA?] SQUARE_CLOSE
+ListExpr ::= SQUARE_OPEN [CommaSeparatedExpressionList COMMA?] SQUARE_CLOSE
 
 ListComprehensionInList ::= IN Expr
 ListComprehensionFilter ::= IF Expr
@@ -836,5 +831,5 @@ ListComprehensionExpr ::= SQUARE_OPEN Expr FOR VariableDefinitionIdentifier List
   implements = "com.google.bamboo.soy.elements.ListComprehensionExprElement"
 }
 
-RecordExpr ::= RECORD PARENS_OPEN [CommaSeparatedRecordFieldValueList] PARENS_CLOSE
+RecordExpr ::= RECORD PARENS_OPEN [CommaSeparatedRecordFieldValueList COMMA?] PARENS_CLOSE
 ParenthesizedExpr ::= PARENS_OPEN Expr PARENS_CLOSE
