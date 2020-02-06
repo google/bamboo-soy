@@ -1,0 +1,39 @@
+{template .caller}
+  {call .velog}
+    {param vedata: SearchSoyData(visibility: Visibility.HIDDEN) /}
+  {/call}
+{/template}
+
+{template .velog}
+  {@param vedata: ve_data}
+  {let $veMetadata: isNull($defaultVeMetadata)
+      ? my.logging.SoyData()
+      : my.logging.SoyData(
+          veForExtensions: logs.MyVeProto(
+              myData: logs.MyData(
+                  myInteractionData: $defaultVeMetadata)),) /}
+  {velog $vedata}
+    <div>Foo</div>
+  {/velog}
+  {velog VeId1}
+    <div>Foo</div>
+  {/velog}
+  {velog ve_data(VeId2)}
+    <div>Foo</div>
+  {/velog}
+  {velog ve_data(VeId3, SearchSoyData(visibility: Visibility.HIDDEN))}
+    <div>Foo</div>
+  {/velog}
+  {velog ve_data(VeId4, $veMetadata)}
+    <div>Foo</div>
+  {/velog}
+  {velog ve_data(VeId5, my.logging.SoyData(
+      veForExtensions: logs.MyVeProto(
+          myData: logs.MyData(
+              myInteractionData: $defaultVeMetadata)),))}
+    <div>Foo</div>
+  {/velog}
+  {velog ve_data(ve(Bar), null)}<div></div>{/velog}
+  {velog ve_data(Bar, soy.test.Foo())}<div></div>{/velog}
+  {velog ve_data(Bar, soy.test.Foo()) logonly="false"}<div></div>{/velog}
+{/template}

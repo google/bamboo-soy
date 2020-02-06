@@ -18,7 +18,7 @@
   implements("(LetSingle|SpecialCharacter|Print)Statement")
       = ["com.google.bamboo.soy.elements.StatementElement" "com.google.bamboo.soy.elements.TagElement"]
   implements("LiteralStatement") = ["com.google.bamboo.soy.elements.StatementElement"]
-  implements("(Call|Choice|For|Foreach|If|LetCompound|Msg)Statement")
+  implements("(Call|Choice|For|Foreach|If|LetCompound|Msg|Velog)Statement")
       = ["com.google.bamboo.soy.elements.StatementElement" "com.google.bamboo.soy.elements.TagBlockElement"]
 
   extends(".*Expr|VariableReferenceIdentifier")=Expr
@@ -110,6 +110,7 @@
     TEMPLATE = "template"
     TERNARY_COALESCER = "?:"
     TESTING_WHITESPACE = "regexp:[ \n\t\r\f]+"
+    VELOG = "velog"
     XID = "xid"
 
     /* Types */
@@ -473,6 +474,8 @@ private BlockTagStatement ::=
     LiteralStatement
   |
     MsgStatement
+  |
+    VelogStatement
 
 
 // Same as StatementList but cannot empty.
@@ -592,6 +595,19 @@ private FallbackMsgTagBody ::= FALLBACKMSG AttributeList {
   recoverWhile = "recoverEndOfTag"
 }
 
+// Velog
+
+VelogStatement ::=
+    BeginVelog
+    [<<StatementList !()>>]
+    <<EndTag VELOG>>
+
+BeginVelog ::= <<BracedTag BeginVelogTagBody>>
+
+private BeginVelogTagBody ::= VELOG Expr [AttributeList] {
+  pin = 1
+  recoverWhile = "recoverEndOfTag"
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Call statements

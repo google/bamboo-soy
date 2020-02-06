@@ -28,6 +28,7 @@ import com.google.bamboo.soy.parser.impl.SoyBeginIfImpl;
 import com.google.bamboo.soy.parser.impl.SoyBeginLetImpl;
 import com.google.bamboo.soy.parser.impl.SoyBeginMsgImpl;
 import com.google.bamboo.soy.parser.impl.SoyBeginTemplateImpl;
+import com.google.bamboo.soy.parser.impl.SoyBeginVelogImpl;
 import com.google.bamboo.soy.parser.impl.SoyDelegatePackageBlockImpl;
 import com.google.bamboo.soy.parser.impl.SoyElseTagImpl;
 import com.google.bamboo.soy.parser.impl.SoyEndTagImpl;
@@ -63,6 +64,7 @@ public class ClosingBraceSanityAnnotator implements Annotator {
           .add(SoyBeginMsgImpl.class)
           .add(SoyBeginChoiceImpl.class)
           .add(SoyBeginTemplateImpl.class)
+          .add(SoyBeginVelogImpl.class)
           .add(SoyDelegatePackageBlockImpl.class)
           .add(SoyElseTagImpl.class)
           .add(SoyEndTagImpl.class)

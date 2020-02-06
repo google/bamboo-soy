@@ -70,10 +70,10 @@ public class SoyTokenTypes {
       SoyTypes.SWITCH,
       SoyTypes.TEMPLATE,
       SoyTypes.XID,
-      SoyTypes.MSG,
       SoyTypes.CARRIAGE_RETURN,
       SoyTypes.NEWLINE_LITERAL,
       SoyTypes.TAB,
+      SoyTypes.VELOG,
 
       /* Tag closing keywords */
       SoyTypes.END_LITERAL,
