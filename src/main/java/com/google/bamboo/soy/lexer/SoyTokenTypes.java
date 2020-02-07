@@ -66,6 +66,7 @@ public class SoyTokenTypes {
       SoyTypes.PRINT,
       SoyTypes.RB,
       SoyTypes.SELECT,
+      SoyTypes.SKIP,
       SoyTypes.SP,
       SoyTypes.SWITCH,
       SoyTypes.TEMPLATE,
