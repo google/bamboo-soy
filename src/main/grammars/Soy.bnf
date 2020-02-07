@@ -456,6 +456,8 @@ private Statement ::=
   |
     BlockTagStatement
   |
+    PrintStatement
+  |
     Content
 
 
@@ -463,8 +465,6 @@ private SingleTagStatement ::=
     LetSingleStatement
   |
     SpecialCharacterStatement
-  |
-    PrintStatement
 
 
 private BlockTagStatement ::=
@@ -766,9 +766,6 @@ private DirectiveList ::= Directive (PIPE Directive)*
 CommaSeparatedExpressionList ::= Expr (COMMA Expr)*
 Directive ::= FunctionIdentifier [COLON CommaSeparatedExpressionList]
 
-Argument ::= Expr | AliasIdentifier
-CommaSeparatedArgExpressionList ::= Argument (COMMA Argument)*
-
 KeyValue ::= Expr COLON Expr
 CommaSeparatedKeyValueList ::= KeyValue (COMMA KeyValue)*
 
@@ -794,7 +791,7 @@ Expr ::= NullCheckTernaryExpr
   | UnaryExpr
   | PrimaryExpr
 
-Global ::= PlainIdentifier (DOT PlainIdentifier)+
+Global ::= PlainIdentifier (DOT PlainIdentifier)*
 ProtoInitialization ::= FunctionIdentifier PARENS_OPEN [CommaSeparatedRecordFieldValueList COMMA?] PARENS_CLOSE
 
 NullCheckTernaryExpr ::= Expr QUESTIONMARK Expr COLON Expr
@@ -815,7 +812,7 @@ private GlobalOrFunctionCallLike ::= RecordExpr | MapExpr | FunctionCallExpr | P
 private Primitive ::= NULL_LITERAL | BOOL_LITERAL | NumberLiteral | AnyStringLiteral
 
 ParenthesizedExpr ::= PARENS_OPEN Expr PARENS_CLOSE
-FunctionCallExpr ::= FunctionIdentifier PARENS_OPEN [CommaSeparatedArgExpressionList COMMA?] PARENS_CLOSE
+FunctionCallExpr ::= FunctionIdentifier PARENS_OPEN [CommaSeparatedExpressionList COMMA?] PARENS_CLOSE
 FieldAccessExpr ::= Primary FieldAccess
 ItemAccessExpr ::= Primary ItemAccess
 RecordExpr ::= RECORD PARENS_OPEN [CommaSeparatedRecordFieldValueList COMMA?] PARENS_CLOSE
