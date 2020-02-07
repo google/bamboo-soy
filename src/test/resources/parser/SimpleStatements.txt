@@ -138,7 +138,6 @@ Closure Template File
               SoyPrimaryExprImpl(PRIMARY_EXPR)
                 SoyAnyStringLiteralImpl(ANY_STRING_LITERAL)
                   PsiElement(SoyTokenType.STRING_LITERAL)(''foo.bar'')
-
             PsiElement(SoyTokenType.))(')')
           PsiElement(SoyTokenType.})('}')
         PsiWhiteSpace('\n  ')

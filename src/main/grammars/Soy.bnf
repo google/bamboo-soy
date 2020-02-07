@@ -171,19 +171,6 @@ private VariableIdentifier ::= DOLLAR IDENTIFIER_WORD {
   pin = 1;
 }
 
-<<<<<<< HEAD
-=======
-FieldAccess ::= (DOT | DOT_NULL_CHECK) IDENTIFIER_WORD FieldOrItemAccess? {
-  pin = 1
-}
-
-ItemAccess ::= (SQUARE_OPEN | INDEX_NULL_CHECK) Expr SQUARE_CLOSE FieldOrItemAccess? {
-  pin = 1
-}
-
-private FieldOrItemAccess ::= FieldAccess | ItemAccess
-
->>>>>>> Refactor expression parsing to bring it closer to the compiler parser
 // A sequence of tokens representing namespace, template or function id: my.name.space, .template
 private QualifiedIdentifier ::= QUALIFIED_IDENTIFIER
 
