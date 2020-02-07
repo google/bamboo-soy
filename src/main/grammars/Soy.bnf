@@ -65,6 +65,7 @@
     IFEMPTY = "ifempty"
     IN = "in"
     INDEX_NULL_CHECK = "?["
+    KEY = "key"
     LB = "lb"
     LBRACE = "{"
     LBRACE_LBRACE = "{{"
@@ -461,6 +462,8 @@ private SingleTagStatement ::=
   |
     SkipStatement
   |
+    KeyStatement
+  |
     SpecialCharacterStatement
   |
     PrintStatement
@@ -730,6 +733,14 @@ private LetSingleTagBody ::= LET VariableDefinitionIdentifier COLON Expr {
 // Skip statement
 
 SkipStatement ::= <<BracedTag SKIP>>
+
+// Key statement
+
+KeyStatement ::= <<BracedTag KeyBody>>
+
+private KeyBody ::= KEY Expr {
+  pin = 1
+}
 
 // Special character statement
 

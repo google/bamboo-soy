@@ -53,6 +53,7 @@ public class SoyTokenTypes {
       SoyTypes.IF,
       SoyTypes.IN,
       SoyTypes.IFEMPTY,
+      SoyTypes.KEY,
       SoyTypes.LB,
       SoyTypes.LET,
       SoyTypes.LITERAL,
