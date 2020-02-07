@@ -98,6 +98,7 @@
     RBRACE_RBRACE = "}}"
     RECORD = "record"
     SELECT = "select"
+    SKIP = "skip"
     SLASH = "/"
     SLASH_RBRACE = "/}"
     SLASH_RBRACE_RBRACE = "/}}"
@@ -159,7 +160,7 @@ FileInput ::= BlockList
 
 private KeywordsAllowedInIdentifiers ::=
     ANY | AS | ATTRIBUTES | BOOL | CSS | FLOAT | HTML | INT | JS | LB | LIST |
-    MAP | MSG | NBSP | NIL | NUMBER | PLURAL | RB | SP | STRING | URI | XID
+    MAP | MSG | NBSP | NIL | NUMBER | PLURAL | RB | SKIP | SP | STRING | URI | XID
 
 // A single identifier token: foo, bar, any, int
 private PlainIdentifier ::= IDENTIFIER_WORD | KeywordsAllowedInIdentifiers {
@@ -458,6 +459,8 @@ private Statement ::=
 private SingleTagStatement ::=
     LetSingleStatement
   |
+    SkipStatement
+  |
     SpecialCharacterStatement
   |
     PrintStatement
@@ -724,7 +727,11 @@ private LetSingleTagBody ::= LET VariableDefinitionIdentifier COLON Expr {
   recoverWhile = "recoverEndOfTag"
 }
 
-// Special character statement.
+// Skip statement
+
+SkipStatement ::= <<BracedTag SKIP>>
+
+// Special character statement
 
 SpecialCharacterStatement ::=
     <<BracedTag LB>>
