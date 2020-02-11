@@ -20,4 +20,9 @@
   {css('base', '%Foo')}
   {css($base, $Foo)}
   {literal}{/literal}
+  <div {skip}></div>
+  <div {key 1}></div>
+  <div {key "1"}></div>
+  <div {key $var}></div>
+  <div {key $var1 + $var2 + $var3}></div>
 {/template}

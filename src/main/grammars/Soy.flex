@@ -176,6 +176,7 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
   "let" { return SoyTypes.LET; }
   "msg" { return SoyTypes.MSG; }
 
+  "key" { return SoyTypes.KEY; }
   "nbsp" { return SoyTypes.NBSP; }
   "nil" { return SoyTypes.NIL; }
   "param" { return SoyTypes.PARAM; }
@@ -183,6 +184,7 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
   "print" { return SoyTypes.PRINT; }
   "rb" { return SoyTypes.RB; }
   "select" { return SoyTypes.SELECT; }
+  "skip" { return SoyTypes.SKIP; }
   "sp" { return SoyTypes.SP; }
   "switch" { return SoyTypes.SWITCH; }
 
