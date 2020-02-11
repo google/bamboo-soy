@@ -69,7 +69,7 @@ public class SoySpacing {
         .around(
             TokenSet.create(SoyTypes.SQUARE_OPEN, SoyTypes.INDEX_NULL_CHECK, SoyTypes.PARENS_OPEN))
         .spaces(0)
-        .before(TokenSet.create(SoyTypes.ITEM_ACCESS, SoyTypes.FIELD_ACCESS)).spaces(0)
+        .before(TokenSet.create(SoyTypes.ITEM_ACCESS_EXPR, SoyTypes.FIELD_ACCESS_EXPR)).spaces(0)
         .before(TokenSet.create(SoyTypes.SQUARE_CLOSE, SoyTypes.PARENS_CLOSE)).spaces(0);
   }
 
