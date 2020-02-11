@@ -29,6 +29,8 @@ import static com.google.bamboo.soy.parser.SoyTypes.SWITCH;
 import static com.google.bamboo.soy.parser.SoyTypes.SWITCH_STATEMENT;
 import static com.google.bamboo.soy.parser.SoyTypes.TEMPLATE;
 import static com.google.bamboo.soy.parser.SoyTypes.TEMPLATE_BLOCK;
+import static com.google.bamboo.soy.parser.SoyTypes.VELOG;
+import static com.google.bamboo.soy.parser.SoyTypes.VELOG_STATEMENT;
 
 import com.google.common.collect.ImmutableMap;
 import com.intellij.lang.PsiBuilder;
@@ -99,6 +101,7 @@ public class SoyParserUtil extends GeneratedParserUtilBase {
           .put(SELECT, SELECT_STATEMENT)
           .put(SWITCH, SWITCH_STATEMENT)
           .put(TEMPLATE, TEMPLATE_BLOCK)
+          .put(VELOG, VELOG_STATEMENT)
           .build();
 
   private static int countNewlines(CharSequence s) {

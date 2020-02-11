@@ -75,6 +75,7 @@ public class SoyTokenTypes {
       SoyTypes.CARRIAGE_RETURN,
       SoyTypes.NEWLINE_LITERAL,
       SoyTypes.TAB,
+      SoyTypes.VELOG,
 
       /* Tag closing keywords */
       SoyTypes.END_LITERAL,

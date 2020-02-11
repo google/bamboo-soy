@@ -175,6 +175,7 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
   "lb" { return SoyTypes.LB; }
   "let" { return SoyTypes.LET; }
   "msg" { return SoyTypes.MSG; }
+  "velog" { return SoyTypes.VELOG; }
 
   "key" { return SoyTypes.KEY; }
   "nbsp" { return SoyTypes.NBSP; }

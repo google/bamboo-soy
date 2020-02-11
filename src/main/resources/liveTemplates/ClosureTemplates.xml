@@ -139,6 +139,13 @@
       <option name="CLOSURE_TEMPLATE_TEMPLATE_BLOCK" value="true"/>
     </context>
   </template>
+  <template name="{velog" value="{velog $IDENT$}$END${/velog}"
+      description="Velog" toReformat="false" toShortenFQNames="true">
+    <variable name="IDENT" expression="" defaultValue="" alwaysStopAt="true"/>
+    <context>
+      <option name="CLOSURE_TEMPLATE_TEMPLATE_BLOCK" value="true"/>
+    </context>
+  </template>
   <template name="{foreach" value="{foreach $OPERAND$ in $OPERANDS$}$END${/foreach}"
       description="Foreach loop" toReformat="false" toShortenFQNames="true">
     <variable name="OPERAND" expression="" defaultValue="" alwaysStopAt="true"/>
