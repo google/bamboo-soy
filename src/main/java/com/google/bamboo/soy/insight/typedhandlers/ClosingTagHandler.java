@@ -27,6 +27,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Automatically inserts a matching closing tag when "{/" is typed.
@@ -69,24 +70,32 @@ public class ClosingTagHandler implements TypedActionHandler {
   public void execute(@NotNull Editor editor, char charTyped, @NotNull DataContext dataContext) {
     myOriginalHandler.execute(editor, charTyped, dataContext);
     if (isMatchForClosingTag(editor, charTyped)) {
-      int offset = editor.getCaretModel().getOffset();
       PsiFile file = dataContext.getData(LangDataKeys.PSI_FILE);
       if (file == null) {
         return;
       }
-      PsiElement el = file.findElementAt(offset - 1);
-      TagBlockElement block = (TagBlockElement) PsiTreeUtil
-          .findFirstParent(el,
-              parent -> parent instanceof TagBlockElement && !(parent instanceof SoyChoiceClause));
+      int offset = editor.getCaretModel().getOffset();
+      TagBlockElement block = findEnclosingTagBlockElement(file, offset);
       if (block == null) {
         return;
       }
-      String closingTag = block.getOpeningTag().generateClosingTag();
-      insertClosingTag(editor, offset, closingTag);
+      insertClosingTag(editor, offset, block.getOpeningTag().generateClosingTag());
       if (editor.getProject() != null) {
         PsiDocumentManager.getInstance(editor.getProject()).commitDocument(editor.getDocument());
-        CodeStyleManager.getInstance(editor.getProject()).reformat(block);
+        TagBlockElement completedBlock = findEnclosingTagBlockElement(file, editor.getCaretModel().getOffset());
+        if (completedBlock == null) {
+          return;
+        }
+        CodeStyleManager.getInstance(editor.getProject()).reformat(completedBlock);
       }
     }
+  }
+
+  @Nullable
+  private TagBlockElement findEnclosingTagBlockElement(PsiFile file, int offset) {
+    PsiElement el = file.findElementAt(offset - 1);
+    return (TagBlockElement) PsiTreeUtil
+        .findFirstParent(el,
+            parent -> parent instanceof TagBlockElement && !(parent instanceof SoyChoiceClause));
   }
 }

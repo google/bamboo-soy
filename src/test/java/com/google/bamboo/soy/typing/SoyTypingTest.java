@@ -170,6 +170,10 @@ public class SoyTypingTest extends SoyCodeInsightFixtureTestCase {
     doTypingTest(
         '/', "{template .bar}{let $var}{<caret>", "{template .bar}\n    {let $var}{/let}");
 
+    // closing compound let with formatting
+    doTypingTest(
+        '/', "{template .bar}\n    {let $var}\n        {<caret>", "{template .bar}\n    {let $var}\n    {/let}");
+
     // ignoring single let
     doTypingTest(
         '/',
