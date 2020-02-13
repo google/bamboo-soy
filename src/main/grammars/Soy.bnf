@@ -528,7 +528,8 @@ ElseTag ::= <<BracedTag ELSE>>
 
 ForStatement
   ::= BeginFor
-    <<StatementList !()>>
+    <<StatementList (IfEmptyTag)>>
+    [IfEmptyTag <<StatementList !()>>]
     <<EndTag FOR>> {
   pin = 1
   implements = "com.google.bamboo.soy.elements.ForStatementElement"
@@ -648,7 +649,7 @@ private meta CallTagBody ::= <<p>> (TemplateReferenceIdentifier [AttributeList] 
 private ParamList ::=
   (ParamListElement | <<UnexpectedStatements (BeginParamTag)>>)*
   // StatementList can only be empty and exists to consume whitespace.
-  <<StatementList (BeginParamTag)>> {
+  [<<StatementList (BeginParamTag)>>] {
   recoverWhile = "!(endOfStatementBlock)"
 }
 
