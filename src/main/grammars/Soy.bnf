@@ -649,7 +649,7 @@ private meta CallTagBody ::= <<p>> (TemplateReferenceIdentifier [AttributeList] 
 private ParamList ::=
   (ParamListElement | <<UnexpectedStatements (BeginParamTag)>>)*
   // StatementList can only be empty and exists to consume whitespace.
-  [<<StatementList (BeginParamTag)>>] {
+  <<StatementList (BeginParamTag)>> {
   recoverWhile = "!(endOfStatementBlock)"
 }
 
