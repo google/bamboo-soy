@@ -528,7 +528,8 @@ ElseTag ::= <<BracedTag ELSE>>
 
 ForStatement
   ::= BeginFor
-    <<StatementList !()>>
+    <<StatementList (IfEmptyTag)>>
+    [IfEmptyTag <<StatementList !()>>]
     <<EndTag FOR>> {
   pin = 1
   implements = "com.google.bamboo.soy.elements.ForStatementElement"
