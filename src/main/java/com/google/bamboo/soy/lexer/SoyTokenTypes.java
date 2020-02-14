@@ -85,7 +85,7 @@ public class SoyTokenTypes {
       SoyTypes.AS);
 
   public static final TokenSet OPERATOR_LITERALS = TokenSet
-      .create(SoyTypes.AND, SoyTypes.OR, SoyTypes.NOT);
+      .create(SoyTypes.AND, SoyTypes.OR, SoyTypes.NOT, SoyTypes.IN);
 
   public static final TokenSet BUILTIN_TYPES = TokenSet
       .create(SoyTypes.ANY,
