@@ -1,0 +1,10 @@
+{template .nestedTernary}
+    {let $status: $otherStatus ?:
+        ($type == Type.ONE
+            ? $isSubTypeA
+                ? Status.ONE_A
+                : $isSubTypeB
+                    ? Status.ONE_B
+                    : Status.UNKNOWN
+            : Status.TOTALLY_UNKNOWN) /}
+{/template}

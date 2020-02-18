@@ -818,7 +818,7 @@ Expr ::= NullCheckTernaryExpr
   | FieldAccessExpr
   | PrimaryExpr
 
-NullCheckTernaryExpr ::= Expr QUESTIONMARK Expr COLON Expr
+NullCheckTernaryExpr ::= Expr QUESTIONMARK Expr COLON Expr { rightAssociative=true }
 NullCheckBinExpr ::= Expr TERNARY_COALESCER Expr
 OrBinExpr ::= Expr OR Expr
 AndBinExpr ::= Expr AND Expr
