@@ -25,7 +25,9 @@ import com.google.bamboo.soy.parser.SoyAtInjectSingle;
 import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.SoyAtStateSingle;
 import com.google.bamboo.soy.parser.SoyChoiceClause;
+import com.google.bamboo.soy.parser.SoyNullCheckTernaryColon;
 import com.google.bamboo.soy.parser.SoyNullCheckTernaryExpr;
+import com.google.bamboo.soy.parser.SoyNullCheckTernaryQmark;
 import com.google.bamboo.soy.parser.SoyRecordFieldValue;
 import com.google.bamboo.soy.parser.SoyStatementList;
 import com.google.bamboo.soy.parser.SoyTypes;
@@ -200,7 +202,7 @@ public class SoyBlock extends TemplateLanguageBlock {
       return Indent.getNormalIndent();
     }
 
-    if (isRecordFieldValue() || isTernaryDelimiter() || isTernaryBranchExpr()) {
+    if (isRecordFieldValue() || isCheckDelimiter() || isTernaryBranchExpr()) {
       return Indent.getContinuationIndent();
     }
     if (isDirectTagChild()) {
@@ -210,9 +212,13 @@ public class SoyBlock extends TemplateLanguageBlock {
     }
   }
 
-  private boolean isTernaryDelimiter() {
-    IElementType elementType = myNode.getElementType();
-    return elementType == SoyTypes.QUESTIONMARK || elementType == SoyTypes.COLON;
+  private boolean isCheckDelimiter() {
+    if (myNode.getElementType() == SoyTypes.TERNARY_COALESCER) {
+      return true;
+    }
+    PsiElement psiElement = myNode.getPsi();
+    return psiElement instanceof SoyNullCheckTernaryQmark
+        || psiElement instanceof SoyNullCheckTernaryColon;
   }
 
   private boolean isTernaryBranchExpr() {
@@ -221,7 +227,8 @@ public class SoyBlock extends TemplateLanguageBlock {
       return false;
     }
     PsiElement parent = psiElement.getParent();
-    return parent instanceof SoyNullCheckTernaryExpr && psiElement != parent.getFirstChild();
+    return parent instanceof SoyNullCheckTernaryExpr
+        && psiElement != WhitespaceUtils.getFirstMeaningChild(parent);
   }
 
   @Override

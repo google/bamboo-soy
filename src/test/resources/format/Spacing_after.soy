@@ -14,4 +14,9 @@
                             ? Status.ONE_B
                             : Status.UNKNOWN
             : Status.TOTALLY_UNKNOWN /}
+
+    {let $nonNullStatus: $status
+            ?: $Status.TOTALLY_UNKNOWN /}
+
+
 {/template}

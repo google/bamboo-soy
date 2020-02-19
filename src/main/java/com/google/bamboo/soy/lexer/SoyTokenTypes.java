@@ -136,6 +136,11 @@ public class SoyTokenTypes {
       SoyTypes.MINUS,
       SoyTypes.EXCLAMATION);
 
+  public static final TokenSet NULL_CHECK_DELIMITERS = TokenSet.create(
+      SoyTypes.NULL_CHECK_TERNARY_COLON,
+      SoyTypes.NULL_CHECK_TERNARY_QMARK,
+      SoyTypes.TERNARY_COALESCER);
+
   public static final ImmutableMap<IElementType, String> BRACE_TYPE_TO_STRING =
       ImmutableMap.<IElementType, String>builder()
           .put(SoyTypes.LBRACE, "{")
