@@ -29,7 +29,7 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
     return "/insight";
   }
 
-  protected void doTest(String inputText, Set<String> expectedCompletions) throws Throwable {
+  protected void doTest(String inputText, Set<String> expectedCompletions) {
     myFixture.configureByFiles("CompletionSourceTemplate.soy", "ExtraCompletionSource.soy");
     myFixture.configureByText(SoyFileType.INSTANCE, inputText);
     myFixture.complete(CompletionType.BASIC, 1);
@@ -38,19 +38,19 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
         actualCompletions == null ? ImmutableList.of() : actualCompletions, expectedCompletions);
   }
 
-  protected void doTest(String inputText, String expectedText) throws Throwable {
+  protected void doTest(String inputText, String expectedText) {
     myFixture.configureByFiles("CompletionSourceTemplate.soy", "ExtraCompletionSource.soy");
     myFixture.configureByText(SoyFileType.INSTANCE, inputText);
     myFixture.complete(CompletionType.BASIC, 1);
     myFixture.checkResult(expectedText);
   }
 
-  public void testNamespaceLookup() throws Throwable {
+  public void testNamespaceLookup() {
     doTest("{alias o<caret>", "{alias outer");
     doTest("{alias outer.<caret>", ImmutableSet.of("outer.space", "outer.spaceship"));
   }
 
-  public void testTemplateLookup() throws Throwable {
+  public void testTemplateLookup() {
     doTest("{template}{call o<caret>", "{template}{call outer");
     doTest("{template}{call outer.<caret>", ImmutableSet.of("outer.space", "outer.spaceship"));
     doTest(
@@ -59,7 +59,7 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
     doTest("{template}{delcall d<caret>", "{template}{delcall delegate");
   }
 
-  public void testLocalTemplateLookup() throws Throwable {
+  public void testLocalTemplateLookup() {
     doTest("{template .local}{/template}{template}{call .<caret>",
         "{template .local}{/template}{template}{call .local");
     doTest("{deltemplate local.template}{/deltemplate}{template}{delcall l<caret>",
@@ -69,7 +69,7 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
         ImmutableSet.of("outer.space.mars", "outer.space.moon"));
   }
 
-  public void testLookupWithAlias() throws Throwable {
+  public void testLookupWithAlias() {
     doTest(
         "{alias outer.space}{template}{call s<caret>", "{alias outer.space}{template}{call space");
     doTest(
@@ -77,7 +77,7 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
         "{alias outer.space}{template}{call space.earth");
   }
 
-  public void testLookupWithPartialAlias() throws Throwable {
+  public void testLookupWithPartialAlias() {
     doTest(
         "{alias outer as inner}{template}{call i<caret>",
         "{alias outer as inner}{template}{call inner");
@@ -86,7 +86,7 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
         ImmutableSet.of("inner.space", "inner.spaceship"));
   }
 
-  public void testLookupWithImproperPartialAlias() throws Throwable {
+  public void testLookupWithImproperPartialAlias() {
     // Ensuring outer.spaceship exists
     doTest(
         "{alias outer.spaceship}{template}{call spaceship.e<caret>",
@@ -97,7 +97,31 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
         "{alias outer.space}{template}{call spaceship.e");
   }
 
-  public void testVariablesInTemplateScope() throws Throwable {
+  public void testVariablesWithoutLeadingDollar() {
+    doTest(
+        "{template .foo}"
+            + "{@param dimension: number}"
+            + "{@inject force: number}"
+            + "{let $multiplier: 10}"
+            + "{foreach $ignored in $dimension}{/foreach}"
+            + "{for $loop in range(1, 2)}"
+            + "  {<caret>",
+        ImmutableSet.of("$dimension", "$force", "$multiplier", "$loop"));
+  }
+
+  public void testGlobals() {
+    doTest(
+        "{template .foo}"
+            + "{@param dimension: number}"
+            + "{@inject force: number}"
+            + "{let $multiplier: 10}"
+            + "{foreach $ignored in $dimension}{/foreach}"
+            + "{for $loop in range(1, 2)}"
+            + "  {t<caret>",
+        ImmutableSet.of());
+  }
+
+  public void testVariablesInTemplateScope() {
     doTest(
         "{template .foo}"
             + "{@param dimension: number}"
@@ -109,7 +133,7 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
         ImmutableSet.of("$dimension", "$force", "$multiplier", "$loop"));
   }
 
-  public void testVariablesInElementScope() throws Throwable {
+  public void testVariablesInElementScope() {
     doTest(
         "{element .foo}"
             + "{@param dimension: number}"
@@ -122,7 +146,7 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
         ImmutableSet.of("$dimension", "$isLoaded", "$force", "$multiplier", "$loop"));
   }
 
-  public void testVariablesInUntypedAtParamDefaultInitializer() throws Throwable {
+  public void testVariablesInUntypedAtParamDefaultInitializer() {
     doTest(
         "{element .foo}"
             + "{@param dimension: number}"
@@ -132,7 +156,7 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
         ImmutableSet.of());
   }
 
-  public void testVariablesInTypedAtParamDefaultInitializer() throws Throwable {
+  public void testVariablesInTypedAtParamDefaultInitializer() {
     doTest(
         "{element .foo}"
             + "{@param dimension: number}"
@@ -142,7 +166,7 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
         ImmutableSet.of());
   }
 
-  public void testVariablesInUntypedAtParamDefaultInitializerLeadingDollar() throws Throwable {
+  public void testVariablesInUntypedAtParamDefaultInitializerLeadingDollar() {
     doTest(
         "{element .foo}"
             + "{@param dimension: number}"
@@ -152,7 +176,7 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
         ImmutableSet.of());
   }
 
-  public void testVariablesInTypedAtParamDefaultInitializerLeadingDollar() throws Throwable {
+  public void testVariablesInTypedAtParamDefaultInitializerLeadingDollar() {
     doTest(
         "{element .foo}"
             + "{@param dimension: number}"
@@ -162,7 +186,7 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
         ImmutableSet.of());
   }
 
-  public void testVariablesInUntypedAtStateDefaultInitializer() throws Throwable {
+  public void testVariablesInUntypedAtStateDefaultInitializer() {
     doTest(
         "{element .foo}"
             + "{@param dimension: number}"
@@ -172,7 +196,7 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
         ImmutableSet.of("$force", "$dimension"));
   }
 
-  public void testVariablesInTypedAtStateDefaultInitializer() throws Throwable {
+  public void testVariablesInTypedAtStateDefaultInitializer() {
     doTest(
         "{element .foo}"
             + "{@param dimension: number}"
@@ -182,7 +206,7 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
         ImmutableSet.of("$force", "$dimension"));
   }
 
-  public void testVariablesInUntypedAtStateDefaultInitializerLeadingDollar() throws Throwable {
+  public void testVariablesInUntypedAtStateDefaultInitializerLeadingDollar() {
     doTest(
         "{element .foo}"
             + "{@param dimension: number}"
@@ -192,7 +216,7 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
         ImmutableSet.of("$force", "$dimension"));
   }
 
-  public void testVariablesInTypedAtStateDefaultInitializerLeadingDollar() throws Throwable {
+  public void testVariablesInTypedAtStateDefaultInitializerLeadingDollar() {
     doTest(
         "{element .foo}"
             + "{@param dimension: number}"
@@ -200,5 +224,25 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
             + "{@inject force: number}"
             + "{@state another: number = $<caret>",
         ImmutableSet.of("$force", "$dimension"));
+  }
+
+  public void testVariablesInFieldAccessLeft() {
+    doTest(
+        "{template .foo}"
+            + "{@param dimension: number}"
+            + "{@param dimensionData: number}"
+            + "{$dimension<caret>.}"
+            + "{/template}",
+        ImmutableSet.of("$dimension", "$dimensionData"));
+  }
+
+  public void testVariablesInFieldAccessRight() {
+    doTest(
+        "{template .foo}"
+            + "{@param dimension: number}"
+            + "{@param dimensionData: number}"
+            + "{$dimension.<caret>}"
+            + "{/template}",
+        ImmutableSet.of());
   }
 }

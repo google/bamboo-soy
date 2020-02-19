@@ -39,6 +39,8 @@ import com.google.bamboo.soy.parser.SoyBeginLet;
 import com.google.bamboo.soy.parser.SoyBeginParamTag;
 import com.google.bamboo.soy.parser.SoyBeginTemplate;
 import com.google.bamboo.soy.parser.SoyExpr;
+import com.google.bamboo.soy.parser.SoyFieldAccessExpr;
+import com.google.bamboo.soy.parser.SoyGlobalExpr;
 import com.google.bamboo.soy.parser.SoyListComprehensionExpr;
 import com.google.bamboo.soy.parser.SoyListType;
 import com.google.bamboo.soy.parser.SoyMapType;
@@ -49,6 +51,7 @@ import com.google.bamboo.soy.parser.SoyTemplateDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyTemplateReferenceIdentifier;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier;
+import com.google.bamboo.soy.parser.SoyVariableReferenceIdentifier;
 import com.google.common.collect.ImmutableList;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;
@@ -100,6 +103,8 @@ public class SoyCompletionContributor extends CompletionContributor {
       Stream.of("text", "html", "attributes", "uri", "css", "js")
           .map(LookupElementBuilder::create)
           .collect(ImmutableList.toImmutableList());
+
+  private static final String INTELLIJ_IDEA_RULEZZZ = "IntellijIdeaRulezzz";
 
   SoyCompletionContributor() {
     extendWithTemplateDefinitionLevelKeywords();
@@ -240,6 +245,9 @@ public class SoyCompletionContributor extends CompletionContributor {
 
             PsiElement currentElement = completionParameters.getPosition();
 
+            if (shouldSkipVariableCompletion(currentElement)) {
+              return;
+            }
             boolean isInsideDefaultInitializer = isInsideDefaultInitializer(currentElement);
             if (isInsideDefaultInitializer
                 && PsiTreeUtil.getParentOfType(currentElement, SoyAtParamSingle.class) != null) {
@@ -260,6 +268,21 @@ public class SoyCompletionContributor extends CompletionContributor {
                     .collect(Collectors.toList()));
           }
         });
+  }
+
+  private boolean shouldSkipVariableCompletion(PsiElement currentElement) {
+    SoyGlobalExpr parentGlobalExpr = PsiTreeUtil.getParentOfType(currentElement, SoyGlobalExpr.class);
+    if (parentGlobalExpr != null) {
+      // Globals do not deal with vars, unless it's an empty expression (the user has not typed anything yet).
+      return currentElement != parentGlobalExpr.getFirstChild()
+          || !currentElement.getText().replace(INTELLIJ_IDEA_RULEZZZ, "").isEmpty();
+    }
+    if (PsiTreeUtil.getParentOfType(currentElement, SoyFieldAccessExpr.class) != null &&
+        PsiTreeUtil.getParentOfType(currentElement, SoyVariableReferenceIdentifier.class) == null) {
+      // Field access after a dot.
+      return true;
+    }
+    return false;
   }
 
   private boolean isInsideDefaultInitializer(PsiElement currentElement) {
@@ -344,7 +367,7 @@ public class SoyCompletionContributor extends CompletionContributor {
                 PsiTreeUtil.getParentOfType(identifierElement, CallStatementElement.class)
                     .isDelegate();
 
-            String prefix = identifier.replaceFirst("IntellijIdeaRulezzz", "");
+            String prefix = identifier.replaceFirst(INTELLIJ_IDEA_RULEZZZ, "");
             Collection<TemplateNameUtils.Fragment> completions =
                 TemplateNameUtils.getPossibleNextIdentifierFragments(
                     completionParameters.getPosition().getProject(),
@@ -384,7 +407,7 @@ public class SoyCompletionContributor extends CompletionContributor {
                     completionParameters.getPosition(), SoyNamespaceIdentifier.class);
             String identifier = identifierElement == null ? "" : identifierElement.getText();
 
-            String prefix = identifier.replaceFirst("IntellijIdeaRulezzz", "");
+            String prefix = identifier.replaceFirst(INTELLIJ_IDEA_RULEZZZ, "");
             Collection<TemplateNameUtils.Fragment> completions =
                 TemplateNameUtils.getTemplateNamespaceFragments(
                     completionParameters.getPosition().getProject(), prefix);
