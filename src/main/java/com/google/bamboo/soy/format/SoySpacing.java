@@ -17,8 +17,8 @@ public class SoySpacing {
         // In a key-value pair no whitespace around equals.
         .aroundInside(SoyTypes.EQUAL, SoyTypes.ATTRIBUTE_KEY_VALUE_PAIR).spaces(0)
 
-        // : should not be preceded by whitespace unless in a ternary expression.
-        .beforeInside(SoyTypes.COLON, SoyTypes.NULL_CHECK_TERNARY_EXPR).spaces(1)
+        // Null check delimiters should be surrounded by spaces.
+        .around(SoyTokenTypes.NULL_CHECK_DELIMITERS).spaces(1)
         .before(SoyTypes.COLON).spacing(0, 0, 0, false, 0)
         // : should be followed by a space unless in a print directive.
         .afterInside(SoyTypes.COLON, SoyTypes.DIRECTIVE).spaces(0)
