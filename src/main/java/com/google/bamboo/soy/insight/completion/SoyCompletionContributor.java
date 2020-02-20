@@ -14,14 +14,11 @@
 
 package com.google.bamboo.soy.insight.completion;
 
-import static com.intellij.patterns.PlatformPatterns.psiElement;
-import static com.intellij.patterns.StandardPatterns.instanceOf;
-import static com.intellij.patterns.StandardPatterns.or;
-
 import com.google.bamboo.soy.elements.AtElementSingle;
 import com.google.bamboo.soy.elements.CallStatementElement;
 import com.google.bamboo.soy.elements.WhitespaceUtils;
 import com.google.bamboo.soy.lang.ParamUtils;
+import com.google.bamboo.soy.lang.ParameterSpecification;
 import com.google.bamboo.soy.lang.Scope;
 import com.google.bamboo.soy.lang.StateVariable;
 import com.google.bamboo.soy.lang.TemplateNameUtils;
@@ -70,6 +67,10 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
+
+import static com.intellij.patterns.PlatformPatterns.psiElement;
+import static com.intellij.patterns.StandardPatterns.instanceOf;
+import static com.intellij.patterns.StandardPatterns.or;
 
 public class SoyCompletionContributor extends CompletionContributor {
 
@@ -459,7 +460,11 @@ public class SoyCompletionContributor extends CompletionContributor {
               return;
             }
 
-            Collection<String> givenParameters = ParamUtils.getGivenParameters(callStatement);
+            Collection<String> givenParameters =
+                ParamUtils.getGivenParameters(callStatement)
+                    .stream()
+                    .map(ParameterSpecification::name)
+                    .collect(Collectors.toSet());
             List<Variable> parameters =
                 ParamUtils.getParametersForInvocation(position, identifier.getText()).stream()
                     .filter(v -> !givenParameters.contains(v.name))

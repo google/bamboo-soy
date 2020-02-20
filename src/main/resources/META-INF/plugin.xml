@@ -98,7 +98,7 @@
     <!-- Annotators -->
     <annotator
       language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.insight.annotators.MissingParametersAnnotator"/>
+      implementationClass="com.google.bamboo.soy.insight.annotators.GivenParametersAnnotator"/>
     <annotator
       language="ClosureTemplate"
       implementationClass="com.google.bamboo.soy.insight.annotators.UnusedParameterOrStateAnnotator"/>
