@@ -16,6 +16,7 @@ package com.google.bamboo.soy.insight.annotators;
 
 import com.google.bamboo.soy.lang.ParamUtils;
 import com.google.bamboo.soy.elements.CallStatementElement;
+import com.google.bamboo.soy.parser.SoyAttributeKeyValuePair;
 import com.google.bamboo.soy.parser.SoyTemplateReferenceIdentifier;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
@@ -34,8 +35,12 @@ public class MissingParametersAnnotator implements Annotator {
 
       Collection<String> givenParameters = ParamUtils.getGivenParameters(statement);
 
-      // TODO(thso): Detect data="" in more robust way.
-      if (statement.getText().contains("data=")) return;
+      if (statement.getBeginCall().getAttributeKeyValuePairList()
+          .stream()
+          .map(pair -> pair.getAttributeNameIdentifier().getText())
+          .anyMatch("data"::equals)) {
+        return;
+      }
 
       PsiElement identifier =
           PsiTreeUtil.findChildOfType(statement, SoyTemplateReferenceIdentifier.class);

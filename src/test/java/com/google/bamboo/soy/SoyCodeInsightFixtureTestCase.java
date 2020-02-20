@@ -18,10 +18,6 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 
 public abstract class SoyCodeInsightFixtureTestCase extends BasePlatformTestCase {
 
-  protected void setUp() throws Exception {
-    super.setUp();
-  }
-
   @Override
   protected String getTestDataPath() {
     return SoyTestUtils.getTestDataFolder() + getBasePath();
