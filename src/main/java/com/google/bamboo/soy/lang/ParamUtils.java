@@ -48,13 +48,13 @@ public class ParamUtils {
     return templateBlock.getParameters();
   }
 
-  public static Collection<String> getGivenParameters(CallStatementElement statement) {
+  public static Collection<ParameterSpecification> getGivenParameters(CallStatementElement statement) {
     return statement
         .getParamListElementList()
         .stream()
         .map(param -> param.getBeginParamTag().getParamSpecificationIdentifier())
         .filter(Objects::nonNull)
-        .map(PsiElement::getText)
+        .map(ParameterSpecification::new)
         .collect(Collectors.toList());
   }
 

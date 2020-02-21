@@ -2,7 +2,7 @@ package com.google.bamboo.soy.insight.annotators;
 
 import com.google.bamboo.soy.SoyCodeInsightFixtureTestCase;
 
-public class MissingParametersAnnotatorTest extends SoyCodeInsightFixtureTestCase {
+public class GivenParametersAnnotatorTest extends SoyCodeInsightFixtureTestCase {
 
   @Override
   protected String getBasePath() {
@@ -10,7 +10,7 @@ public class MissingParametersAnnotatorTest extends SoyCodeInsightFixtureTestCas
   }
 
   public void testAnnotator() {
-    myFixture.configureByFile("MissingParameters.soy");
+    myFixture.configureByFile("GivenParameters.soy");
     myFixture.checkHighlighting(false, false, true, true);
   }
 }

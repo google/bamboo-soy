@@ -18,3 +18,19 @@
   {call <error descr="Missing required parameters: stringParam,intParam">.calleeTemplate</error> /}
   {call <error descr="Missing required parameters: stringParam,intParam">.calleeElement</error> /}
 {/template}
+
+{template .callerTemplate1}
+  {call .calleeTemplate}
+    {param stringParam: '' /}
+    {param intParam: 2 /}
+    {param <error descr="Unknown parameter specified">unknown</error>: '' /}
+  {/call}
+{/template}
+
+{template .callerTemplate2}
+  {call .calleeTemplate}
+    {param stringParam: '' /}
+    {param intParam: 2 /}
+    {param <error descr="Duplicate parameter specified">intParam</error>: 3 /}
+  {/call}
+{/template}
