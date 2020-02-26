@@ -34,3 +34,10 @@
     {param <error descr="Duplicate parameter specified">intParam</error>: 3 /}
   {/call}
 {/template}
+
+{template .callerTemplate3}
+    {call .unknownTemplate}
+        {param stringParam: '' /}
+        {param intParam: 2 /}
+    {/call}
+{/template}

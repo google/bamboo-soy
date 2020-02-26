@@ -11,6 +11,6 @@ public class GivenParametersAnnotatorTest extends SoyCodeInsightFixtureTestCase 
 
   public void testAnnotator() {
     myFixture.configureByFile("GivenParameters.soy");
-    myFixture.checkHighlighting(false, false, true, true);
+    myFixture.checkHighlighting(false, false, true, false);
   }
 }

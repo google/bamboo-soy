@@ -18,6 +18,8 @@ import com.google.bamboo.soy.elements.CallStatementElement;
 import com.google.bamboo.soy.lang.ParamUtils;
 import com.google.bamboo.soy.lang.Parameter;
 import com.google.bamboo.soy.lang.ParameterSpecification;
+import com.google.bamboo.soy.lang.TemplateNameUtils;
+import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.google.bamboo.soy.parser.SoyTemplateReferenceIdentifier;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
@@ -48,9 +50,14 @@ public class GivenParametersAnnotator implements Annotator {
       if (identifier == null) return;
 
       Collection<ParameterSpecification> givenParameters = ParamUtils.getGivenParameters(statement);
-      List<Parameter> declaredParameters =
-          ParamUtils.getParametersForInvocation(statement, identifier.getText());
+      SoyTemplateBlock templateBlock =
+          TemplateNameUtils.findTemplateDeclaration(statement, identifier.getText());
+      if (templateBlock == null) {
+        // Do not check parameters for an unknown template invocation.
+        return;
+      }
 
+      List<Parameter> declaredParameters = templateBlock.getParameters();
       checkMissingRequiredParameters(
           annotationHolder, identifier, givenParameters, declaredParameters);
       checkUnknownParameters(annotationHolder, givenParameters, declaredParameters);
