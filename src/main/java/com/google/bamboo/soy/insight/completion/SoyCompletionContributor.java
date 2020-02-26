@@ -170,6 +170,7 @@ public class SoyCompletionContributor extends CompletionContributor {
         psiElement()
             .andOr(
                 psiElement().inside(SoyBeginParamTag.class),
+                psiElement().inside(SoyBeginTemplate.class),
                 psiElement().inside(SoyBeginLet.class)),
         new CompletionProvider<CompletionParameters>() {
           @Override
@@ -181,6 +182,7 @@ public class SoyCompletionContributor extends CompletionContributor {
                 completionParameters.getPosition(),
                 elt ->
                     elt instanceof SoyParamSpecificationIdentifier
+                        || elt instanceof SoyTemplateDefinitionIdentifier
                         || elt instanceof SoyVariableDefinitionIdentifier)) {
               completionResultSet.addElement(
                   LookupElementBuilder.create("kind")
@@ -196,6 +198,7 @@ public class SoyCompletionContributor extends CompletionContributor {
         psiElement()
             .andOr(
                 psiElement().inside(SoyBeginParamTag.class).afterLeaf("="),
+                psiElement().inside(SoyBeginTemplate.class).afterLeaf("="),
                 psiElement().inside(SoyBeginLet.class).afterLeaf("=")),
         new CompletionProvider<CompletionParameters>() {
           @Override

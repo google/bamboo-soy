@@ -245,4 +245,16 @@ public class SoyCompletionTest extends SoyCodeInsightFixtureTestCase {
             + "{/template}",
         ImmutableSet.of());
   }
+
+  public void testTemplateAttributes() {
+    doTest(
+        "{template .foo <caret>}",
+        ImmutableSet.of("stricthtml=\"true\"", "visibility=\"private\"", "kind"));
+  }
+
+  public void testTemplateKindValues() {
+    doTest(
+        "{template .foo kind=\"<caret>\"}",
+        ImmutableSet.of("css", "js", "attributes", "html", "text", "uri"));
+  }
 }
