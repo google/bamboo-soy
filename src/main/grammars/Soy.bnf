@@ -59,10 +59,12 @@
     FALLBACKMSG = "fallbackmsg"
     FOR = "for"
     FOREACH = "foreach"
+    FROM = "from"
     GREATER = ">"
     GREATER_EQUAL = ">="
     IF = "if"
     IFEMPTY = "ifempty"
+    IMPORT_OPEN = "import"
     IN = "in"
     INDEX_NULL_CHECK = "?["
     KEY = "key"
@@ -99,6 +101,7 @@
     RBRACE_RBRACE = "}}"
     RECORD = "record"
     SELECT = "select"
+    SEMICOLON = ";"
     SKIP = "skip"
     SLASH = "/"
     SLASH_RBRACE = "/}"
@@ -289,6 +292,7 @@ AttributeKeyValuePair ::= AttributeNameIdentifier EQUAL AnyStringLiteral {
 
 private Brace ::= LBRACE | LBRACE_LBRACE | LBRACE_SLASH | LBRACE_LBRACE_SLASH | RBRACE | RBRACE_RBRACE | SLASH_RBRACE | SLASH_RBRACE_RBRACE
 private recoverEndOfTag ::= !(Brace | LITERAL | LITERAL_DOUBLE)
+private recoverEndOfImport ::= !(IMPORT_OPEN | LBRACE | LBRACE_SLASH | LBRACE_LBRACE | LBRACE_LBRACE_SLASH | LITERAL | LITERAL_DOUBLE)
 private meta BracedTag ::= <<ClosedBracedTag <<p>>>> | <<OpenBracedTag <<p>>>>
 private meta ClosedBracedTag ::= (LBRACE | LBRACE_LBRACE) <<p>> (SLASH_RBRACE | SLASH_RBRACE_RBRACE)
 
@@ -314,12 +318,21 @@ private meta EndTagInner ::= (LBRACE_SLASH | LBRACE_LBRACE_SLASH) <<p>> {
 
 // Expanding on soy's hierarchical structure follows.
 
-BlockList ::= (Block | OTHER | COMMENT_BLOCK | HTML_COMMENT)*
+BlockList ::= (Block | Import | OTHER | COMMENT_BLOCK | HTML_COMMENT)*
 
 private Block ::= NamespaceBlock | AliasBlock | TemplateBlock | DelegatePackageBlock | CatchallBraces
 
 CatchallBraces ::= <<BracedTag ()>> | <<EndTag_ ()>>
 
+
+// Import
+
+Import ::= IMPORT_OPEN LBRACE ImportedSymbol (COMMA ImportedSymbol)* RBRACE FROM STRING_LITERAL SEMICOLON {
+  pin = 1
+  recoverWhile = "recoverEndOfImport"
+}
+
+private ImportedSymbol ::= IDENTIFIER_WORD [ AS IDENTIFIER_WORD ]
 
 // Namespace block
 

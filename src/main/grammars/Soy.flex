@@ -70,6 +70,8 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
 %state TAG_IDENTIFIER_WORD
 %state TAG_QUALIFIED_IDENTIFIER
 %state WHITESPACE_BEFORE_LINE_COMMENT
+%state IMPORT
+%state IMPORT_CONTINUATION
 
 %%
 
@@ -112,13 +114,7 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
 {DocCommentBlock} { return SoyTypes.DOC_COMMENT_BLOCK; }
 {BlockComment} { return SoyTypes.COMMENT_BLOCK; }
 
-// -- Rest
 {WhiteSpace}  { return TokenType.WHITE_SPACE; }
-
-"{" { yybegin(TAG); return SoyTypes.LBRACE; }
-"{{" { yybegin(TAG); return SoyTypes.LBRACE_LBRACE; }
-"{/" { yybegin(TAG); return SoyTypes.LBRACE_SLASH; }
-"{{/" { yybegin(TAG); return SoyTypes.LBRACE_LBRACE_SLASH; }
 
 // Anywhere inside a tag.
 <TAG> {
@@ -238,6 +234,7 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
   "\\t" { return SoyTypes.TAB; }
 
   "=" { return SoyTypes.EQUAL; }
+  ";" { return SoyTypes.SEMICOLON; }
   ":" { return SoyTypes.COLON; }
   ":=" { return SoyTypes.COLON_EQUAL; }
   "?" { return SoyTypes.QUESTIONMARK; }
@@ -280,6 +277,35 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
 // Only IdentifierWord expected (ensured by look-ahead).
 <TAG_IDENTIFIER_WORD> {
   {IdentifierWord} { yybegin(TAG); return SoyTypes.IDENTIFIER_WORD; }
+}
+
+// Import clause.
+<YYINITIAL, IMPORT, IMPORT_CONTINUATION> {
+    // All except YYINITIAL for error recovery.
+    "import" { yybegin(IMPORT); return SoyTypes.IMPORT_OPEN; }
+}
+
+<IMPORT> {
+  "{" { yybegin(IMPORT_CONTINUATION); return SoyTypes.LBRACE; }
+  . { yybegin(YYINITIAL); return SoyTypes.OTHER; }
+}
+
+// LBRACEs always start a TAG, except when in the IMPORT state.
+"{" { yybegin(TAG); return SoyTypes.LBRACE; }
+"{{" { yybegin(TAG); return SoyTypes.LBRACE_LBRACE; }
+"{/" { yybegin(TAG); return SoyTypes.LBRACE_SLASH; }
+"{{/" { yybegin(TAG); return SoyTypes.LBRACE_LBRACE_SLASH; }
+
+<IMPORT_CONTINUATION> {
+  "as" { return SoyTypes.AS; }
+  "}" { return SoyTypes.RBRACE; }
+  "," { return SoyTypes.COMMA; }
+  "from" { return SoyTypes.FROM; }
+  ";" { yybegin(YYINITIAL); return SoyTypes.SEMICOLON; }
+  {DoubleQuotedStringLiteral} { return SoyTypes.STRING_LITERAL; }
+  {SingleQuotedStringLiteral} { return SoyTypes.STRING_LITERAL; }
+  {IdentifierWord} { return SoyTypes.IDENTIFIER_WORD; }
+  . { yybegin(YYINITIAL); return SoyTypes.OTHER; }
 }
 
 . { return SoyTypes.OTHER; }
