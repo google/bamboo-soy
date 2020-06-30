@@ -117,6 +117,10 @@ public class SoyParserTest extends ParsingTestCase {
     doTest(true);
   }
 
+  public void testImport() {
+    doTest(true);
+  }
+
   @Override
   protected boolean checkAllPsiRoots() {
     return false;
