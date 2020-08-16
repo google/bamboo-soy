@@ -14,7 +14,7 @@
 
 package com.google.bamboo.soy.insight.annotators;
 
-import com.google.bamboo.soy.parser.SoyFieldAccessExpr;
+import com.google.bamboo.soy.parser.SoyFieldAccessOrMethodCallExpr;
 import com.google.bamboo.soy.parser.SoyVariableReferenceIdentifier;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
@@ -27,9 +27,9 @@ public class UnfinishedIdentifiersAnnotator implements Annotator {
   public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
     if (psiElement instanceof SoyVariableReferenceIdentifier && psiElement.getText().equals("$")) {
       annotationHolder.createErrorAnnotation(psiElement, "Variable name expected.");
-    } else if (psiElement instanceof SoyFieldAccessExpr
+    } else if (psiElement instanceof SoyFieldAccessOrMethodCallExpr
         && psiElement.getText().endsWith(".")) {
-      annotationHolder.createErrorAnnotation(psiElement, "Field name expected.");
+      annotationHolder.createErrorAnnotation(psiElement, "Field or method name expected.");
     }
   }
 }

@@ -5,6 +5,12 @@
     ? $a  ?.field ?.template['index']?[1]
     : ([1, 2, 3][$b   .if] ?: -4)
   }
+  {isNonnull($a)
+  ? $a  ?.method() ?.template['index']?[1]
+  : ([1, 2, 3][$b   .if()] ?: -4)
+          }
+  {'foo'.substring(1, 2)}
+  {'foo'.substring(1,)}
   {true}
   {null}
   {record(a: $a + $b, int: 12)}

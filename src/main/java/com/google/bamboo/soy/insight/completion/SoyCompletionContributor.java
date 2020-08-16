@@ -36,7 +36,7 @@ import com.google.bamboo.soy.parser.SoyBeginLet;
 import com.google.bamboo.soy.parser.SoyBeginParamTag;
 import com.google.bamboo.soy.parser.SoyBeginTemplate;
 import com.google.bamboo.soy.parser.SoyExpr;
-import com.google.bamboo.soy.parser.SoyFieldAccessExpr;
+import com.google.bamboo.soy.parser.SoyFieldAccessOrMethodCallExpr;
 import com.google.bamboo.soy.parser.SoyGlobalExpr;
 import com.google.bamboo.soy.parser.SoyListComprehensionExpr;
 import com.google.bamboo.soy.parser.SoyListType;
@@ -281,7 +281,7 @@ public class SoyCompletionContributor extends CompletionContributor {
       return currentElement != parentGlobalExpr.getFirstChild()
           || !currentElement.getText().replace(INTELLIJ_IDEA_RULEZZZ, "").isEmpty();
     }
-    if (PsiTreeUtil.getParentOfType(currentElement, SoyFieldAccessExpr.class) != null &&
+    if (PsiTreeUtil.getParentOfType(currentElement, SoyFieldAccessOrMethodCallExpr.class) != null &&
         PsiTreeUtil.getParentOfType(currentElement, SoyVariableReferenceIdentifier.class) == null) {
       // Field access after a dot.
       return true;
