@@ -1,5 +1,22 @@
 # Release notes
 
+## Release notes for 1.6
+
+### Features
+ * Added support for list comprehensions (fixed #195)
+ * Added proto initialization support (fixes #201)
+ * Added support for the {css} and {xid} functional style syntax, {nbsp}, {velog}
+ * Added support for {skip}, {key} (fixes #205) 
+ * Added support for {ifempty} inside {for}
+ * Added support for the "import" syntax (fixes #222)
+ * Added support for the methods syntax
+
+### Bug and stability fixes
+ * HTML block-commenting fixed
+ * Missing params with default initializers are no longer reported as errors (fixes #199)
+ * Minor bugfixes
+
+
 ## Release notes for 1.5
 
 ### Features
