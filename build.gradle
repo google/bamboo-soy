@@ -30,7 +30,7 @@ intellij {
 
 ext.tmpMarkdownInputDir = "${buildDir}/tmp/markdown-inputs".toString()
 ext.htmlOutputDir = "${buildDir}/gen-html".toString()
-ext.pluginVersion = '1.5'
+ext.pluginVersion = '1.6'
 
 task prepareMarkdownInputs(type: Copy) {
     from("${projectDir}") {
