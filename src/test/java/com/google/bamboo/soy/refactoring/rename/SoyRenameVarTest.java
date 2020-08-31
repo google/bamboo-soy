@@ -40,6 +40,14 @@ public class SoyRenameVarTest extends SoyRenameTest {
     doTest("bar");
   }
 
+  public void testForRenameIndex() {
+    doTest("bar");
+  }
+
+  public void testForRenameIndexReference() {
+    doTest("bar");
+  }
+
   public void testForeachRenameDeclaration() {
     doTest("bar");
   }

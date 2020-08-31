@@ -1,0 +1,6 @@
+{template .test}
+  {@param fooParam: list<string>}
+  {for $s, $index<caret> in $fooParam}
+    {$index}
+  {/for}
+{/template}
