@@ -3,8 +3,8 @@ package com.google.bamboo.soy.elements;
 import com.google.bamboo.soy.lang.Scope;
 import com.google.bamboo.soy.lang.Variable;
 import com.google.bamboo.soy.parser.SoyBeginFor;
-import com.google.common.collect.ImmutableList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,8 +22,8 @@ public interface ForStatementElement extends Scope, TagBlockElement, StatementEl
   @NotNull
   @Override
   default List<Variable> getLocalVariables() {
-    return getBeginFor().getVariableDefinitionIdentifier() != null
-        ? ImmutableList.of(getBeginFor().getVariableDefinitionIdentifier().toVariable())
-        : ImmutableList.of();
+    return getBeginFor().getVariableDefinitionIdentifierList().stream()
+        .map(VariableDefinitionElement::toVariable)
+        .collect(Collectors.toUnmodifiableList());
   }
 }

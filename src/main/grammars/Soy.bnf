@@ -550,7 +550,7 @@ ForStatement
 
 BeginFor ::= <<BracedTag BeginForTagBody>>
 
-private BeginForTagBody ::= FOR VariableDefinitionIdentifier IN Expr {
+private BeginForTagBody ::= FOR VariableDefinitionIdentifier (COMMA VariableDefinitionIdentifier)? IN Expr {
   pin = 1
   recoverWhile = "recoverEndOfTag"
 }
