@@ -80,6 +80,7 @@
     zzAtEOF  = false;
     zzAtBOL = true;
     zzEndRead = end;
+    zzLexicalStateStack.clear();
     yybegin(initialState);
   }
 
