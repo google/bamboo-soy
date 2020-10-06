@@ -64,11 +64,15 @@ MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
 NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
 
 /* Lexer states */
-%state TAG
+%state OPEN_TAG
+%state OPEN_TAG_NAMESPACE
+%state CLOSE_TAG
+%state YYINITIAL_IN_TAG
 %state LITERAL_SINGLE
 %state LITERAL_DOUBLE
 %state TAG_IDENTIFIER_WORD
 %state TAG_QUALIFIED_IDENTIFIER
+%state TAG_QUALIFIED_IDENTIFIER_NAMESPACE
 %state WHITESPACE_BEFORE_LINE_COMMENT
 %state IMPORT
 %state IMPORT_CONTINUATION
@@ -78,13 +82,13 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
 // -- Literal tags: ensure we parse literal tags and eat their whole content first without matching
 // anything within the literal body.
 <LITERAL_SINGLE> {
-  "{/literal}" { yybegin(YYINITIAL); return SoyTypes.END_LITERAL; }
+  "{/literal}" { yypop(); return SoyTypes.END_LITERAL; }
   "{{literal}}" { return SoyTypes.OTHER; }
   "{{/literal}}" { return SoyTypes.OTHER; }
 }
 
 <LITERAL_DOUBLE> {
-  "{{/literal}}" { yybegin(YYINITIAL); return SoyTypes.END_LITERAL_DOUBLE; }
+  "{{/literal}}" { yypop(); return SoyTypes.END_LITERAL_DOUBLE; }
   "{literal}" { return SoyTypes.OTHER; }
   "{/literal}" { return SoyTypes.OTHER; }
 }
@@ -93,8 +97,8 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
   .|{WhiteSpace}|"{{"|"{/"|"{{/" { return SoyTypes.OTHER; }
 }
 
-"{literal}" { yybegin(LITERAL_SINGLE); return SoyTypes.LITERAL; }
-"{{literal}}" { yybegin(LITERAL_DOUBLE); return SoyTypes.LITERAL_DOUBLE; }
+"{literal}" { yypush(); yybegin(LITERAL_SINGLE); return SoyTypes.LITERAL; }
+"{{literal}}" { yypush(); yybegin(LITERAL_DOUBLE); return SoyTypes.LITERAL_DOUBLE; }
 
 /* Comments */
 
@@ -116,14 +120,44 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
 
 {WhiteSpace}  { return TokenType.WHITE_SPACE; }
 
-// Anywhere inside a tag.
-<TAG> {
-  /* Tag closing */
-  "/}" { yybegin(YYINITIAL); return SoyTypes.SLASH_RBRACE; }
-  "}" { yybegin(YYINITIAL); return SoyTypes.RBRACE; }
-  "}}" { yybegin(YYINITIAL); return SoyTypes.RBRACE_RBRACE; }
-  "/}}" { yybegin(YYINITIAL); return SoyTypes.SLASH_RBRACE_RBRACE; }
+/**
+  The idea behind tracking open-close tags is to allow Python-style imports only at the top level, not inside tag
+  contents, which breaks HTML parsing, like <div style="color: white !important">. Here, the leading part of "important"
+  would get parsed as "import" because the parser is in the YYINITIAL state. We work around this by having tag contents
+  parsed in the YYINITIAL_IN_TAG state.
 
+  We also need to parse {namespace ...} in a special way, since it doesn't have a closing counterpart and everything
+  following it should start in the YYINITIAL (not YYINITIAL_IN_TAG) state.
+ */
+
+<CLOSE_TAG> {
+  /* Tag closing */
+  "/}" { return SoyTypes.OTHER; } // ERROR: {/..../} or {{/.../}
+  "}" { yypop(); return SoyTypes.RBRACE; }
+  "}}" { yypop(); return SoyTypes.RBRACE_RBRACE; }
+  "/}}" { return SoyTypes.OTHER; } // ERROR: {/..../}} or {{/..../}}
+}
+
+<OPEN_TAG> {
+  /* Tag closing */
+  "/}" { yypop(); return SoyTypes.SLASH_RBRACE; } // self-closing
+  "}" { yybegin(YYINITIAL_IN_TAG); return SoyTypes.RBRACE; }
+  "}}" { yybegin(YYINITIAL_IN_TAG); return SoyTypes.RBRACE_RBRACE; }
+  "/}}" { yypop(); return SoyTypes.SLASH_RBRACE_RBRACE; } // self-closing
+}
+
+<OPEN_TAG_NAMESPACE> {
+  /* Tag closing */
+  "}" { yypop(); return SoyTypes.RBRACE; }
+}
+
+<OPEN_TAG> {
+  "namespace"/{NonSemantical}{QualifiedIdentifier} {
+    yybegin(YYINITIAL); yypush(); yybegin(TAG_QUALIFIED_IDENTIFIER_NAMESPACE); return SoyTypes.NAMESPACE;
+  }
+}
+
+<OPEN_TAG, OPEN_TAG_NAMESPACE, CLOSE_TAG> {
   /* Tag names that may be followed by identifiers */
   "@inject"/{NonSemantical}{IdentifierWord} { yybegin(TAG_IDENTIFIER_WORD); return SoyTypes.AT_INJECT; }
   "@inject?"/{NonSemantical}{IdentifierWord} { yybegin(TAG_IDENTIFIER_WORD); return SoyTypes.AT_INJECT_OPT; }
@@ -136,7 +170,6 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
   "delpackage"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELPACKAGE; }
   "deltemplate"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.DELTEMPLATE; }
   "element"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.ELEMENT; }
-  "namespace"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.NAMESPACE; }
   "param"/{NonSemantical}{IdentifierWord} { yybegin(TAG_IDENTIFIER_WORD); return SoyTypes.PARAM; }
   "template"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.TEMPLATE; }
 
@@ -271,41 +304,45 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
 
 // Only QualifiedIdentifier expected (ensured by look-ahead).
 <TAG_QUALIFIED_IDENTIFIER> {
-  {QualifiedIdentifier} { yybegin(TAG); return SoyTypes.QUALIFIED_IDENTIFIER; }
+  {QualifiedIdentifier} { yybegin(OPEN_TAG); return SoyTypes.QUALIFIED_IDENTIFIER; }
+}
+
+<TAG_QUALIFIED_IDENTIFIER_NAMESPACE> {
+  {QualifiedIdentifier} { yybegin(OPEN_TAG_NAMESPACE); return SoyTypes.QUALIFIED_IDENTIFIER; }
 }
 
 // Only IdentifierWord expected (ensured by look-ahead).
 <TAG_IDENTIFIER_WORD> {
-  {IdentifierWord} { yybegin(TAG); return SoyTypes.IDENTIFIER_WORD; }
+  {IdentifierWord} { yybegin(OPEN_TAG); return SoyTypes.IDENTIFIER_WORD; }
 }
 
 // Import clause.
 <YYINITIAL, IMPORT, IMPORT_CONTINUATION> {
     // All except YYINITIAL for error recovery.
-    "import" { yybegin(IMPORT); return SoyTypes.IMPORT_OPEN; }
+    "import" { yypush(); yybegin(IMPORT); return SoyTypes.IMPORT_OPEN; }
 }
 
 <IMPORT> {
   "{" { yybegin(IMPORT_CONTINUATION); return SoyTypes.LBRACE; }
-  . { yybegin(YYINITIAL); return SoyTypes.OTHER; }
+  . { yypop(); return SoyTypes.OTHER; }
 }
 
 // LBRACEs always start a TAG, except when in the IMPORT state.
-"{" { yybegin(TAG); return SoyTypes.LBRACE; }
-"{{" { yybegin(TAG); return SoyTypes.LBRACE_LBRACE; }
-"{/" { yybegin(TAG); return SoyTypes.LBRACE_SLASH; }
-"{{/" { yybegin(TAG); return SoyTypes.LBRACE_LBRACE_SLASH; }
+"{{/" { yybegin(CLOSE_TAG); return SoyTypes.LBRACE_LBRACE_SLASH; }
+"{/" { yybegin(CLOSE_TAG); return SoyTypes.LBRACE_SLASH; }
+"{{" { yypush(); yybegin(OPEN_TAG); return SoyTypes.LBRACE_LBRACE; }
+"{" { yypush(); yybegin(OPEN_TAG); return SoyTypes.LBRACE; }
 
 <IMPORT_CONTINUATION> {
   "as" { return SoyTypes.AS; }
   "}" { return SoyTypes.RBRACE; }
   "," { return SoyTypes.COMMA; }
   "from" { return SoyTypes.FROM; }
-  ";" { yybegin(YYINITIAL); return SoyTypes.SEMICOLON; }
+  ";" { yypop(); return SoyTypes.SEMICOLON; }
   {DoubleQuotedStringLiteral} { return SoyTypes.STRING_LITERAL; }
   {SingleQuotedStringLiteral} { return SoyTypes.STRING_LITERAL; }
   {IdentifierWord} { return SoyTypes.IDENTIFIER_WORD; }
-  . { yybegin(YYINITIAL); return SoyTypes.OTHER; }
+  . { yypop(); return SoyTypes.OTHER; }
 }
 
 . { return SoyTypes.OTHER; }
