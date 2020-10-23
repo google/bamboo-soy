@@ -1,4 +1,4 @@
-// Copyright 2020 Google Inc.
+// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,31 +14,28 @@
 
 package com.google.bamboo.soy.refactoring;
 
-import com.google.bamboo.soy.elements.impl.IdentifierMixin;
-import com.google.bamboo.soy.elements.impl.SoyIdentifierMixin;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.AbstractElementManipulator;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNamedElement;
-import com.intellij.psi.PsiReference;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SoyIdentifierManipulator extends AbstractElementManipulator<PsiElement> {
+public class SoyStringIdentifierManipulator extends AbstractElementManipulator<PsiElement> {
 
   @Nullable
   @Override
   public PsiElement handleContentChange(
       @NotNull PsiElement element, @NotNull TextRange range, String newContent)
       throws IncorrectOperationException {
-    if (element instanceof IdentifierMixin) {
-      IdentifierMixin identifierMixin = (IdentifierMixin) element;
-      PsiReference reference = identifierMixin.getReference();
-      if (reference != null && reference.getElement() instanceof PsiNamedElement) {
-        ((PsiNamedElement) reference.getElement()).setName(newContent);
-      }
+    String stringText = element.getText();
+    String newText = stringText.substring(
+        0,
+        range.getStartOffset()) + newContent + stringText.substring(range.getEndOffset());
+    PsiElement newPsiElement = SoyPsiElementFactory.createStringFromText(element.getProject(), newText);
+    if (newPsiElement == null) {
+      throw new IncorrectOperationException("Illegal value '" + newText + "'");
     }
-    return ((PsiNamedElement) element).setName(newContent);
+    return element.replace(newPsiElement);
   }
 }

@@ -94,7 +94,9 @@
     <lang.elementManipulator
         forClass="com.google.bamboo.soy.elements.impl.SoyIdentifierOwnerMixin"
         implementationClass="com.google.bamboo.soy.refactoring.SoyIdentifierManipulator"/>
-
+    <lang.elementManipulator
+        forClass="com.google.bamboo.soy.parser.SoyAnyStringLiteral"
+        implementationClass="com.google.bamboo.soy.refactoring.SoyStringIdentifierManipulator"/>
     <!-- Annotators -->
     <annotator
       language="ClosureTemplate"

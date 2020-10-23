@@ -14,12 +14,9 @@
 
 package com.google.bamboo.soy.refactoring;
 
-import com.google.bamboo.soy.elements.impl.IdentifierDefinitionMixin;
-import com.google.bamboo.soy.elements.impl.IdentifierMixin;
 import com.intellij.lang.refactoring.RefactoringSupportProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
-import com.intellij.psi.PsiReference;
 import org.jetbrains.annotations.NotNull;
 
 public class SoyRefactoringSupportProvider extends RefactoringSupportProvider {
