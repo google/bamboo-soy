@@ -30,6 +30,9 @@ import com.intellij.psi.impl.source.PsiFileImpl;
 import com.intellij.psi.templateLanguages.ConfigurableTemplateLanguageFileViewProvider;
 import com.intellij.psi.templateLanguages.TemplateDataElementType;
 import java.util.Set;
+
+import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.tree.OuterLanguageElementType;
 import org.jetbrains.annotations.NotNull;
 
 public class SoyFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProvider
@@ -41,9 +44,12 @@ public class SoyFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProv
   // Template data language, like HTML
   private static final Language TEMPLATE_DATA_LANGUAGE = HTMLLanguage.INSTANCE;
 
+  public static final IElementType OUTER_ELEMENT_TYPE =
+      new OuterLanguageElementType("CLOSURE_TEMPLATE_DATA in Soy", SoyLanguage.INSTANCE);
+
   // Element type for template data language
   private static final TemplateDataElementType TEMPLATE_DATA_ELEMENT_TYPE =
-      new TemplateDataElementType("CLOSURE_TEMPLATE_DATA", TEMPLATE_DATA_LANGUAGE, OTHER, OTHER);
+      new TemplateDataElementType("CLOSURE_TEMPLATE_DATA", TEMPLATE_DATA_LANGUAGE, OTHER, OUTER_ELEMENT_TYPE);
 
   SoyFileViewProvider(PsiManager manager, VirtualFile file, boolean physical) {
     super(manager, file, physical);

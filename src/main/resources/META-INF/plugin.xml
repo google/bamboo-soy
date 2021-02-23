@@ -12,7 +12,7 @@
   <change-notes></change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="163.0"/>
+  <idea-version since-build="203.3645.34"/>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
@@ -44,6 +44,7 @@
     <lang.parserDefinition
       language="ClosureTemplate"
       implementationClass="com.google.bamboo.soy.parser.SoyParserDefinition"/>
+    <lang.ast.factory language="ClosureTemplate" implementationClass="com.google.bamboo.soy.parser.SoyAstFactory"/>
     <stubElementTypeHolder class="com.google.bamboo.soy.parser.SoyTypes"/>
     <lang.commenter
       language="ClosureTemplate"

@@ -58,8 +58,7 @@ public class RollbarErrorReportSubmitter extends ErrorReportSubmitter {
   }
 
   @Override
-  public boolean submit(@NotNull IdeaLoggingEvent[] events, @Nullable String additionalInfo,
-      @NotNull Component parentComponent, @NotNull Consumer<SubmittedReportInfo> consumer) {
+  public boolean submit(IdeaLoggingEvent @NotNull [] events, @Nullable String additionalInfo, @NotNull Component parentComponent, @NotNull Consumer<? super SubmittedReportInfo> consumer) {
     log(events, additionalInfo);
     consumer.consume(new SubmittedReportInfo(null, null, NEW_ISSUE));
     Messages.showInfoMessage(parentComponent, DEFAULT_RESPONSE, DEFAULT_RESPONSE_TITLE);
