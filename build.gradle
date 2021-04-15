@@ -5,9 +5,9 @@ buildscript {
 }
 
 plugins {
-    id 'org.jetbrains.grammarkit' version '2020.3.2'
-    id 'org.jetbrains.intellij' version '0.7.1'
-    id 'org.jetbrains.kotlin.jvm' version '1.4.21'
+    id 'org.jetbrains.grammarkit' version '2021.1.2'
+    id 'org.jetbrains.intellij' version '0.7.2'
+    id 'org.jetbrains.kotlin.jvm' version '1.5.0-RC'
     id 'org.kordamp.gradle.markdown' version '2.0.0'
 }
 
@@ -23,9 +23,8 @@ dependencies {
 }
 
 intellij {
-    version 'IC-2020.3'
+    version 'IC-2021.1'
     updateSinceUntilBuild false
-
 }
 
 ext.tmpMarkdownInputDir = "${buildDir}/tmp/markdown-inputs".toString()
