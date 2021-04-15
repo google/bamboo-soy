@@ -29,11 +29,11 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.impl.source.PsiFileImpl;
 import com.intellij.psi.templateLanguages.ConfigurableTemplateLanguageFileViewProvider;
 import com.intellij.psi.templateLanguages.TemplateDataElementType;
-import java.util.Set;
-
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.OuterLanguageElementType;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Set;
 
 public class SoyFileViewProvider extends MultiplePsiFilesPerDocumentFileViewProvider
     implements ConfigurableTemplateLanguageFileViewProvider {
