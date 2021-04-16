@@ -16,13 +16,14 @@ package com.google.bamboo.soy.format;
 
 import com.google.bamboo.soy.elements.TagBlockElement;
 import com.google.bamboo.soy.elements.TagElement;
+import com.google.bamboo.soy.file.SoyFileViewProvider;
 import com.google.bamboo.soy.format.blocks.SoyBlock;
 import com.google.bamboo.soy.format.blocks.SoyStatementListBlock;
 import com.google.bamboo.soy.format.blocks.SoyTagBlock;
 import com.google.bamboo.soy.format.blocks.SoyTagBlockBlock;
 import com.google.bamboo.soy.parser.SoyStatementList;
-import com.google.bamboo.soy.parser.SoyTypes;
 import com.intellij.formatting.Alignment;
+import com.intellij.formatting.FormattingContext;
 import com.intellij.formatting.FormattingModel;
 import com.intellij.formatting.Wrap;
 import com.intellij.formatting.templateLanguages.DataLanguageBlockWrapper;
@@ -36,9 +37,10 @@ import com.intellij.psi.formatter.DocumentBasedFormattingModel;
 import com.intellij.psi.formatter.FormattingDocumentModelImpl;
 import com.intellij.psi.formatter.xml.HtmlPolicy;
 import com.intellij.psi.templateLanguages.SimpleTemplateLanguageFormattingModelBuilder;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class SoyFormattingModelBuilder extends TemplateLanguageFormattingModelBuilder {
 
@@ -82,17 +84,18 @@ public class SoyFormattingModelBuilder extends TemplateLanguageFormattingModelBu
     }
   }
 
-  @NotNull
-  public FormattingModel createModel(PsiElement element, CodeStyleSettings settings) {
-    final PsiFile file = element.getContainingFile();
+  @Override
+  public @NotNull FormattingModel createModel(@NotNull FormattingContext formattingContext) {
+    PsiElement element = formattingContext.getPsiElement();
+    final PsiFile file = formattingContext.getContainingFile();
 
-    if (element.getNode().getElementType() == SoyTypes.OTHER) {
-      return new SimpleTemplateLanguageFormattingModelBuilder().createModel(element, settings);
+    if (formattingContext.getNode().getElementType() == SoyFileViewProvider.OUTER_ELEMENT_TYPE) {
+      return new SimpleTemplateLanguageFormattingModelBuilder().createModel(formattingContext);
     } else {
       return new DocumentBasedFormattingModel(
-          getRootBlock(file, file.getViewProvider(), settings),
+          getRootBlock(file, file.getViewProvider(), formattingContext.getCodeStyleSettings()),
           element.getProject(),
-          settings,
+          formattingContext.getCodeStyleSettings(),
           file.getFileType(),
           file);
     }
