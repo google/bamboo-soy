@@ -1,6 +1,6 @@
 branches:
   only:
-    - master
+    - /^master(?:-[0-9.]+)?$/
 
 language: java
 jdk: oraclejdk11

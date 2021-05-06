@@ -51,7 +51,7 @@ public class SoyParserUtil extends GeneratedParserUtilBase {
       new WhitespacesAndCommentsBinder.RecursiveBinder() {
         @Override
         public int getEdgePosition(
-            List<? extends IElementType> tokens, boolean atStreamEdge, TokenTextGetter getter) {
+            List<IElementType> tokens, boolean atStreamEdge, TokenTextGetter getter) {
           int newLinesFound = 0;
           for (int i = tokens.size() - 1; i > 0; i--) {
             if (tokens.get(i) == DOC_COMMENT_BLOCK) {
@@ -71,7 +71,7 @@ public class SoyParserUtil extends GeneratedParserUtilBase {
       new WhitespacesAndCommentsBinder.RecursiveBinder() {
         @Override
         public int getEdgePosition(
-            List<? extends IElementType> tokens, boolean atStreamEdge, TokenTextGetter getter) {
+            List<IElementType> tokens, boolean atStreamEdge, TokenTextGetter getter) {
           int edgePosition = 0;
           for (int i = 0; i < tokens.size(); i++) {
             if (tokens.get(i) == DOC_COMMENT_BLOCK) {
