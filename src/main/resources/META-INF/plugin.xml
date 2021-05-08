@@ -12,7 +12,8 @@
   <change-notes></change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="183.0"/>
+  <!-- Both @since-build and @until-build will be set at build time by Gradle. -->
+  <idea-version since-build="0"/>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
