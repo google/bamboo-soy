@@ -14,9 +14,9 @@
 
 package com.google.bamboo.soy;
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase;
+import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 
-public abstract class SoyCodeInsightFixtureTestCase extends BasePlatformTestCase {
+public abstract class SoyCodeInsightFixtureTestCase extends LightPlatformCodeInsightFixtureTestCase {
 
   @Override
   protected String getTestDataPath() {
