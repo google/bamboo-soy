@@ -22,31 +22,15 @@ dependencies {
     testCompile 'org.assertj:assertj-core:3.8.0'
 }
 
-ext {
-    tmpMarkdownInputDir = "${buildDir}/tmp/markdown-inputs".toString()
-    htmlOutputDir = "${buildDir}/gen-html".toString()
-    pluginVersion = '1.6.1'
-
-    // Make sure |ext.pluginSinceBuild| is consistent with |intellij.version|.
-    pluginSinceBuild = '183'
-    pluginUntilBuild = '203'
-    patchPluginXmlVersion = patchPluginXmlVersion()
-}
-
-String patchPluginXmlVersion() {
-    assert pluginSinceBuild != ''
-    return "${pluginVersion}-${pluginSinceBuild}${pluginUntilBuild == '' ? '' : '-' + pluginUntilBuild}"
-}
-
 intellij {
-    // Make sure |version| is consistent with |ext.pluginSinceBuild|.
-    version 'IC-2018.3'
+    version 'IC-2019.2'
+    updateSinceUntilBuild false
 
-    // |version| is visible in the format 'xxxx.y'
-    assert pluginSinceBuild.substring(0, 3) == version.substring(2, 6).replace('.', '')
-    updateSinceUntilBuild true
-    pluginName project.name + '-' + patchPluginXmlVersion
 }
+
+ext.tmpMarkdownInputDir = "${buildDir}/tmp/markdown-inputs".toString()
+ext.htmlOutputDir = "${buildDir}/gen-html".toString()
+ext.pluginVersion = '1.6'
 
 task prepareMarkdownInputs(type: Copy) {
     from("${projectDir}") {
@@ -126,13 +110,11 @@ def readChangeNotes() {
     def lines = new File(htmlOutputDir, 'releasenotes.html').readLines()
 
     // Drop the top-level "Release notes" header.
-    return lines[1..lines.size - 1].join('\n')
+    return lines[1..lines.size-1].join('\n')
 }
 
 patchPluginXml {
     dependsOn markdownToHtml
-    version patchPluginXmlVersion
-    sinceBuild pluginSinceBuild
-    untilBuild pluginUntilBuild
+    version pluginVersion
     changeNotes { readChangeNotes() }
 }
