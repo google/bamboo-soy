@@ -5,9 +5,9 @@ buildscript {
 }
 
 plugins {
-    id 'org.jetbrains.grammarkit' version '2021.1.2'
-    id 'org.jetbrains.intellij' version '0.7.2'
-    id 'org.jetbrains.kotlin.jvm' version '1.5.0-RC'
+    id 'org.jetbrains.grammarkit' version '2021.1.3'
+    id 'org.jetbrains.intellij' version '0.7.3'
+    id 'org.jetbrains.kotlin.jvm' version '1.5.0'
     id 'org.kordamp.gradle.markdown' version '2.0.0'
 }
 
@@ -16,20 +16,37 @@ repositories {
 }
 
 dependencies {
-    compile 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
-    compile 'com.rollbar:rollbar:0.5.3'
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.assertj:assertj-core:3.8.0'
+    implementation 'com.rollbar:rollbar:0.5.3'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.assertj:assertj-core:3.8.0'
+}
+
+ext {
+    tmpMarkdownInputDir = "${buildDir}/tmp/markdown-inputs".toString()
+    htmlOutputDir = "${buildDir}/gen-html".toString()
+    pluginVersion = '1.6.1'
+
+    // Make sure |ext.pluginSinceBuild| is consistent with |intellij.version|.
+    pluginSinceBuild = '203'
+    pluginUntilBuild = ''
+    patchPluginXmlVersion = patchPluginXmlVersion()
+}
+
+String patchPluginXmlVersion() {
+    assert pluginSinceBuild != ''
+    return "${pluginVersion}-${pluginSinceBuild}${pluginUntilBuild == '' ? '' : '-' + pluginUntilBuild}"
 }
 
 intellij {
-    version 'IC-2021.1'
-    updateSinceUntilBuild false
-}
+    // Make sure |version| is consistent with |ext.pluginSinceBuild|.
+    version 'IC-2020.3'
 
-ext.tmpMarkdownInputDir = "${buildDir}/tmp/markdown-inputs".toString()
-ext.htmlOutputDir = "${buildDir}/gen-html".toString()
-ext.pluginVersion = '1.6'
+    // |version| is visible in the format 'xxxx.y'
+    assert pluginSinceBuild.substring(0, 3) == version.substring(2, 6).replace('.', '')
+    updateSinceUntilBuild true
+    pluginName project.name + '-' + patchPluginXmlVersion
+}
 
 task prepareMarkdownInputs(type: Copy) {
     from("${projectDir}") {
@@ -114,6 +131,8 @@ def readChangeNotes() {
 
 patchPluginXml {
     dependsOn markdownToHtml
-    version pluginVersion
+    version patchPluginXmlVersion
+    sinceBuild pluginSinceBuild
+    untilBuild pluginUntilBuild
     changeNotes { readChangeNotes() }
 }
