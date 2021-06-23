@@ -4,6 +4,7 @@ buildscript {
     }
 }
 
+
 plugins {
     id 'org.jetbrains.grammarkit' version '2019.2'
     id 'org.jetbrains.intellij' version '0.4.20'
