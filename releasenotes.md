@@ -1,12 +1,24 @@
 # Release notes
 
+## Release notes for 1.6.1-183-203
+
+### General
+ * Starting with 1.6.1, Bamboo Soy releases will be IntelliJ API version-dependent
+
+### Features
+ * Added support for index syntax in {for} (fixes #228)
+
+### Bug and stability fixes
+ * Fixed parsing of the "import" string inside HTML (fixes #231)
+
+
 ## Release notes for 1.6
 
 ### Features
  * Added support for list comprehensions (fixed #195)
  * Added proto initialization support (fixes #201)
  * Added support for the {css} and {xid} functional style syntax, {nbsp}, {velog}
- * Added support for {skip}, {key} (fixes #205) 
+ * Added support for {skip}, {key} (fixes #205)
  * Added support for {ifempty} inside {for}
  * Added support for the "import" syntax (fixes #222)
  * Added support for the methods syntax
@@ -68,7 +80,7 @@
  * Autocompletion:
    * Add support for `stricthtml="true"` in template definition blocks.
    * Better context detection for where variable autocompletion should trigger.
- 
+
 ### Stability and bug fixes
  * Fixed various NPEs and bugs that occurred on partial/incomplete code constructs.
 
