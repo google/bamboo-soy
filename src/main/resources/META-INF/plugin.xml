@@ -20,8 +20,7 @@
 
   <project-components>
     <component>
-      <implementation-class>com.google.bamboo.soy.SoyProjectComponent
-      </implementation-class>
+      <implementation-class>com.google.bamboo.soy.SoyProjectComponent</implementation-class>
     </component>
   </project-components>
 
