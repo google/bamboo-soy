@@ -61,15 +61,16 @@ SingleQuotedStringLiteral='([^\r\n'\\]|\\.)*'
 MultiLineDoubleQuotedStringLiteral=\"([^\"\\]|\\([^]))*\"
 MultiLineSingleQuotedStringLiteral='([^'\\]|\\([^]))*'
 
-NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
+NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})+
 
 /* Lexer states */
 %state OPEN_TAG
-%state OPEN_TAG_NAMESPACE
 %state CLOSE_TAG
 %state YYINITIAL_IN_TAG
 %state LITERAL_SINGLE
 %state LITERAL_DOUBLE
+%state TAG_CONTINUATION
+%state TAG_CONTINUATION_NAMESPACE
 %state TAG_IDENTIFIER_WORD
 %state TAG_QUALIFIED_IDENTIFIER
 %state TAG_QUALIFIED_IDENTIFIER_NAMESPACE
@@ -138,7 +139,7 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
   "/}}" { return SoyTypes.OTHER; } // ERROR: {/..../}} or {{/..../}}
 }
 
-<OPEN_TAG> {
+<OPEN_TAG, TAG_CONTINUATION> {
   /* Tag closing */
   "/}" { yypop(); return SoyTypes.SLASH_RBRACE; } // self-closing
   "}" { yybegin(YYINITIAL_IN_TAG); return SoyTypes.RBRACE; }
@@ -146,7 +147,7 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
   "/}}" { yypop(); return SoyTypes.SLASH_RBRACE_RBRACE; } // self-closing
 }
 
-<OPEN_TAG_NAMESPACE> {
+<TAG_CONTINUATION_NAMESPACE> {
   /* Tag closing */
   "}" { yypop(); return SoyTypes.RBRACE; }
 }
@@ -157,7 +158,7 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
   }
 }
 
-<OPEN_TAG, OPEN_TAG_NAMESPACE, CLOSE_TAG> {
+<OPEN_TAG, CLOSE_TAG> {
   /* Tag names that may be followed by identifiers */
   "@inject"/{NonSemantical}{IdentifierWord} { yybegin(TAG_IDENTIFIER_WORD); return SoyTypes.AT_INJECT; }
   "@inject?"/{NonSemantical}{IdentifierWord} { yybegin(TAG_IDENTIFIER_WORD); return SoyTypes.AT_INJECT_OPT; }
@@ -173,12 +174,16 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
   "param"/{NonSemantical}{IdentifierWord} { yybegin(TAG_IDENTIFIER_WORD); return SoyTypes.PARAM; }
   "template"/{NonSemantical}{QualifiedIdentifier} { yybegin(TAG_QUALIFIED_IDENTIFIER); return SoyTypes.TEMPLATE; }
 
+  "let" { yybegin(TAG_CONTINUATION); return SoyTypes.LET; }
+  "element" { yybegin(TAG_CONTINUATION); return SoyTypes.ELEMENT; }
+}
+
+<OPEN_TAG, TAG_CONTINUATION, TAG_CONTINUATION_NAMESPACE, CLOSE_TAG> {
   "alias" { return SoyTypes.ALIAS; }
   "call" { return SoyTypes.CALL; }
   "delcall" { return SoyTypes.DELCALL; }
   "delpackage" { return SoyTypes.DELPACKAGE; }
   "deltemplate" { return SoyTypes.DELTEMPLATE; }
-  "element" { return SoyTypes.ELEMENT; }
   "namespace" { return SoyTypes.NAMESPACE; }
   "template" { return SoyTypes.TEMPLATE; }
 
@@ -202,7 +207,6 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
   "if" { return SoyTypes.IF; }
   "ifempty" { return SoyTypes.IFEMPTY; }
   "lb" { return SoyTypes.LB; }
-  "let" { return SoyTypes.LET; }
   "msg" { return SoyTypes.MSG; }
   "velog" { return SoyTypes.VELOG; }
 
@@ -246,9 +250,9 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
   null { return SoyTypes.NULL_LITERAL; }
 
   /* Maybe followed by IdentifierWord, a special state to not trigger keyword rules. */
-  "."/{NonSemantical}{IdentifierWord} { yybegin(TAG_IDENTIFIER_WORD); return SoyTypes.DOT; }
-  "?."/{NonSemantical}{IdentifierWord} { yybegin(TAG_IDENTIFIER_WORD); return SoyTypes.DOT_NULL_CHECK; }
-  "$"/{NonSemantical}{IdentifierWord} { yybegin(TAG_IDENTIFIER_WORD); return SoyTypes.DOLLAR; }
+  "."/{NonSemantical}?{IdentifierWord} { yybegin(TAG_IDENTIFIER_WORD); return SoyTypes.DOT; }
+  "?."/{NonSemantical}?{IdentifierWord} { yybegin(TAG_IDENTIFIER_WORD); return SoyTypes.DOT_NULL_CHECK; }
+  "$"/{NonSemantical}?{IdentifierWord} { yybegin(TAG_IDENTIFIER_WORD); return SoyTypes.DOLLAR; }
 
   "." { return SoyTypes.DOT; }
   "?." { return SoyTypes.DOT_NULL_CHECK; }
@@ -304,16 +308,16 @@ NonSemantical=({WhiteSpace}|{LineComment}|{DocCommentBlock}|{BlockComment})*
 
 // Only QualifiedIdentifier expected (ensured by look-ahead).
 <TAG_QUALIFIED_IDENTIFIER> {
-  {QualifiedIdentifier} { yybegin(OPEN_TAG); return SoyTypes.QUALIFIED_IDENTIFIER; }
+  {QualifiedIdentifier} { yybegin(TAG_CONTINUATION); return SoyTypes.QUALIFIED_IDENTIFIER; }
 }
 
 <TAG_QUALIFIED_IDENTIFIER_NAMESPACE> {
-  {QualifiedIdentifier} { yybegin(OPEN_TAG_NAMESPACE); return SoyTypes.QUALIFIED_IDENTIFIER; }
+  {QualifiedIdentifier} { yybegin(TAG_CONTINUATION_NAMESPACE); return SoyTypes.QUALIFIED_IDENTIFIER; }
 }
 
 // Only IdentifierWord expected (ensured by look-ahead).
 <TAG_IDENTIFIER_WORD> {
-  {IdentifierWord} { yybegin(OPEN_TAG); return SoyTypes.IDENTIFIER_WORD; }
+  {IdentifierWord} { yybegin(TAG_CONTINUATION); return SoyTypes.IDENTIFIER_WORD; }
 }
 
 // Import clause.
