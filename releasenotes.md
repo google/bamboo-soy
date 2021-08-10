@@ -1,5 +1,11 @@
 # Release notes
 
+## Release notes for 1.6.2-203
+
+### Bug and stability fixes
+ * Added a workaround for https://youtrack.jetbrains.com/issue/IDEA-272393 (fixes #249)
+
+
 ## Release notes for 1.6.1-203
 
 ### General
