@@ -3,7 +3,7 @@ package com.google.bamboo.soy;
 import static com.intellij.openapi.diagnostic.SubmittedReportInfo.SubmissionStatus.NEW_ISSUE;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
-import com.intellij.ide.plugins.PluginManager;
+import com.intellij.ide.plugins.PluginManagerCore;
 import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.diagnostic.ErrorReportSubmitter;
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent;
@@ -11,9 +11,10 @@ import com.intellij.openapi.diagnostic.SubmittedReportInfo;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.SystemInfo;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.Consumer;
-import com.rollbar.Rollbar;
-import com.rollbar.payload.Payload;
+import com.rollbar.notifier.Rollbar;
+import com.rollbar.notifier.config.ConfigBuilder;
 import java.awt.Component;
 import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
@@ -30,6 +31,8 @@ public class RollbarErrorReportSubmitter extends ErrorReportSubmitter {
   private static final String EXTRA_MORE_EVENTS = "More Events";
   private static final String EXTRA_ADDITIONAL_INFO = "Additional Info";
 
+  private static final String EVENT_MESSAGE_FORMAT = "<event-message>%s</event-message>";
+
   private static final String TAG_PLATFORM_VERSION = "platform";
   private static final String TAG_OS = "os";
   private static final String TAG_OS_VERSION = "os_version";
@@ -41,10 +44,14 @@ public class RollbarErrorReportSubmitter extends ErrorReportSubmitter {
 
   private static final String PLUGIN_ID = "com.google.bamboo.id";
 
-  private static final Rollbar rollbar = new Rollbar(ACCESS_TOKEN, "production");
+  private static final Rollbar rollbar = new Rollbar(
+      ConfigBuilder.withAccessToken(ACCESS_TOKEN)
+          .environment("production")
+          .codeVersion(getPluginVersion())
+          .build());
 
   private static String getPluginVersion() {
-    IdeaPluginDescriptor plugin = PluginManager.getPlugin(PluginId.getId(PLUGIN_ID));
+    IdeaPluginDescriptor plugin = PluginManagerCore.getPlugin(PluginId.getId(PLUGIN_ID));
     if (plugin == null) {
       return "unknown";
     }
@@ -58,16 +65,17 @@ public class RollbarErrorReportSubmitter extends ErrorReportSubmitter {
   }
 
   @Override
-  public boolean submit(IdeaLoggingEvent @NotNull [] events, @Nullable String additionalInfo, @NotNull Component parentComponent, @NotNull Consumer<? super SubmittedReportInfo> consumer) {
-    log(events, additionalInfo);
+  public boolean submit(IdeaLoggingEvent @NotNull [] events, @Nullable String additionalInfo,
+      @NotNull Component parentComponent, @NotNull Consumer<? super SubmittedReportInfo> consumer) {
+    log(events, StringUtil.notNullize(additionalInfo));
     consumer.consume(new SubmittedReportInfo(null, null, NEW_ISSUE));
     Messages.showInfoMessage(parentComponent, DEFAULT_RESPONSE, DEFAULT_RESPONSE_TITLE);
     return true;
   }
 
-  private void log(@NotNull IdeaLoggingEvent[] events, @Nullable String additionalInfo) {
+  private void log(@NotNull IdeaLoggingEvent[] events, @NotNull String additionalInfo) {
     IdeaLoggingEvent ideaEvent = events[0];
-    if (ideaEvent.getThrowable() == null) {
+    if (ideaEvent.getThrowableText().isEmpty()) {
       return;
     }
     LinkedHashMap<String, Object> customData = new LinkedHashMap<>();
@@ -77,13 +85,16 @@ public class RollbarErrorReportSubmitter extends ErrorReportSubmitter {
     customData.put(TAG_OS_ARCH, SystemInfo.OS_ARCH);
     customData.put(TAG_JAVA_VERSION, SystemInfo.JAVA_VERSION);
     customData.put(TAG_JAVA_RUNTIME_VERSION, SystemInfo.JAVA_RUNTIME_VERSION);
-    if (additionalInfo != null) {
+    if (!StringUtil.isEmptyOrSpaces(ideaEvent.getMessage())) {
+      additionalInfo += String.format(EVENT_MESSAGE_FORMAT, ideaEvent.getMessage());
+    }
+    if (!StringUtil.isEmptyOrSpaces(additionalInfo)) {
       customData.put(EXTRA_ADDITIONAL_INFO, additionalInfo);
     }
     if (events.length > 1) {
       customData.put(EXTRA_MORE_EVENTS,
           Stream.of(events).map(Object::toString).collect(Collectors.joining("\n")));
     }
-    rollbar.codeVersion(getPluginVersion()).log(ideaEvent.getThrowable(), customData);
+    rollbar.error(ideaEvent.getThrowableText(), customData);
   }
 }
