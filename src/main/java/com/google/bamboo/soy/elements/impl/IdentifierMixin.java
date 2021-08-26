@@ -22,6 +22,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.PsiReferenceBase;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -39,8 +40,11 @@ public class IdentifierMixin extends ASTWrapperPsiElement implements IdentifierE
   @Override
   public PsiReference getReference() {
     PsiElement element = getNode().getPsi();
-    String identifier = element.getText();
+    return getIdentifierReference(element, element.getTextRange().getStartOffset(), 0, element.getText());
+  }
 
+  private PsiReferenceBase<PsiElement> getIdentifierReference(PsiElement element, int startOffset,
+                                                              int startOffsetInElement, String identifier) {
     if (identifier.startsWith("$")) {
       String fullIdentifier = identifier.substring(1);
       String[] fragments = fullIdentifier.split("\\.");
@@ -50,9 +54,9 @@ public class IdentifierMixin extends ASTWrapperPsiElement implements IdentifierE
           element,
           fragments[0],
           new TextRange(
-              element.getTextRange().getStartOffset(),
-              element.getTextRange().getStartOffset() + dollarFragmentLength),
-          new TextRange(1, dollarFragmentLength));
+              startOffset,
+              startOffset + dollarFragmentLength),
+          new TextRange(startOffsetInElement + 1, startOffsetInElement + dollarFragmentLength));
     } else if (identifier.startsWith(".")) {
       return new TemplateDefinitionReference(element, element.getTextRange());
     } else {
@@ -61,10 +65,10 @@ public class IdentifierMixin extends ASTWrapperPsiElement implements IdentifierE
         return new TemplateDefinitionReference(element, element.getTextRange());
       }
     }
-
     return null;
   }
 
+  @NotNull
   @Override
   public PsiReference[] getReferences() {
     PsiElement element = getNode().getPsi();
@@ -80,15 +84,12 @@ public class IdentifierMixin extends ASTWrapperPsiElement implements IdentifierE
     List<PsiReference> variableReferenceList = new ArrayList<>();
     while (identifierMatcher.find()) {
       variableReferenceList.add(
-          new VariableDefinitionReference(
-              element,
-              maybeEmbeddedExpression.substring(
-                  identifierMatcher.start() + 1, identifierMatcher.end()),
-              new TextRange(
-                  element.getTextRange().getStartOffset() + identifierMatcher.start(),
-                  element.getTextRange().getStartOffset() + identifierMatcher.end()),
-              new TextRange(identifierMatcher.start(), identifierMatcher.end())));
+          getIdentifierReference(element,
+                                 element.getTextRange().getStartOffset() + identifierMatcher.start(),
+                                 identifierMatcher.start(),
+                                 identifierMatcher.group())
+      );
     }
-    return variableReferenceList.toArray(new PsiReference[variableReferenceList.size()]);
+    return variableReferenceList.toArray(PsiReference.EMPTY_ARRAY);
   }
 }

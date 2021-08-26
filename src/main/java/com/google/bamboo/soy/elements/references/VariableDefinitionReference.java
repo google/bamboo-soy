@@ -16,21 +16,31 @@ package com.google.bamboo.soy.elements.references;
 
 import com.google.bamboo.soy.lang.Scope;
 import com.google.bamboo.soy.lang.Variable;
+import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.*;
-
+import com.intellij.psi.MultiRangeReference;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiElementResolveResult;
+import com.intellij.psi.PsiReference;
+import com.intellij.psi.PsiReferenceBase;
+import com.intellij.psi.ResolveResult;
+import com.intellij.psi.tree.IElementType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 public class VariableDefinitionReference extends PsiReferenceBase<PsiElement>
     implements PsiReference, MultiRangeReference {
-  private String identifier;
-  private TextRange textRangeInElement;
+  private static final ImmutableSet<IElementType> STRING_LITERAL_TYPES = ImmutableSet.of(
+      SoyTypes.ANY_STRING_LITERAL,
+      SoyTypes.STRING_LITERAL,
+      SoyTypes.MULTI_LINE_STRING_LITERAL);
+  private final String identifier;
+  private final TextRange textRangeInElement;
 
   public VariableDefinitionReference(
       PsiElement element, String identifier, TextRange textRange, TextRange textRangeInElement) {
@@ -50,7 +60,7 @@ public class VariableDefinitionReference extends PsiReferenceBase<PsiElement>
       }
     }
 
-    return results.toArray(new ResolveResult[results.size()]);
+    return results.toArray(ResolveResult.EMPTY_ARRAY);
   }
 
   @Override
@@ -60,7 +70,7 @@ public class VariableDefinitionReference extends PsiReferenceBase<PsiElement>
   }
 
   @Override
-  public boolean isReferenceTo(PsiElement element) {
+  public boolean isReferenceTo(@NotNull PsiElement element) {
     ResolveResult[] results = multiResolve();
     for (ResolveResult result : results) {
       if (this.getElement().getManager().areElementsEquivalent(result.getElement(), element)) {
@@ -94,6 +104,12 @@ public class VariableDefinitionReference extends PsiReferenceBase<PsiElement>
   @NotNull
   @Override
   public List<TextRange> getRanges() {
-    return ImmutableList.of(new TextRange(0, textRangeInElement.getEndOffset()));
+    IElementType elementType = getElement().getNode().getElementType();
+
+    // Include the leading '$' character.
+    int startOffset = STRING_LITERAL_TYPES.contains(elementType)
+        ? textRangeInElement.getStartOffset() - 1
+        : 0;
+    return ImmutableList.of(new TextRange(startOffset, textRangeInElement.getEndOffset()));
   }
 }

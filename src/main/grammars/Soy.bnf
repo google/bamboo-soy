@@ -164,7 +164,7 @@ FileInput ::= BlockList
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 private KeywordsAllowedInIdentifiers ::=
-    ANY | AS | ATTRIBUTES | BOOL | CSS | FLOAT | HTML | INT | JS | LB | LIST |
+    ANY | AS | ATTRIBUTES | BOOL | CSS | FLOAT | HTML | INT | JS | KEY | LB | LIST |
     MAP | MSG | NBSP | NIL | NUMBER | PLURAL | RB | SKIP | SP | STRING | URI | XID
 
 // A single identifier token: foo, bar, any, int

@@ -7,5 +7,12 @@
 {element .referencedElement}
   {@param barParam: string}
   {@state myState:= $barParam}
+  {call .bar attr="$barParam" /}
+  {call .bar attr="$barParam$barParam" /}
+  {call .bar attr="$barParam$barParam $barParam" /}
+  {call .bar attr="$barParam" /}
+  {call .bar attr="$barParam$barParam" /}
+  {call .bar attr="$barParam$barParam $barParam" /}
+  {call .baz attr="fooParam" /}
   {$barParam} + {$barParam} = {$barParam + $barParam}
 {/element}

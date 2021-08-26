@@ -53,8 +53,9 @@ public class UnusedParameterOrStateAnnotator implements Annotator {
               ParamUtils.getStateDefinitions(element).stream()).collect(
               ImmutableList.toImmutableList());
 
+      Collection<IdentifierElement> childrenOfType = PsiTreeUtil.findChildrenOfType(element, IdentifierElement.class);
       Set<String> usedVariableIdentifiers =
-          PsiTreeUtil.findChildrenOfType(element, IdentifierElement.class)
+          childrenOfType
               .stream()
               .map(IdentifierElement::getReferences)
               .flatMap(Arrays::stream)

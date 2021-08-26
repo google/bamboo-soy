@@ -39,3 +39,16 @@
     {/param}
   {/call}
 {/template}
+
+{template .callWithKey}
+    {call l1 key="1"}
+        {param foo: 'Foo' /}
+    {/call}
+{/template}
+
+{template .callWithKeyVar}
+    {@param keyId: number}
+    {call l1 key="$keyId"}
+        {param foo: 'Foo' /}
+    {/call}
+{/template}
