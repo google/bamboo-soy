@@ -16,10 +16,15 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.rollbar:rollbar:0.5.3'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.assertj:assertj-core:3.8.0'
+    implementation('com.rollbar:rollbar-api:1.7.8') {
+        exclude group: 'org.slf4j'
+    }
+    implementation('com.rollbar:rollbar-java:1.7.8') {
+        exclude group: 'org.slf4j'
+    }
+    implementation('org.jetbrains.kotlin:kotlin-stdlib-jdk8')
+    testImplementation('junit:junit:4.12')
+    testImplementation('org.assertj:assertj-core:3.8.0')
 }
 
 ext {
@@ -126,7 +131,7 @@ def readChangeNotes() {
     def lines = new File(htmlOutputDir, 'releasenotes.html').readLines()
 
     // Drop the top-level "Release notes" header.
-    return lines[1..lines.size-1].join('\n')
+    return lines[1..lines.size - 1].join('\n')
 }
 
 patchPluginXml {
