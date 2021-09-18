@@ -1,5 +1,11 @@
 # Release notes
 
+## Release notes for 1.6.3-203
+
+### General
+ * Improve exception reporting for better error diagnostics
+
+
 ## Release notes for 1.6.2-203
 
 ### Bug and stability fixes
