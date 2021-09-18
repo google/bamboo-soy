@@ -30,7 +30,7 @@ dependencies {
 ext {
     tmpMarkdownInputDir = "${buildDir}/tmp/markdown-inputs".toString()
     htmlOutputDir = "${buildDir}/gen-html".toString()
-    pluginVersion = '1.6.2'
+    pluginVersion = '1.6.3'
 
     // Make sure |ext.pluginSinceBuild| is consistent with |intellij.version|.
     pluginSinceBuild = '203'
