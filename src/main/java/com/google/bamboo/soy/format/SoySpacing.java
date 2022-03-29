@@ -64,6 +64,7 @@ public class SoySpacing {
         .spaces(0)
         .around(SoyTypes.PIPE).spaces(0)
         .afterInside(SoyTokenTypes.UNARY_OPERATORS, SoyTypes.UNARY_EXPR).spaces(0)
+        .afterInside(SoyTypes.NOT, SoyTypes.UNARY_EXPR).spaces(1)
         .around(SoyTokenTypes.BINARY_OPERATORS).spaces(1)
         .around(TokenSet.create(SoyTypes.DOT, SoyTypes.DOT_NULL_CHECK)).spaces(0)
         .around(

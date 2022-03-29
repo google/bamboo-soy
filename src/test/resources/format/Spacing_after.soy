@@ -18,5 +18,8 @@
     {let $nonNullStatus: $status
             ?: $Status.TOTALLY_UNKNOWN /}
 
+    {if not $p.bar}
+        <br/>
+    {/if}
 
 {/template}
