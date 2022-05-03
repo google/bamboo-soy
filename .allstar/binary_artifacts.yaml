@@ -1,0 +1,4 @@
+# Exemption reason: This repo uses a Gradle wrapper jar to build/test/package releases
+# Exemption timeframe: permanent
+optConfig:
+  optOut: true
