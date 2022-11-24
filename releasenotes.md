@@ -1,5 +1,13 @@
 # Release notes
 
+## Release notes for 1.6.4-203
+
+### General
+ * Get rid of deprecated and scheduled-for-removal API usages
+ * The plugin may now be loaded and unloaded without an IDE restart
+ * Minor improvements
+
+
 ## Release notes for 1.6.3-203
 
 ### General
