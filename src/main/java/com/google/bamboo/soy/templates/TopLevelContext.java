@@ -17,10 +17,10 @@ package com.google.bamboo.soy.templates;
 import static com.intellij.patterns.PlatformPatterns.psiElement;
 
 import com.google.bamboo.soy.file.SoyFileType;
+import com.intellij.codeInsight.template.TemplateActionContext;
 import com.intellij.codeInsight.template.TemplateContextType;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import org.jetbrains.annotations.NotNull;
 
 public class TopLevelContext extends TemplateContextType {
   protected TopLevelContext() {
@@ -28,10 +28,11 @@ public class TopLevelContext extends TemplateContextType {
   }
 
   @Override
-  public boolean isInContext(@NotNull PsiFile file, int offset) {
+  public boolean isInContext(TemplateActionContext context) {
+    PsiFile file = context.getFile();
     if (file.getFileType() != SoyFileType.INSTANCE) return false;
 
-    PsiElement element = file.findElementAt(offset);
+    PsiElement element = file.findElementAt(context.getStartOffset());
     return !psiElement().inside(Matchers.templateBlockMatcher).accepts(element);
   }
 }

@@ -15,7 +15,6 @@
 package com.google.bamboo.soy.refactoring;
 
 import com.google.bamboo.soy.elements.impl.IdentifierMixin;
-import com.google.bamboo.soy.elements.impl.SoyIdentifierMixin;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.AbstractElementManipulator;
 import com.intellij.psi.PsiElement;

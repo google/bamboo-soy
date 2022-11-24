@@ -16,7 +16,6 @@ package com.google.bamboo.soy;
 
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.intellij.lang.BracePair;
-import com.intellij.lang.Commenter;
 import com.intellij.lang.PairedBraceMatcher;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;

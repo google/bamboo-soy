@@ -18,70 +18,78 @@
        on how to target different products -->
   <depends>com.intellij.modules.lang</depends>
 
-  <project-components>
-    <component>
-      <implementation-class>com.google.bamboo.soy.SoyProjectComponent</implementation-class>
-    </component>
-  </project-components>
-
   <extensions defaultExtensionNs="com.intellij">
-    <fileTypeFactory
-      implementation="com.google.bamboo.soy.file.SoyFileTypeFactory"/>
+    <fileType
+        name="Closure template"
+        extensions="soy"
+        implementationClass="com.google.bamboo.soy.file.SoyFileType"
+        fieldName="INSTANCE"
+        language="ClosureTemplate"/>
     <lang.psiStructureViewFactory language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.insight.structure.SoyStructureViewFactory"/>
+        implementationClass="com.google.bamboo.soy.insight.structure.SoyStructureViewFactory"/>
     <lang.fileViewProviderFactory language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.file.SoyFileViewProviderFactory"/>
+        implementationClass="com.google.bamboo.soy.file.SoyFileViewProviderFactory"/>
     <html.scriptContentProvider language="ClosureTemplate"
-      implementationClass="com.intellij.lang.HtmlScriptContentProvider$Empty"/>
+        implementationClass="com.intellij.lang.HtmlScriptContentProvider$Empty"/>
     <lang.formatter language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.format.SoyFormattingModelBuilder"/>
+        implementationClass="com.google.bamboo.soy.format.SoyFormattingModelBuilder"/>
     <lang.syntaxHighlighterFactory
-      language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.insight.highlight.SoySyntaxHighlighterFactory"/>
+        language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.insight.highlight.SoySyntaxHighlighterFactory"/>
     <colorSettingsPage
-      implementation="com.google.bamboo.soy.SoyColorSettingsPage"/>
+        implementation="com.google.bamboo.soy.SoyColorSettingsPage"/>
     <lang.parserDefinition
-      language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.parser.SoyParserDefinition"/>
-    <lang.ast.factory language="ClosureTemplate" implementationClass="com.google.bamboo.soy.parser.SoyAstFactory"/>
+        language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.parser.SoyParserDefinition"/>
+    <lang.ast.factory language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.parser.SoyAstFactory"/>
     <stubElementTypeHolder class="com.google.bamboo.soy.parser.SoyTypes"/>
     <lang.commenter
-      language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.commenting.SoyCommenter"/>
+        language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.commenting.SoyCommenter"/>
     <multiLangCommenter
-      implementation="com.google.bamboo.soy.commenting.SoyMultiLangCommentProvider"/>
+        implementation="com.google.bamboo.soy.commenting.SoyMultiLangCommentProvider"/>
     <lang.braceMatcher
-      language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.SoyBraceMatcher"/>
+        language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.SoyBraceMatcher"/>
     <lang.findUsagesProvider
-      language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.SoyFindUsagesProvider"/>
+        language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.SoyFindUsagesProvider"/>
     <completion.contributor
-      language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.insight.completion.SoyCompletionContributor"/>
+        language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.insight.completion.SoyCompletionContributor"/>
     <enterHandlerDelegate
-      implementation="com.google.bamboo.soy.insight.typedhandlers.EnterHandler"/>
-    <editorTypedHandler
-      implementationClass="com.google.bamboo.soy.insight.typedhandlers.ClosingTagHandler"/>
+        implementation="com.google.bamboo.soy.insight.typedhandlers.EnterHandler"/>
     <typedHandler
-      implementation="com.google.bamboo.soy.insight.typedhandlers.QuoteHandler"/>
-    <liveTemplateContext implementation="com.google.bamboo.soy.templates.TopLevelContext"/>
-    <liveTemplateContext implementation="com.google.bamboo.soy.templates.CallBlockContext"/>
-    <liveTemplateContext implementation="com.google.bamboo.soy.templates.TemplateBlockContext"/>
-    <defaultLiveTemplatesProvider
-      implementation="com.google.bamboo.soy.templates.SoyTemplateProvider"/>
+        implementation="com.google.bamboo.soy.insight.typedhandlers.ClosingTagHandler"/>
+    <typedHandler
+        implementation="com.google.bamboo.soy.insight.typedhandlers.QuoteHandler"/>
+    <typedHandler
+        implementation="com.google.bamboo.soy.insight.typedhandlers.MemberHandler"/>
+    <liveTemplateContext
+        implementation="com.google.bamboo.soy.templates.TopLevelContext"/>
+    <liveTemplateContext
+        implementation="com.google.bamboo.soy.templates.CallBlockContext"/>
+    <liveTemplateContext
+        implementation="com.google.bamboo.soy.templates.TemplateBlockContext"/>
+    <defaultLiveTemplates file="liveTemplates/ClosureTemplates"/>
 
     <lang.documentationProvider language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.insight.documentation.SoyDocumentationProvider"/>
+        implementationClass="com.google.bamboo.soy.insight.documentation.SoyDocumentationProvider"/>
     <lang.foldingBuilder language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.insight.folding.SoyFoldingBuilder"/>
+        implementationClass="com.google.bamboo.soy.insight.folding.SoyFoldingBuilder"/>
 
-    <codeStyleSettingsProvider implementation="com.google.bamboo.soy.format.SoyCodeStyleSettingsProvider"/>
-    <langCodeStyleSettingsProvider implementation="com.google.bamboo.soy.format.SoyLanguageCodeStyleSettingsProvider"/>
-    <iconProvider implementation="com.google.bamboo.soy.icons.SoyElementIconProvider"/>
+    <codeStyleSettingsProvider
+        implementation="com.google.bamboo.soy.format.SoyCodeStyleSettingsProvider"/>
+    <langCodeStyleSettingsProvider
+        implementation="com.google.bamboo.soy.format.SoyLanguageCodeStyleSettingsProvider"/>
+    <iconProvider
+        implementation="com.google.bamboo.soy.icons.SoyElementIconProvider"/>
 
-    <stubIndex implementation="com.google.bamboo.soy.stubs.index.NamespaceDeclarationIndex"/>
-    <stubIndex implementation="com.google.bamboo.soy.stubs.index.TemplateBlockIndex"/>
+    <stubIndex
+        implementation="com.google.bamboo.soy.stubs.index.NamespaceDeclarationIndex"/>
+    <stubIndex
+        implementation="com.google.bamboo.soy.stubs.index.TemplateBlockIndex"/>
 
     <!-- Refactoring -->
     <psi.referenceContributor
@@ -99,49 +107,50 @@
         implementationClass="com.google.bamboo.soy.refactoring.SoyStringIdentifierManipulator"/>
     <!-- Annotators -->
     <annotator
-      language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.insight.annotators.GivenParametersAnnotator"/>
+        language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.insight.annotators.GivenParametersAnnotator"/>
     <annotator
-      language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.insight.annotators.UnusedParameterOrStateAnnotator"/>
+        language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.insight.annotators.UnusedParameterOrStateAnnotator"/>
     <annotator
-      language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.insight.annotators.CaseAndDefaultAnnotator"/>
+        language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.insight.annotators.CaseAndDefaultAnnotator"/>
     <annotator
-      language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.insight.annotators.ClosingBraceSanityAnnotator"/>
+        language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.insight.annotators.ClosingBraceSanityAnnotator"/>
     <annotator
-      language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.insight.annotators.DeltemplateIdentifierAnnotator"/>
+        language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.insight.annotators.DeltemplateIdentifierAnnotator"/>
     <annotator
-      language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.insight.annotators.IncompleteBlockAnnotator"/>
+        language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.insight.annotators.IncompleteBlockAnnotator"/>
     <annotator
-      language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.insight.annotators.UnexpectedStatementsAnnotator"/>
+        language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.insight.annotators.UnexpectedStatementsAnnotator"/>
     <annotator
-      language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.insight.annotators.UnfinishedIdentifiersAnnotator"/>
+        language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.insight.annotators.UnfinishedIdentifiersAnnotator"/>
     <annotator
-      language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.insight.annotators.VariableHighlightAnnotator"/>
+        language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.insight.annotators.VariableHighlightAnnotator"/>
     <annotator
-      language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.insight.annotators.DoubleQuotedStringAnnotator"/>
+        language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.insight.annotators.DoubleQuotedStringAnnotator"/>
     <annotator
-      language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.insight.annotators.DefaultInitializerOnOptionalParameterAnnotator"/>
+        language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.insight.annotators.DefaultInitializerOnOptionalParameterAnnotator"/>
     <annotator
-      language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.insight.annotators.DefaultInitializerRefsAnnotator"/>
+        language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.insight.annotators.DefaultInitializerRefsAnnotator"/>
     <annotator
-      language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.insight.annotators.StateInTemplateAnnotator"/>
+        language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.insight.annotators.StateInTemplateAnnotator"/>
     <annotator
-      language="ClosureTemplate"
-      implementationClass="com.google.bamboo.soy.insight.annotators.UnterminatedCommentAnnotator"/>
+        language="ClosureTemplate"
+        implementationClass="com.google.bamboo.soy.insight.annotators.UnterminatedCommentAnnotator"/>
 
-    <errorHandler implementation="com.google.bamboo.soy.RollbarErrorReportSubmitter"/>
+    <errorHandler
+        implementation="com.google.bamboo.soy.RollbarErrorReportSubmitter"/>
   </extensions>
 
   <actions>

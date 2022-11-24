@@ -18,6 +18,7 @@ import com.google.bamboo.soy.parser.SoyFieldAccessOrMethodCallExpr;
 import com.google.bamboo.soy.parser.SoyVariableReferenceIdentifier;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,10 +27,11 @@ public class UnfinishedIdentifiersAnnotator implements Annotator {
   @Override
   public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
     if (psiElement instanceof SoyVariableReferenceIdentifier && psiElement.getText().equals("$")) {
-      annotationHolder.createErrorAnnotation(psiElement, "Variable name expected.");
+      annotationHolder.newAnnotation(HighlightSeverity.ERROR, "Variable name expected.").create();
     } else if (psiElement instanceof SoyFieldAccessOrMethodCallExpr
         && psiElement.getText().endsWith(".")) {
-      annotationHolder.createErrorAnnotation(psiElement, "Field or method name expected.");
+      annotationHolder.newAnnotation(HighlightSeverity.ERROR, "Field or method name expected.")
+          .create();
     }
   }
 }

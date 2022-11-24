@@ -21,10 +21,11 @@ import com.intellij.application.options.XmlLanguageCodeStyleSettingsProvider;
 import com.intellij.lang.Language;
 import com.intellij.lang.html.HTMLLanguage;
 import com.intellij.openapi.util.io.StreamUtil;
-import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import org.jetbrains.annotations.NotNull;
 
 public class SoyLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSettingsProvider {
@@ -37,17 +38,22 @@ public class SoyLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSetti
 
   @Override
   public String getCodeSample(@NotNull SettingsType settingsType) {
-    switch (settingsType) {
-      case INDENT_SETTINGS:
-        return loadSample("IndentSettings");
-      default:
-        return null;
-    }
+    return settingsType == SettingsType.INDENT_SETTINGS
+        ? loadIndentSample()
+        : null;
   }
 
   @Override
-  public CommonCodeStyleSettings getDefaultCommonSettings() {
-    return XmlLanguageCodeStyleSettingsProvider.getDefaultCommonSettings(HTMLLanguage.INSTANCE);
+  protected void customizeDefaults(
+      @NotNull CommonCodeStyleSettings commonSettings,
+      @NotNull CommonCodeStyleSettings.IndentOptions indentOptions) {
+    CommonCodeStyleSettings settings =
+        XmlLanguageCodeStyleSettingsProvider.getDefaultCommonSettings(HTMLLanguage.INSTANCE);
+    if (settings == null) {
+      return;
+    }
+    commonSettings.copyFrom(settings);
+    indentOptions.copyFrom(settings.getIndentOptions());
   }
 
   @Override
@@ -55,11 +61,12 @@ public class SoyLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSetti
     return new SmartIndentOptionsEditor();
   }
 
-  private String loadSample(String name) {
+  private String loadIndentSample() {
     try {
       return StreamUtil
-          .readText(getClass().getClassLoader().getResourceAsStream("codeSamples/" + name + ".soy"),
-              "UTF-8");
+          .readText(new InputStreamReader(
+              getClass().getClassLoader().getResourceAsStream("codeSamples/IndentSettings.soy"),
+              StandardCharsets.UTF_8));
     } catch (IOException e) {
       return "";
     }

@@ -19,7 +19,7 @@ import com.intellij.application.options.CodeStyleAbstractConfigurable;
 import com.intellij.application.options.CodeStyleAbstractPanel;
 import com.intellij.application.options.TabbedLanguageCodeStylePanel;
 import com.intellij.lang.Language;
-import com.intellij.openapi.options.Configurable;
+import com.intellij.psi.codeStyle.CodeStyleConfigurable;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.codeStyle.CodeStyleSettingsProvider;
 import org.jetbrains.annotations.NotNull;
@@ -31,10 +31,9 @@ public class SoyCodeStyleSettingsProvider extends CodeStyleSettingsProvider {
     return SoyLanguage.INSTANCE;
   }
 
-  @NotNull
   @Override
-  public Configurable createSettingsPage(CodeStyleSettings settings,
-      CodeStyleSettings originalSettings) {
+  public @NotNull CodeStyleConfigurable createConfigurable(@NotNull CodeStyleSettings settings,
+      @NotNull CodeStyleSettings originalSettings) {
     return new CodeStyleAbstractConfigurable(settings, originalSettings,
         getConfigurableDisplayName()) {
       @Override

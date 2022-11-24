@@ -19,7 +19,6 @@ import com.google.bamboo.soy.parser.SoyExpr;
 import com.google.bamboo.soy.parser.SoyTypeExpression;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.google.bamboo.soy.stubs.AtParamStub;
-import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.StubBasedPsiElement;

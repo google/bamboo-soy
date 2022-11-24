@@ -17,8 +17,6 @@ package com.google.bamboo.soy.refactoring;
 import com.google.bamboo.soy.SoyLanguage;
 import com.google.bamboo.soy.file.SoyFile;
 import com.google.bamboo.soy.file.SoyFileType;
-import com.google.bamboo.soy.parser.SoyAnyStringLiteral;
-import com.google.bamboo.soy.parser.SoyElementType;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;

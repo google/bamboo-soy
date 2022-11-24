@@ -23,6 +23,7 @@ import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.google.bamboo.soy.parser.SoyTemplateReferenceIdentifier;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.util.Collection;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 public class GivenParametersAnnotator implements Annotator {
+
   @Override
   public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
     if (psiElement instanceof CallStatementElement) {
@@ -47,7 +49,9 @@ public class GivenParametersAnnotator implements Annotator {
       PsiElement identifier =
           PsiTreeUtil.findChildOfType(statement, SoyTemplateReferenceIdentifier.class);
 
-      if (identifier == null) return;
+      if (identifier == null) {
+        return;
+      }
 
       Collection<ParameterSpecification> givenParameters = ParamUtils.getGivenParameters(statement);
       SoyTemplateBlock templateBlock =
@@ -81,8 +85,9 @@ public class GivenParametersAnnotator implements Annotator {
 
     if (!givenParameterNames.containsAll(requiredParameterNames)) {
       requiredParameterNames.removeAll(givenParameterNames);
-      annotationHolder.createErrorAnnotation(
-          identifier, "Missing required parameters: " + String.join(",", requiredParameterNames));
+      annotationHolder.newAnnotation(HighlightSeverity.ERROR,
+              "Missing required parameters: " + String.join(",", requiredParameterNames))
+          .range(identifier).create();
     }
   }
 
@@ -94,8 +99,8 @@ public class GivenParametersAnnotator implements Annotator {
         declaredParameters.stream().map(var -> var.name).collect(Collectors.toSet());
     for (ParameterSpecification givenParameter : givenParameters) {
       if (!declaredParameterNames.contains(givenParameter.name())) {
-        annotationHolder.createErrorAnnotation(
-            givenParameter.identifier(), "Unknown parameter specified");
+        annotationHolder.newAnnotation(HighlightSeverity.ERROR,
+            "Unknown parameter specified").range(givenParameter.identifier()).create();
       }
     }
   }
@@ -106,8 +111,8 @@ public class GivenParametersAnnotator implements Annotator {
     Set<String> seenNames = new HashSet<>();
     for (ParameterSpecification givenParameter : givenParameters) {
       if (!seenNames.add(givenParameter.name())) {
-        annotationHolder.createErrorAnnotation(
-            givenParameter.identifier(), "Duplicate parameter specified");
+        annotationHolder.newAnnotation(HighlightSeverity.ERROR,
+            "Duplicate parameter specified").range(givenParameter.identifier()).create();
       }
     }
   }

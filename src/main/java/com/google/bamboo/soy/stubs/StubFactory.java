@@ -18,7 +18,7 @@ import com.google.common.collect.ImmutableMap;
 import com.intellij.psi.stubs.IStubElementType;
 
 public abstract class StubFactory {
-  private static ImmutableMap<String, IStubElementType> stubTypeByElement =
+  private static final ImmutableMap<String, IStubElementType> stubTypeByElement =
       ImmutableMap.of(
           "TEMPLATE_BLOCK", TemplateBlockStub.TYPE,
           "TEMPLATE_DEFINITION_IDENTIFIER", TemplateDefinitionStub.TYPE,

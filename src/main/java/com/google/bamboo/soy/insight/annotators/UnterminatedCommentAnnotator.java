@@ -17,6 +17,7 @@ package com.google.bamboo.soy.insight.annotators;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
@@ -37,7 +38,8 @@ public class UnterminatedCommentAnnotator implements Annotator {
         int start = element.getTextRange().getEndOffset() - 1;
         int end = start + 1;
         annotationHolder
-            .createErrorAnnotation(TextRange.create(start, end), "Unterminated comment");
+            .newAnnotation(HighlightSeverity.ERROR, "Unterminated comment")
+            .range(TextRange.create(start, end)).create();
       }
     }
   }

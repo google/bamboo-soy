@@ -25,10 +25,10 @@ import com.intellij.psi.stubs.StubElement;
 import com.intellij.psi.stubs.StubInputStream;
 import com.intellij.psi.stubs.StubOutputStream;
 import com.intellij.psi.tree.IStubFileElementType;
-import java.io.IOException;
 import org.jetbrains.annotations.NotNull;
 
 public class FileStub extends PsiFileStubImpl<SoyFile> {
+
   public static final Type TYPE = new Type("SoyFile", SoyLanguage.INSTANCE);
 
   public FileStub(SoyFile file) {
@@ -36,6 +36,7 @@ public class FileStub extends PsiFileStubImpl<SoyFile> {
   }
 
   @Override
+  @NotNull
   public IStubFileElementType getType() {
     return TYPE;
   }
@@ -43,11 +44,12 @@ public class FileStub extends PsiFileStubImpl<SoyFile> {
   // May only be called when the stub tree is fully constructed.
   public String getNamespace() {
     NamespaceDeclarationStub namespaceDeclaration =
-        (NamespaceDeclarationStub) findChildStubByType(NamespaceDeclarationStub.TYPE);
+        findChildStubByType(NamespaceDeclarationStub.TYPE);
     return namespaceDeclaration == null ? "" : namespaceDeclaration.getName();
   }
 
   static class Type extends IStubFileElementType<FileStub> {
+
     public static final int VERSION = 4;
 
     public Type(String debugName, Language language) {
@@ -58,7 +60,8 @@ public class FileStub extends PsiFileStubImpl<SoyFile> {
     public StubBuilder getBuilder() {
       return new DefaultStubBuilder() {
         @Override
-        protected StubElement createStubForFile(@NotNull PsiFile file) {
+        @NotNull
+        protected StubElement<SoyFile> createStubForFile(@NotNull PsiFile file) {
           return new FileStub((SoyFile) file);
         }
       };
@@ -70,18 +73,17 @@ public class FileStub extends PsiFileStubImpl<SoyFile> {
     }
 
     @Override
-    public void serialize(@NotNull FileStub stub, @NotNull StubOutputStream dataStream)
-        throws IOException {}
+    public void serialize(@NotNull FileStub stub, @NotNull StubOutputStream dataStream) {
+    }
 
-    @NotNull
     @Override
-    public FileStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub)
-        throws IOException {
+    @NotNull
+    public FileStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub) {
       return new FileStub(null);
     }
 
-    @NotNull
     @Override
+    @NotNull
     public String getExternalId() {
       return "SoyFile";
     }

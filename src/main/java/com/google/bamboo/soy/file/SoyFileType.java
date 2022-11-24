@@ -45,7 +45,7 @@ public class SoyFileType extends LanguageFileType implements TemplateLanguageFil
   @NotNull
   @Override
   public String getName() {
-    return "Closure template file";
+    return "Closure template";
   }
 
   @NotNull

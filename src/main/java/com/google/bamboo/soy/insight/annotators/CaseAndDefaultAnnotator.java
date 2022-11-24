@@ -18,6 +18,7 @@ import com.google.bamboo.soy.elements.ChoiceStatementElement;
 import com.google.bamboo.soy.parser.SoyChoiceClause;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,11 +37,12 @@ public class CaseAndDefaultAnnotator implements Annotator {
 
         if (foundDefault) {
           if (!clause.isDefault()) {
-            annotationHolder.createErrorAnnotation(
-                child, "{case} clauses are not allowed after {default}.");
+            annotationHolder.newAnnotation(
+                    HighlightSeverity.ERROR, "{case} clauses are not allowed after {default}.")
+                .create();
           } else if (clause.isDefault()) {
-            annotationHolder.createErrorAnnotation(
-                child, "There can only be one {default} clause.");
+            annotationHolder.newAnnotation(
+                HighlightSeverity.ERROR, "There can only be one {default} clause.").create();
           }
         } else if (clause.isDefault()) {
           foundDefault = true;

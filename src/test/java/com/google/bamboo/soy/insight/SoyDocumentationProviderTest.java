@@ -25,51 +25,49 @@ public class SoyDocumentationProviderTest extends SoyCodeInsightFixtureTestCase 
     return "/insight";
   }
 
-  private void doTest(String expectedQuickNavigateInfo) {
+  private void doTest(String expectedLocation, String expectedSoyDoc) {
     String filename = getTestName(false) + ".soy";
     myFixture.configureByFile(filename);
     PsiElement element = myFixture.getElementAtCaret();
-    String info = (new SoyDocumentationProvider()).getQuickNavigateInfo(element, null);
-    assertEquals(expectedQuickNavigateInfo, info);
+    {
+      String info = (new SoyDocumentationProvider()).getQuickNavigateInfo(element, null);
+      assertEquals(expectedLocation + "\n\n" + expectedSoyDoc, info);
+    }
+    {
+      String info = (new SoyDocumentationProvider()).generateDoc(element, null);
+      assertEquals(expectedSoyDoc, info);
+    }
   }
 
   public void testAtInjectReference() {
-    doTest("Defined at AtInjectReference.soy:5\n"
-        + "Leading doc");
+    doTest("Defined at AtInjectReference.soy:5", "Leading doc");
   }
 
   public void testAtParamReference() {
-    doTest("Defined at AtParamReference.soy:5\n"
-        + "Leading doc");
+    doTest("Defined at AtParamReference.soy:5", "Leading doc");
   }
 
   public void testAtStateReference() {
-    doTest("Defined at AtStateReference.soy:5\n"
-        + "Leading doc");
+    doTest("Defined at AtStateReference.soy:5", "Leading doc");
   }
 
   public void testLetDefinitionReference() {
-    doTest("Defined at LetDefinitionReference.soy:5\n"
-        + "Leading doc");
+    doTest("Defined at LetDefinitionReference.soy:5", "Leading doc");
   }
 
   public void testAtInjectReferenceTrailingDoc() {
-    doTest("Defined at AtInjectReferenceTrailingDoc.soy:4\n"
-        + "Same-line doc");
+    doTest("Defined at AtInjectReferenceTrailingDoc.soy:4", "Same-line doc");
   }
 
   public void testAtParamReferenceTrailingDoc() {
-    doTest("Defined at AtParamReferenceTrailingDoc.soy:4\n"
-        + "Same-line doc");
+    doTest("Defined at AtParamReferenceTrailingDoc.soy:4", "Same-line doc");
   }
 
   public void testAtStateReferenceTrailingDoc() {
-    doTest("Defined at AtStateReferenceTrailingDoc.soy:4\n"
-        + "Same-line doc");
+    doTest("Defined at AtStateReferenceTrailingDoc.soy:4", "Same-line doc");
   }
 
   public void testLetDefinitionReferenceTrailingDoc() {
-    doTest("Defined at LetDefinitionReferenceTrailingDoc.soy:4\n"
-        + "Same-line doc");
+    doTest("Defined at LetDefinitionReferenceTrailingDoc.soy:4", "Same-line doc");
   }
 }

@@ -22,7 +22,7 @@ import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.openapi.editor.ex.util.LayerDescriptor;
 import com.intellij.openapi.editor.ex.util.LayeredLexerEditorHighlighter;
 import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.fileTypes.StdFileTypes;
+import com.intellij.openapi.fileTypes.FileTypes;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;
 import com.intellij.openapi.project.Project;
@@ -42,7 +42,7 @@ public class SoyLayeredHighlighter extends LayeredLexerEditorHighlighter {
     // Highlighter for the outer language.
     FileType type = null;
     if (project == null || virtualFile == null) {
-      type = StdFileTypes.PLAIN_TEXT;
+      type = FileTypes.PLAIN_TEXT;
     } else {
       Language language = TemplateDataLanguageMappings.getInstance(project).getMapping(virtualFile);
       if (language != null) type = language.getAssociatedFileType();

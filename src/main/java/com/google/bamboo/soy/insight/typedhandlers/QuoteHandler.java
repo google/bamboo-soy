@@ -17,13 +17,9 @@ package com.google.bamboo.soy.insight.typedhandlers;
 import com.google.bamboo.soy.file.SoyFileType;
 import com.google.common.collect.ImmutableSet;
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate;
-import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate;
-import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegate.Result;
 import com.intellij.ide.highlighter.HtmlFileType;
-import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.actionSystem.TypedActionHandler;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
@@ -48,8 +44,10 @@ public class QuoteHandler extends TypedHandlerDelegate {
   private final Set<String> allowedNextCharacters = ImmutableSet.of("\n", " ", "]", ")", "}");
 
   @Override
-  public Result beforeCharTyped(char charTyped, final Project project, final Editor editor,
-      final PsiFile file, final FileType fileType) {
+  @NotNull
+  public Result beforeCharTyped(char charTyped, final @NotNull Project project,
+      final @NotNull Editor editor,
+      final PsiFile file, final @NotNull FileType fileType) {
     if (file.getFileType() != SoyFileType.INSTANCE && file.getFileType() != HtmlFileType.INSTANCE) {
       return Result.CONTINUE;
     }

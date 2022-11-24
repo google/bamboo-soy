@@ -22,6 +22,7 @@ import com.google.bamboo.soy.parser.SoyExpr;
 import com.google.bamboo.soy.parser.SoyVariableReferenceIdentifier;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.util.Collection;
@@ -53,8 +54,8 @@ public class DefaultInitializerRefsAnnotator implements Annotator {
     }
 
     if (parentAtElement instanceof SoyAtParamSingle) {
-      annotationHolder.createErrorAnnotation(element,
-          "Default initializers cannot depend on other parameters or state");
+      annotationHolder.newAnnotation(HighlightSeverity.ERROR,
+          "Default initializers cannot depend on other parameters or state").create();
       return;
     }
 
@@ -67,8 +68,8 @@ public class DefaultInitializerRefsAnnotator implements Annotator {
     String variableName = variableRef.getIdentifierWord().getText();
     for (StateVariable stateVariable : declaredStates) {
       if (variableName.equals(stateVariable.name)) {
-        annotationHolder.createErrorAnnotation(element,
-            "State cannot be referenced in default initializers");
+        annotationHolder.newAnnotation(HighlightSeverity.ERROR,
+            "State cannot be referenced in default initializers").create();
         return;
       }
     }
