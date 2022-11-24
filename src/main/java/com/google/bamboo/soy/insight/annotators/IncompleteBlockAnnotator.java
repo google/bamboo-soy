@@ -18,6 +18,7 @@ import com.google.bamboo.soy.elements.ChoiceClauseElement;
 import com.google.bamboo.soy.elements.TagBlockElement;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,8 +29,8 @@ public class IncompleteBlockAnnotator implements Annotator {
     if (psiElement instanceof TagBlockElement) {
       TagBlockElement block = (TagBlockElement) psiElement;
       if (block.isIncomplete() && !(block instanceof ChoiceClauseElement)) {
-        annotationHolder.createErrorAnnotation(block.getOpeningTag(),
-            "{" + block.getTagName() + "} is not closed.");
+        annotationHolder.newAnnotation(HighlightSeverity.ERROR,
+            "{" + block.getTagName() + "} is not closed.").range(block.getOpeningTag()).create();
       }
     }
   }

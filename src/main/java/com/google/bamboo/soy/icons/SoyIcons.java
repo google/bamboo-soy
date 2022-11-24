@@ -20,13 +20,13 @@ import javax.swing.Icon;
 
 public class SoyIcons {
 
-  public static final Icon FILE = IconLoader.getIcon("/icons/closure-template.png");
+  public static final Icon FILE = IconLoader.getIcon("/icons/closure-template.png", SoyIcons.class);
 
-  static final Icon CODE_CALL = IconLoader.getIcon("/icons/call.png");
+  static final Icon CODE_CALL = IconLoader.getIcon("/icons/call.png", SoyIcons.class);
   static final Icon CODE_INJECT = AllIcons.Nodes.Plugin;
-  static final Icon CODE_NAMESPACE = IconLoader.getIcon("/icons/namespace.png");
+  static final Icon CODE_NAMESPACE = IconLoader.getIcon("/icons/namespace.png", SoyIcons.class);
   static final Icon CODE_PARAMETER = AllIcons.Nodes.Parameter;
   static final Icon CODE_STATE = AllIcons.Nodes.J2eeParameter;
-  static final Icon CODE_TEMPLATE = IconLoader.getIcon("/icons/template.png");
+  static final Icon CODE_TEMPLATE = IconLoader.getIcon("/icons/template.png", SoyIcons.class);
   static final Icon CODE_VARIABLE = AllIcons.Nodes.Variable;
 }

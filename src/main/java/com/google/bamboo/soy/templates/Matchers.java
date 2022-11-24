@@ -23,9 +23,9 @@ import com.intellij.psi.PsiElement;
 
 class Matchers {
 
-  static PsiElementPattern.Capture<PsiElement> templateBlockMatcher =
+  static final PsiElementPattern.Capture<PsiElement> templateBlockMatcher =
       psiElement(SoyTypes.TEMPLATE_BLOCK);
 
-  static PsiElementPattern.Capture<PsiElement> templateCallStatementMatcher =
+  static final PsiElementPattern.Capture<PsiElement> templateCallStatementMatcher =
       psiElement().inside(CallStatementElement.class);
 }

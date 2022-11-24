@@ -19,6 +19,7 @@ import com.google.bamboo.soy.elements.ChoiceStatementElement;
 import com.google.bamboo.soy.parser.SoyUnexpectedStatements;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,10 +30,11 @@ public class UnexpectedStatementsAnnotator implements Annotator {
     if (psiElement instanceof SoyUnexpectedStatements) {
       PsiElement parent = psiElement.getParent();
       if (parent instanceof CallStatementElement) {
-        annotationHolder.createErrorAnnotation(psiElement, "Expected a {param ...} tag.");
+        annotationHolder.newAnnotation(HighlightSeverity.ERROR, "Expected a {param ...} tag.")
+            .create();
       } else if (parent instanceof ChoiceStatementElement) {
-        annotationHolder.createErrorAnnotation(
-            psiElement, "Expected a {case ...} or {default ...} tag.");
+        annotationHolder.newAnnotation(HighlightSeverity.ERROR,
+            "Expected a {case ...} or {default ...} tag.").create();
       }
     }
   }

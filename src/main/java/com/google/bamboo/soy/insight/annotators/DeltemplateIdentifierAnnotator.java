@@ -17,18 +17,22 @@ package com.google.bamboo.soy.insight.annotators;
 import com.google.bamboo.soy.parser.SoyTemplateBlock;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
 public class DeltemplateIdentifierAnnotator implements Annotator {
+
   @Override
   public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
     if (psiElement instanceof SoyTemplateBlock) {
       SoyTemplateBlock block = (SoyTemplateBlock) psiElement;
       if (block.isDelegate() && block.getName() != null && block.getName().startsWith(".")) {
-        annotationHolder.createErrorAnnotation(
-            // cannot be null since getName is not null
-            block.getDefinitionIdentifier(), "Delegate template names cannot start with '.'.");
+        annotationHolder
+            .newAnnotation(HighlightSeverity.ERROR,
+                "Delegate template names cannot start with '.'.")
+            .range(block.getDefinitionIdentifier() /* cannot be null since getName is not null */)
+            .create();
       }
     }
   }

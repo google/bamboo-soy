@@ -2,7 +2,6 @@ package com.google.bamboo.soy.insight.quickfix;
 
 import com.google.bamboo.soy.elements.AtElementSingle;
 import com.google.bamboo.soy.elements.WhitespaceUtils;
-import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;

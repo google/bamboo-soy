@@ -30,13 +30,13 @@ import org.jetbrains.annotations.Nullable;
 
 public class SoyDocumentationProvider extends AbstractDocumentationProvider {
 
-  private static int MAX_COMMENT_PREVIEW_LENGTH = 96;
+  private static final int MAX_COMMENT_PREVIEW_LENGTH = 96;
 
   private static String uncommentify(@NotNull String docComment) {
     return docComment
-        .replaceFirst("^/\\*[\\*\\n\\r\\t ]*", "")
-        .replaceAll("[ \\t\\n\\r\\*]*\\*/$", "")
-        .replaceAll("\n[\\t\\n\\r\\* ]*", "\n");
+        .replaceFirst("^/\\*[* \\t\\n\\r]*", "")
+        .replaceAll("[* \\t\\n\\r]*\\*/$", "")
+        .replaceAll("\n[* \\t\\n\\r]*", "\n");
   }
 
   private static String produceCommentPreview(@NotNull String docComment) {
@@ -50,7 +50,7 @@ public class SoyDocumentationProvider extends AbstractDocumentationProvider {
     preview = preview.replaceAll("[\\n\\r\\f\\t ]+", " ");
 
     if (preview.length() > MAX_COMMENT_PREVIEW_LENGTH) {
-      preview = preview.substring(0, Math.min(preview.length(), MAX_COMMENT_PREVIEW_LENGTH));
+      preview = preview.substring(0, MAX_COMMENT_PREVIEW_LENGTH);
 
       int lastSpaceIndex = preview.lastIndexOf(" ");
       // If this comment is entirely without whitespaces then it's a weird one so let's just return
@@ -96,6 +96,17 @@ public class SoyDocumentationProvider extends AbstractDocumentationProvider {
   @Nullable
   @Override
   public String getQuickNavigateInfo(PsiElement element, PsiElement originalElement) {
+    return buildDoc(element, true);
+  }
+
+  @Override
+  public @Nullable String generateDoc(
+      PsiElement element,
+      @Nullable PsiElement originalElement) {
+    return buildDoc(element, false);
+  }
+
+  private @Nullable String buildDoc(PsiElement element, boolean addDefinitionLocation) {
     if (element.getNode() == null) {
       // Happens for a fake PSI element containing a URL ("Open in browser").
       return null;
@@ -107,17 +118,23 @@ public class SoyDocumentationProvider extends AbstractDocumentationProvider {
       return null;
     }
 
-    int lineNum = document.getLineNumber(element.getTextOffset()) + 1 /* count starts at zero */;
+    int lineNum = document.getLineNumber(element.getTextOffset()) + 1; // count starts at zero
     String path = element.getContainingFile().getVirtualFile().getName();
-    StringBuilder navigateInfo = new StringBuilder("Defined at ");
-    navigateInfo.append(path);
-    navigateInfo.append(":");
-    navigateInfo.append(lineNum);
+    StringBuilder navigateInfo = new StringBuilder();
+    if (addDefinitionLocation) {
+      navigateInfo.append("Defined at ");
+      navigateInfo.append(path);
+      navigateInfo.append(":");
+      navigateInfo.append(lineNum);
+    }
+
     String optDoc = getDocCommentForEnclosingTag(element);
     if (optDoc != null) {
-      navigateInfo.append("\n");
+      if (addDefinitionLocation) {
+        navigateInfo.append("\n\n");
+      }
       navigateInfo.append(produceCommentPreview(optDoc));
     }
-    return navigateInfo.toString();
+    return navigateInfo.length() > 0 ? navigateInfo.toString() : null;
   }
 }

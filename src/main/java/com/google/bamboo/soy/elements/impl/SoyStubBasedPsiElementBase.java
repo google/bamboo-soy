@@ -37,6 +37,6 @@ public abstract class SoyStubBasedPsiElementBase<T extends StubElement>
 
   @Override
   public String toString() {
-    return getClass().getSimpleName() + "(" + getNode().getElementType().toString() + ")";
+    return getClass().getSimpleName() + "(" + getNode().getElementType() + ")";
   }
 }

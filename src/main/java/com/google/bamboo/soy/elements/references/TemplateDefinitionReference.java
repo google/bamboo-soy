@@ -27,16 +27,15 @@ import org.jetbrains.annotations.NotNull;
 
 public class TemplateDefinitionReference extends PsiReferenceBase<PsiElement>
     implements PsiPolyVariantReference {
-  private String templateName;
+  private final String templateName;
 
   public TemplateDefinitionReference(PsiElement element, TextRange textRange) {
     super(element, textRange);
     this.templateName = element.getText();
   }
 
-  @NotNull
   @Override
-  public ResolveResult[] multiResolve(boolean incompleteCode) {
+  public ResolveResult @NotNull [] multiResolve(boolean incompleteCode) {
     return PsiElementResolveResult.createResults(
         TemplateNameUtils.findTemplateDeclarations(this.getElement(), templateName)
             .stream()
@@ -51,7 +50,7 @@ public class TemplateDefinitionReference extends PsiReferenceBase<PsiElement>
   }
 
   @Override
-  public boolean isReferenceTo(PsiElement element) {
+  public boolean isReferenceTo(@NotNull PsiElement element) {
     ResolveResult[] results = multiResolve(false);
     for (ResolveResult result : results) {
       if (this.getElement().getManager().areElementsEquivalent(result.getElement(), element)) {
@@ -62,13 +61,12 @@ public class TemplateDefinitionReference extends PsiReferenceBase<PsiElement>
   }
 
   @Override
-  @NotNull
-  public Object[] getVariants() {
+  public Object @NotNull [] getVariants() {
     return new Object[0];
   }
 
   @Override
-  public TextRange getRangeInElement() {
+  public @NotNull TextRange getRangeInElement() {
     return new TextRange(0, this.getElement().getNode().getTextLength());
   }
 }

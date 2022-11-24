@@ -41,6 +41,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.TokenSet;
 import java.util.stream.Collectors;
@@ -50,8 +51,8 @@ import org.jetbrains.annotations.NotNull;
 public class ClosingBraceSanityAnnotator implements Annotator {
 
   @VisibleForTesting
-  static final ImmutableSet<Class> mustCloseRBraceTags =
-      ImmutableSet.<Class>builder()
+  static final ImmutableSet<Class<?>> mustCloseRBraceTags =
+      ImmutableSet.<Class<?>>builder()
           .add(SoyAliasBlockImpl.class)
           .add(SoyAtParamSingleImpl.class)
           .add(SoyAtStateSingleImpl.class)
@@ -74,7 +75,7 @@ public class ClosingBraceSanityAnnotator implements Annotator {
           .add(SoyPrintStatementImpl.class)
           .build();
 
-  private static ImmutableSet<Class> mustCloseSlashRBraceTags =
+  private static final ImmutableSet<Class<?>> mustCloseSlashRBraceTags =
       ImmutableSet.of(SoyLetSingleStatementImpl.class);
 
   @Override
@@ -96,11 +97,12 @@ public class ClosingBraceSanityAnnotator implements Annotator {
       }
 
       if (!allowedRBraces.contains(tagElement.getClosingBraceType())) {
-        annotationHolder.createErrorAnnotation(tagElement, "Must close by " +
+        annotationHolder.newAnnotation(HighlightSeverity.ERROR, "Must close by " +
             Stream.of(allowedRBraces.getTypes())
                 .map(SoyTokenTypes.BRACE_TYPE_TO_STRING::get)
                 .sorted()
-                .collect(Collectors.joining(" or ")));
+                .collect(Collectors.joining(" or ")))
+            .create();
       }
     }
   }

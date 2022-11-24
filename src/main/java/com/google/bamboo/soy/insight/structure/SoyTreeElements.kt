@@ -62,8 +62,6 @@ private fun getPresentableName(psiElement: PsiElement): String? =
     is TagBlockElement -> psiElement.tagName
     is SoyNamespaceBlock -> "namespace"
     is SoyLetSingleStatement -> "let"
-    is ParamElement -> "param"
-    is SoyMsgStatement -> "msg"
     is SoyAtInjectSingle -> "@inject"
     is SoyAtParamSingle -> "@param"
     is SoyAtStateSingle -> "@state"
@@ -74,22 +72,22 @@ private fun getPresentableName(psiElement: PsiElement): String? =
  * A base class for all Soy TreeElements. The descendants would usually override the methods
  * relevant for presentation.
  */
-private open class BaseTreeElement(psiElement: PsiElement)
-  : PsiTreeElementBase<PsiElement>(psiElement) {
+private open class BaseTreeElement(psiElement: PsiElement) :
+  PsiTreeElementBase<PsiElement>(psiElement) {
   override fun getChildrenBase(): Collection<StructureViewTreeElement> =
-      getChildren(value)
+    getChildren(value)
 
   override fun getPresentableText(): String? = getPresentableName(value)
 
   override fun getIcon(open: Boolean): Icon? = super.getIcon(open) ?: SoyIcons.FILE
 
   protected fun getChildren(psiElement: PsiElement): Collection<PsiTreeElementBase<PsiElement>> =
-      psiElement.children.map { child ->
-        if (getPresentableName(child) != null)
-          listOf(getTreeElement(child))
-        else
-          getChildren(child)
-      }.flatten()
+    psiElement.children.map { child ->
+      if (getPresentableName(child) != null)
+        listOf(getTreeElement(child))
+      else
+        getChildren(child)
+    }.flatten()
 
   private val MAX_TEXT_LENGTH = 50
   protected fun shortenTextIfLong(@NotNull text: String): String {
@@ -113,43 +111,42 @@ private open class BaseTreeElement(psiElement: PsiElement)
  * A TreeElement for call statements.
  */
 private class CallTreeElement(val psiElement: CallStatementElement) : BaseTreeElement(psiElement) {
-  override fun getPresentableText(): String? =
-      getPresentableName(psiElement) + " ${psiElement.templateName}"
+  override fun getPresentableText(): String =
+    "${getPresentableName(psiElement)} ${psiElement.templateName}"
 }
 
 /**
  * A TreeElement for the [SoyFile].
  */
 private class FileTreeElement(val psiFile: SoyFile) : BaseTreeElement(psiFile) {
-  override fun getPresentableText(): String? = psiFile.name
+  override fun getPresentableText(): String = psiFile.name
 }
 
 /**
  * A TreeElement for the [SoyLetCompoundStatement].
  */
-private class LetCompoundTreeElement(val psiElement: SoyLetCompoundStatement)
-  : BaseTreeElement(psiElement) {
-  override fun getPresentableText(): String? =
-      getPresentableName(psiElement) + " ${psiElement.beginLet.variableDefinitionIdentifier?.name}"
+private class LetCompoundTreeElement(val psiElement: SoyLetCompoundStatement) :
+  BaseTreeElement(psiElement) {
+  override fun getPresentableText(): String =
+    "${getPresentableName(psiElement)} ${psiElement.beginLet.variableDefinitionIdentifier?.name}"
 }
 
 /**
  * A TreeElement for the [SoyLetSingleStatement].
  */
-private class LetSingleTreeElement(val psiElement: SoyLetSingleStatement)
-  : BaseTreeElement(psiElement) {
-  override fun getPresentableText(): String? =
-      getPresentableName(psiElement) + " ${psiElement.variableDefinitionIdentifier.name}"
+private class LetSingleTreeElement(val psiElement: SoyLetSingleStatement) :
+  BaseTreeElement(psiElement) {
+  override fun getPresentableText(): String =
+    "${getPresentableName(psiElement)} ${psiElement.variableDefinitionIdentifier.name}"
 
   override fun getLocationString(): String? =
-      if (psiElement.expr != null) ": ${psiElement.expr?.text}" else null
+    if (psiElement.expr != null) ": ${psiElement.expr?.text}" else null
 }
 
 /**
  * A TreeElement for the [SoyMsgStatement].
  */
-private class MsgTreeElement(val psiElement: SoyMsgStatement)
-  : BaseTreeElement(psiElement) {
+private class MsgTreeElement(val psiElement: SoyMsgStatement) : BaseTreeElement(psiElement) {
   override fun getLocationString(): String = shortenTextIfLong(psiElement.description ?: "")
 }
 
@@ -157,11 +154,11 @@ private class MsgTreeElement(val psiElement: SoyMsgStatement)
  * A TreeElement for the [SoyParamListElement].
  */
 private class ParamTreeElement(val psiElement: ParamElement) : BaseTreeElement(psiElement) {
-  override fun getPresentableText(): String? =
-      getPresentableName(psiElement) + " ${psiElement.paramName}"
+  override fun getPresentableText(): String =
+    "${getPresentableName(psiElement)} ${psiElement.paramName}"
 
-  override fun getLocationString(): String? =
-      if (psiElement.inlinedValue != null) ": ${psiElement.inlinedValue}" else ""
+  override fun getLocationString(): String =
+    if (psiElement.inlinedValue != null) ": ${psiElement.inlinedValue}" else ""
 }
 
 /**
@@ -169,14 +166,17 @@ private class ParamTreeElement(val psiElement: ParamElement) : BaseTreeElement(p
  */
 private class AtTreeElement(val psiElement: AtElementSingle) : BaseTreeElement(psiElement) {
   override fun getPresentableText(): String? =
-      if (psiElement.paramDefinitionIdentifier != null)
-        shortenTextIfLong(atElementSinglePresentableText(psiElement))
-      else null
+    if (psiElement.paramDefinitionIdentifier != null)
+      shortenTextIfLong(atElementSinglePresentableText(psiElement))
+    else null
 
 
   private fun atElementSinglePresentableText(psiElement: AtElementSingle): String {
-    return "${getPresentableName(psiElement)} ${psiElement.name}" +
-        buildTypeAndDefaultValue(psiElement)
+    return "${getPresentableName(psiElement)} ${psiElement.name}${
+      buildTypeAndDefaultValue(
+        psiElement
+      )
+    }"
   }
 
   private fun buildTypeAndDefaultValue(psiElement: AtElementSingle): String {
@@ -185,12 +185,10 @@ private class AtTreeElement(val psiElement: AtElementSingle) : BaseTreeElement(p
     if (psiElement is SoyAtParamSingle) {
       type = psiElement.type
       defaultValue = psiElement.defaultInitializerExpr?.text ?: ""
-    }
-    if (psiElement is SoyAtStateSingle) {
+    } else if (psiElement is SoyAtStateSingle) {
       type = psiElement.type
       defaultValue = psiElement.defaultInitializerExpr?.text ?: ""
-    }
-    if (type.isEmpty()) {
+    } else if (type.isEmpty()) {
       return if (defaultValue.isEmpty()) "" else " := $defaultValue"
     }
     return if (defaultValue.isEmpty()) ": $type" else ": $type = $defaultValue"
@@ -201,6 +199,6 @@ private class AtTreeElement(val psiElement: AtElementSingle) : BaseTreeElement(p
  * A TreeElement for the template blocks.
  */
 private class TemplateTreeElement(val psiElement: SoyTemplateBlock) : BaseTreeElement(psiElement) {
-  override fun getPresentableText(): String? =
-      getPresentableName(psiElement) + " ${psiElement.name}"
+  override fun getPresentableText(): String =
+    "${getPresentableName(psiElement)} ${psiElement.name}"
 }

@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 public class ParameterDefinitionReference extends PsiReferenceBase<PsiElement>
     implements PsiReference {
 
-  private String parameterName;
+  private final String parameterName;
 
   public ParameterDefinitionReference(PsiElement element, TextRange textRange) {
     super(element, textRange);

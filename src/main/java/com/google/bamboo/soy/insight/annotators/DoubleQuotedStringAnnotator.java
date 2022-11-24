@@ -18,17 +18,19 @@ import com.google.bamboo.soy.parser.SoyAnyStringLiteral;
 import com.google.bamboo.soy.parser.SoyExpr;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
 public class DoubleQuotedStringAnnotator implements Annotator {
+
   @Override
   public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
     if (psiElement instanceof SoyAnyStringLiteral
         && psiElement.getParent() instanceof SoyExpr
         && psiElement.getText().startsWith("\"")) {
-      annotationHolder.createErrorAnnotation(
-          psiElement, "Strings in expressions must use single quotes.");
+      annotationHolder.newAnnotation(HighlightSeverity.ERROR,
+          "Strings in expressions must use single quotes.").create();
     }
   }
 }

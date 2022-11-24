@@ -24,7 +24,6 @@ import com.google.bamboo.soy.parser.SoyParamListElement;
 import com.google.bamboo.soy.parser.SoyStatementList;
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegateAdapter;
 import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorModificationUtil;
@@ -48,8 +47,6 @@ import org.jetbrains.annotations.Nullable;
  * <p>If pressed right after an opening tag this handler will indent the cursor on the next line.
  */
 public class EnterHandler extends EnterHandlerDelegateAdapter {
-
-  private static final Logger LOG = Logger.getInstance(EnterHandler.class);
 
   private static void handleEnterInComment(
       PsiElement element, @NotNull PsiFile file, @NotNull Editor editor) {
@@ -122,7 +119,7 @@ public class EnterHandler extends EnterHandlerDelegateAdapter {
       @Nullable EditorActionHandler originalHandler) {
     if (psiFile instanceof SoyFile && isBetweenSiblingTags(psiFile, caretOffset.get())) {
       if (originalHandler != null) {
-        originalHandler.execute(editor, dataContext);
+        originalHandler.execute(editor, editor.getCaretModel().getCurrentCaret(), dataContext);
       }
       return Result.Default;
     }

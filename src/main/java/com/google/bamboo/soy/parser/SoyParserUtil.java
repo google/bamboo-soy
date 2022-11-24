@@ -46,7 +46,9 @@ public class SoyParserUtil extends GeneratedParserUtilBase {
 
   private static final Pattern NEWLINE_PATTERN = Pattern.compile("\r\n|\r|\n");
 
-  /** Binds the last leading doc comment either on the same or previous line. */
+  /**
+   * Binds the last leading doc comment either on the same or previous line.
+   */
   public static WhitespacesAndCommentsBinder LEADING_COMMENTS_BINDER =
       new WhitespacesAndCommentsBinder.RecursiveBinder() {
         @Override
@@ -66,7 +68,9 @@ public class SoyParserUtil extends GeneratedParserUtilBase {
         }
       };
 
-  /** Binds the trailing doc comments on the same line */
+  /**
+   * Binds the trailing doc comments on the same line
+   */
   public static WhitespacesAndCommentsBinder TRAILING_COMMENTS_BINDER =
       new WhitespacesAndCommentsBinder.RecursiveBinder() {
         @Override
@@ -85,7 +89,7 @@ public class SoyParserUtil extends GeneratedParserUtilBase {
         }
       };
 
-  private static ImmutableMap<IElementType, IElementType> closingTokenToBlock =
+  private static final ImmutableMap<IElementType, IElementType> closingTokenToBlock =
       ImmutableMap.<IElementType, IElementType>builder()
           .put(CALL, DIRECT_CALL_STATEMENT)
           .put(DELCALL, DEL_CALL_STATEMENT)
@@ -113,13 +117,18 @@ public class SoyParserUtil extends GeneratedParserUtilBase {
     return n;
   }
 
-  /** Matches a closing tag iff there is frame in the stack which it may close. */
-  public static boolean parseEndOfStatementBlock(PsiBuilder builder, int level) {
+  /**
+   * Matches a closing tag iff there is frame in the stack which it may close.
+   */
+  public static boolean parseEndOfStatementBlock(PsiBuilder builder, int ignoredLevel) {
     if (!nextTokenIs(builder, "", LBRACE_SLASH, LBRACE_LBRACE_SLASH)) {
       return false;
     }
     Marker marker = enter_section_(builder);
-    boolean r = consumeToken(builder, LBRACE_SLASH) || consumeToken(builder, LBRACE_LBRACE_SLASH);
+
+    @SuppressWarnings("unused")
+    boolean unused =
+        consumeToken(builder, LBRACE_SLASH) || consumeToken(builder, LBRACE_LBRACE_SLASH);
 
     IElementType block = null;
     for (IElementType token : closingTokenToBlock.keySet()) {

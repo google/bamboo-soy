@@ -44,14 +44,14 @@ public class TemplateBlockStub extends StubBase<SoyTemplateBlock> {
   // May only be called when the stub tree is fully constructed.
   public String getFullyQualifiedName() {
     TemplateDefinitionStub templateDefinition =
-        (TemplateDefinitionStub) findChildStubByType(TemplateDefinitionStub.TYPE);
+        findChildStubByType(TemplateDefinitionStub.TYPE);
     return templateDefinition == null ? "" : templateDefinition.getFullyQualifiedName();
   }
 
   // May only be called when the stub tree is fully constructed.
   public String getName() {
     TemplateDefinitionStub templateDefinition =
-        (TemplateDefinitionStub) findChildStubByType(TemplateDefinitionStub.TYPE);
+        findChildStubByType(TemplateDefinitionStub.TYPE);
     return templateDefinition == null ? "" : templateDefinition.getName();
   }
 

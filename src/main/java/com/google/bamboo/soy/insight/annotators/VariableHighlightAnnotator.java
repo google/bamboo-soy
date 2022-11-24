@@ -18,9 +18,9 @@ import com.google.bamboo.soy.insight.highlight.SoySyntaxHighlighter;
 import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier;
 import com.google.bamboo.soy.parser.SoyVariableReferenceIdentifier;
-import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,8 +31,8 @@ public class VariableHighlightAnnotator implements Annotator {
     if (element instanceof SoyVariableReferenceIdentifier
         || element instanceof SoyVariableDefinitionIdentifier
         || element instanceof SoyParamDefinitionIdentifier) {
-      Annotation annotation = holder.createInfoAnnotation(element, null);
-      annotation.setTextAttributes(SoySyntaxHighlighter.VARIABLE);
+      holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+          .textAttributes(SoySyntaxHighlighter.VARIABLE).create();
     }
   }
 }

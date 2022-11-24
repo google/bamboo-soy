@@ -15,7 +15,6 @@
 package com.google.bamboo.soy.elements;
 
 import com.google.bamboo.soy.lang.Variable;
-import com.intellij.navigation.NavigationItem;
 import com.intellij.psi.PsiNameIdentifierOwner;
 import org.jetbrains.annotations.NotNull;
 

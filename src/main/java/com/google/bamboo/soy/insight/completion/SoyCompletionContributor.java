@@ -14,6 +14,10 @@
 
 package com.google.bamboo.soy.insight.completion;
 
+import static com.intellij.patterns.PlatformPatterns.psiElement;
+import static com.intellij.patterns.StandardPatterns.instanceOf;
+import static com.intellij.patterns.StandardPatterns.or;
+
 import com.google.bamboo.soy.elements.AtElementSingle;
 import com.google.bamboo.soy.elements.CallStatementElement;
 import com.google.bamboo.soy.elements.WhitespaceUtils;
@@ -68,10 +72,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 
-import static com.intellij.patterns.PlatformPatterns.psiElement;
-import static com.intellij.patterns.StandardPatterns.instanceOf;
-import static com.intellij.patterns.StandardPatterns.or;
-
 public class SoyCompletionContributor extends CompletionContributor {
 
   private static final LookupElement SOY_LIST_TYPE_LITERAL =
@@ -82,22 +82,22 @@ public class SoyCompletionContributor extends CompletionContributor {
 
   private static final ImmutableList<LookupElement> SOY_TYPE_LITERALS =
       Stream.concat(
-          Stream.of(
-              "any",
-              "null",
-              "?",
-              "string",
-              "bool",
-              "int",
-              "float",
-              "number",
-              "html",
-              "uri",
-              "js",
-              "css",
-              "attributes")
-              .map(LookupElementBuilder::create),
-          Stream.of(SOY_LIST_TYPE_LITERAL, SOY_MAP_TYPE_LITERAL))
+              Stream.of(
+                      "any",
+                      "null",
+                      "?",
+                      "string",
+                      "bool",
+                      "int",
+                      "float",
+                      "number",
+                      "html",
+                      "uri",
+                      "js",
+                      "css",
+                      "attributes")
+                  .map(LookupElementBuilder::create),
+              Stream.of(SOY_LIST_TYPE_LITERAL, SOY_MAP_TYPE_LITERAL))
           .collect(ImmutableList.toImmutableList());
 
   private static final ImmutableList<LookupElement> KIND_LITERALS =
@@ -148,7 +148,7 @@ public class SoyCompletionContributor extends CompletionContributor {
           @Override
           protected void addCompletions(
               @NotNull CompletionParameters completionParameters,
-              ProcessingContext processingContext,
+              @NotNull ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
             if (isPrecededBy(
                 completionParameters.getPosition(),
@@ -176,7 +176,7 @@ public class SoyCompletionContributor extends CompletionContributor {
           @Override
           protected void addCompletions(
               @NotNull CompletionParameters completionParameters,
-              ProcessingContext processingContext,
+              @NotNull ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
             if (isPrecededBy(
                 completionParameters.getPosition(),
@@ -204,7 +204,7 @@ public class SoyCompletionContributor extends CompletionContributor {
           @Override
           protected void addCompletions(
               @NotNull CompletionParameters completionParameters,
-              ProcessingContext processingContext,
+              @NotNull ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
             completionResultSet.addAllElements(KIND_LITERALS);
           }
@@ -275,18 +275,17 @@ public class SoyCompletionContributor extends CompletionContributor {
   }
 
   private boolean shouldSkipVariableCompletion(PsiElement currentElement) {
-    SoyGlobalExpr parentGlobalExpr = PsiTreeUtil.getParentOfType(currentElement, SoyGlobalExpr.class);
+    SoyGlobalExpr parentGlobalExpr = PsiTreeUtil.getParentOfType(currentElement,
+        SoyGlobalExpr.class);
     if (parentGlobalExpr != null) {
       // Globals do not deal with vars, unless it's an empty expression (the user has not typed anything yet).
       return currentElement != parentGlobalExpr.getFirstChild()
           || !currentElement.getText().replace(INTELLIJ_IDEA_RULEZZZ, "").isEmpty();
     }
-    if (PsiTreeUtil.getParentOfType(currentElement, SoyFieldAccessOrMethodCallExpr.class) != null &&
-        PsiTreeUtil.getParentOfType(currentElement, SoyVariableReferenceIdentifier.class) == null) {
-      // Field access after a dot.
-      return true;
-    }
-    return false;
+    // Field access after a dot.
+    return PsiTreeUtil.getParentOfType(currentElement, SoyFieldAccessOrMethodCallExpr.class) != null
+        &&
+        PsiTreeUtil.getParentOfType(currentElement, SoyVariableReferenceIdentifier.class) == null;
   }
 
   private boolean isInsideDefaultInitializer(PsiElement currentElement) {
@@ -298,11 +297,11 @@ public class SoyCompletionContributor extends CompletionContributor {
 
     if (parentAtElement.getLastChild() != null
         && PsiTreeUtil.findSiblingBackward(
-                parentAtElement.getLastChild(),
-                currentElement.getNode().getElementType(),
-                false,
-                null)
-            == currentElement) {
+        parentAtElement.getLastChild(),
+        currentElement.getNode().getElementType(),
+        false,
+        null)
+        == currentElement) {
       // currentElement is an immediate child of a SoyAt[State|Param]Single that does not have
       // a valid default initializer Expr (due to malformed source code during typing).
       return true;
@@ -331,11 +330,11 @@ public class SoyCompletionContributor extends CompletionContributor {
           @Override
           protected void addCompletions(
               @NotNull CompletionParameters completionParameters,
-              ProcessingContext processingContext,
+              @NotNull ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
-            if (PsiTreeUtil.getParentOfType(
-                completionParameters.getPosition(), CallStatementElement.class)
-                .isDelegate()) {
+            CallStatementElement callStatement = PsiTreeUtil.getParentOfType(
+                completionParameters.getPosition(), CallStatementElement.class);
+            if (callStatement != null && callStatement.isDelegate()) {
               return;
             }
 
@@ -355,7 +354,7 @@ public class SoyCompletionContributor extends CompletionContributor {
           @Override
           protected void addCompletions(
               @NotNull CompletionParameters completionParameters,
-              ProcessingContext processingContext,
+              @NotNull ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
             PsiElement identifierElement =
                 PsiTreeUtil.getParentOfType(
@@ -367,9 +366,9 @@ public class SoyCompletionContributor extends CompletionContributor {
 
             String identifier = identifierElement.getText();
 
-            boolean isDelegate =
-                PsiTreeUtil.getParentOfType(identifierElement, CallStatementElement.class)
-                    .isDelegate();
+            CallStatementElement callStatement =
+                PsiTreeUtil.getParentOfType(identifierElement, CallStatementElement.class);
+            boolean isDelegate = callStatement != null && callStatement.isDelegate();
 
             String prefix = identifier.replaceFirst(INTELLIJ_IDEA_RULEZZZ, "");
             Collection<TemplateNameUtils.Fragment> completions =
@@ -404,7 +403,7 @@ public class SoyCompletionContributor extends CompletionContributor {
           @Override
           protected void addCompletions(
               @NotNull CompletionParameters completionParameters,
-              ProcessingContext processingContext,
+              @NotNull ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
             PsiElement identifierElement =
                 PsiTreeUtil.getParentOfType(
@@ -444,7 +443,7 @@ public class SoyCompletionContributor extends CompletionContributor {
           @Override
           protected void addCompletions(
               @NotNull CompletionParameters completionParameters,
-              ProcessingContext processingContext,
+              @NotNull ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
             PsiElement position = completionParameters.getPosition();
             CallStatementElement callStatement =
@@ -506,16 +505,11 @@ public class SoyCompletionContributor extends CompletionContributor {
           @Override
           protected void addCompletions(
               @NotNull CompletionParameters completionParameters,
-              ProcessingContext processingContext,
+              @NotNull ProcessingContext processingContext,
               @NotNull CompletionResultSet completionResultSet) {
             completionResultSet.addAllElements(SOY_TYPE_LITERALS);
           }
         });
-  }
-
-  @Override
-  public boolean invokeAutoPopup(@NotNull PsiElement position, char typeChar) {
-    return (typeChar == '.' || typeChar == '$');
   }
 
   /**

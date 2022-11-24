@@ -1,7 +1,6 @@
 package com.google.bamboo.soy.lang;
 
 import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
-import com.intellij.psi.PsiNamedElement;
 import org.jetbrains.annotations.NotNull;
 
 public class Parameter extends Variable {

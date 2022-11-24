@@ -18,6 +18,7 @@ import com.google.bamboo.soy.parser.SoyAtParamSingle;
 import com.google.bamboo.soy.parser.SoyTypes;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,9 +30,9 @@ public class DefaultInitializerOnOptionalParameterAnnotator implements Annotator
       SoyAtParamSingle atParamSingle = (SoyAtParamSingle) element;
       if (atParamSingle.getTagNameTokenType() == SoyTypes.AT_PARAM_OPT
           && atParamSingle.getExpr() != null) {
-        annotationHolder.createErrorAnnotation(atParamSingle,
+        annotationHolder.newAnnotation(HighlightSeverity.ERROR,
             "Default initializers are not supported on optional parameters. Did you mean '{@param "
-                + atParamSingle.getName() + " ...}'?");
+                + atParamSingle.getName() + " ...}'?").create();
       }
     }
   }

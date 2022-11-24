@@ -17,8 +17,6 @@ package com.google.bamboo.soy.elements.impl;
 import com.intellij.lang.ASTNode;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.regex.Pattern;
-
 public abstract class IdentifierDefinitionMixin extends SoyIdentifierOwnerMixin {
   IdentifierDefinitionMixin(@NotNull ASTNode node) {
     super(node);

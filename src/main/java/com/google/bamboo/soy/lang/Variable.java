@@ -1,10 +1,7 @@
 package com.google.bamboo.soy.lang;
 
 import com.google.bamboo.soy.elements.VariableDefinitionElement;
-import com.google.bamboo.soy.parser.SoyParamDefinitionIdentifier;
-import com.google.bamboo.soy.parser.SoyVariableDefinitionIdentifier;
 import com.intellij.psi.PsiNamedElement;
-import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 
 public class Variable {

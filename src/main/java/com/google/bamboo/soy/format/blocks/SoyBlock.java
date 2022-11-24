@@ -53,7 +53,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SoyBlock extends TemplateLanguageBlock {
 
-  private HtmlPolicy myHtmlPolicy;
+  private final HtmlPolicy myHtmlPolicy;
 
   public SoyBlock(
       @NotNull TemplateLanguageBlockFactory blockFactory,

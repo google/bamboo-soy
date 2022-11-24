@@ -14,29 +14,19 @@
 
 package com.google.bamboo.soy;
 
+import com.intellij.ide.highlighter.HtmlFileType;
 import com.intellij.lang.Language;
 import com.intellij.openapi.fileTypes.LanguageFileType;
-import com.intellij.openapi.fileTypes.StdFileTypes;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /** IntelliJ programming language object describing closure templates. */
 public class SoyLanguage extends Language {
   public static final SoyLanguage INSTANCE = new SoyLanguage();
 
   public static LanguageFileType getDefaultTemplateLang() {
-    return StdFileTypes.HTML;
+    return HtmlFileType.INSTANCE;
   }
 
   private SoyLanguage() {
     super("ClosureTemplate");
-  }
-
-  public SoyLanguage(
-      @Nullable Language baseLanguage,
-      @NotNull @NonNls final String ID,
-      @NotNull @NonNls final String... mimeTypes) {
-    super(baseLanguage, ID, mimeTypes);
   }
 }
