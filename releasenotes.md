@@ -1,5 +1,11 @@
 # Release notes
 
+## Release notes for 1.6.5-203
+
+### General
+ * Rotate Rollbar token for plugin error reporting
+
+
 ## Release notes for 1.6.4-203
 
 ### General
