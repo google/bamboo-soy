@@ -1,6 +1,6 @@
 # Bamboo Soy for IntelliJ 🏮🍣🏮
 
-[![Build Status](https://travis-ci.org/google/bamboo-soy.svg?branch=master)](https://travis-ci.org/google/bamboo-soy)
+![Java CI with Gradle](https://github.com/google/bamboo-soy/actions/workflows/gradle.yml/badge.svg?branch=master)
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
 
 The smartest Intellij plugin for the [Soy templating language](https://github.com/google/closure-templates).
