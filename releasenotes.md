@@ -1,5 +1,11 @@
 # Release notes
 
+## Release notes for 1.6.6-203
+
+### General
+ * Use the IDE's bundled Kotlin library (fixes #270)
+
+
 ## Release notes for 1.6.5-203
 
 ### General
